@@ -6,6 +6,7 @@
   "plugins": [
     {
       "name": "dotnet-unity-tests-plugin",
+      "source": "./",
       "version": "1.0.0",
       "description": "Um planejador, revisor e criador de testes unitários para dotnet",
       "category": "testing",
