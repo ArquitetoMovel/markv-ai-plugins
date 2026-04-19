@@ -1,7 +1,7 @@
 {
   "name": "dotnet-unity-tests-plugin",
   "description": "Planejador, revisor e criador de testes unitários para dotnet",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Alexandre Danelon (Arquiteto Móvel)",
     "email": "alexandre.danelon@outlook.com"

@@ -29,7 +29,25 @@ O papel do agente *dotnet-tester-creator* é ler a especificação e plano gerad
 - Deverá utilizar ferramentas de terminal para garantir que o projeto compila e os testes rodam como `dotnet build` e `dotnet test`.
 - Deverá garantir uma cobertura minima de 80%.
 
+### dotnet-tester-planner
+
+O agente *dotnet-tester-planner* é responsável por **decompor** o `test-plan.md` gerado pelo *dotnet-tester-reviewer* em múltiplos arquivos `<NomeProjeto>.plan.md`, um por unidade paralelizável.
+
+- Lê a seção 3 (Plano de Ação por Projeto) e a seção 4 (Ordem de Execução Recomendada) do plano mestre.
+- Deriva metadados de dependência a partir da coluna "Pode Paralelizar Com" e da prioridade.
+- Gera frontmatter YAML em cada `*.plan.md` com os campos `session`, `projeto`, `tipo`, `framework`, `skill`, `prioridade`, `depende-de`, `pode-paralelizar-com`.
+- **Nunca** escreve código de teste nem executa comandos `dotnet`.
+- Todos os `*.plan.md` são gravados dentro do `session-dir` informado no prompt.
+
 ### dotnet-tester-coordinator
 
-O papel do agente *dotnet-tester-coordinator* é orquestrar os agentes *dotnet-tester-reviewer* e *dotnet-tester-creator*.
-Poderá haver mais de uma instancia rodando em paralelo do *dotnet-tester-creator* de acordo com o plano de execução gerado.
+O agente *dotnet-tester-coordinator* é o ponto de entrada do plugin. Ele orquestra o pipeline completo em quatro fases:
+
+1. **Setup de sessão**: localiza o `.sln`, gera `session-id` (timestamp UTC no formato `YYYYMMDD-HHmmss`) e cria `<solution-root>/.dotnet-unity-tests/<session-id>/`.
+2. **Reviewer**: invoca *dotnet-tester-reviewer* para produzir `test-plan.md` dentro do `session-dir`.
+3. **Planner**: invoca *dotnet-tester-planner* para particionar o plano em `*.plan.md` individuais.
+4. **Creators em ondas**: dispara instâncias de *dotnet-tester-creator* **em paralelo** por onda, respeitando o grafo de dependências derivado do frontmatter de cada `*.plan.md`. Cada creator grava um `<NomeProjeto>.result.md` no `session-dir`.
+
+Ao final, o coordinator consolida todos os `*.result.md` em `<session-dir>/summary.md` e reporta ao usuário: projetos concluídos, cobertura global, falhas.
+
+Todos os artefatos da sessão ficam isolados em `.dotnet-unity-tests/<session-id>/`, permitindo múltiplas execuções coexistirem na mesma solução.

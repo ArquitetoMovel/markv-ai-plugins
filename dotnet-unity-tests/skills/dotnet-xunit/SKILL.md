@@ -15,6 +15,14 @@ description: >
 
 ---
 
+## Ponto de entrada canônico
+
+Quando esta skill for acionada automaticamente por palavras-chave do usuário (ex.: "criar testes .NET 8", "escrever testes unitários", "cobrir classe X"), o assistant **deve invocar o agente `dotnet-tester-coordinator`** como ponto de entrada — ele orquestra o fluxo completo `reviewer → planner → creator(s)` e gerencia o diretório de sessão `.dotnet-unity-tests/<session-id>/` na raiz da solução.
+
+Consulte este documento diretamente **apenas** para referência pontual de padrões de código (escrever um `[Fact]` ad-hoc, tirar dúvida de convenção de nomenclatura, lembrar versão de pacote). Para qualquer tarefa end-to-end de planejar + criar testes em uma solução, use o coordinator.
+
+---
+
 ## Stack canônica
 
 | Pacote                         | Versão   | Finalidade                          |
