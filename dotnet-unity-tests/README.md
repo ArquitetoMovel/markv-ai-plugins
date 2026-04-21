@@ -42,7 +42,7 @@ dotnet-unity-tests/
 
 ```bash
 /plugin marketplace add ArquitetoMovel/markv-ai-plugins
-/plugin install dotnet-unity-tests-plugin@arquiteto-movel-plugins
+/plugin install dotnet-unity-tests-plugin@markv-ai-plugins
 ```
 
 ### GitHub Copilot CLI

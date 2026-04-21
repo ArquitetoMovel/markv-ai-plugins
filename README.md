@@ -38,7 +38,7 @@ Substitua `<plugin-name>` pelo nome do plugin desejado.
 ```bash
 # Claude Code
 /plugin marketplace add ArquitetoMovel/markv-ai-plugins
-/plugin install <plugin-name>@arquiteto-movel-plugins
+/plugin install <plugin-name>@markv-ai-plugins
 
 # GitHub Copilot CLI
 copilot plugin marketplace add ArquitetoMovel/markv-ai-plugins

@@ -19,7 +19,7 @@ Repo-level marketplace manifests (all identical content):
 - `marketplace.json` — root (generic)
 - `.claude-plugin/marketplace.json` — Claude Code
 - `.cursor-plugin/marketplace.json` — Cursor
-- `.github/plugin/marketplace.json` — Copilot CLI (note `name` is `arquiteto-movel-plugins` here; the other three use `markV AI Plugins Marketplace` — match existing naming convention per host when editing)
+- `.github/plugin/marketplace.json` — Copilot CLI (note `name` is `arquiteto-movel-plugins` here; the other three use `markv-ai-plugins` — both kebab-case as required by the Claude Code schema; match the existing per-host convention when editing)
 
 Per-plugin manifests inside a plugin directory (see `dotnet-unity-tests/`):
 
@@ -74,7 +74,7 @@ There is no build, lint, or test for this repo itself. Useful end-user install c
 ```bash
 # Claude Code
 /plugin marketplace add ArquitetoMovel/markv-ai-plugins
-/plugin install <plugin-name>@arquiteto-movel-plugins
+/plugin install <plugin-name>@markv-ai-plugins
 
 # GitHub Copilot CLI
 copilot plugin marketplace add ArquitetoMovel/markv-ai-plugins

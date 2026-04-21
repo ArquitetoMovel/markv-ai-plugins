@@ -33,7 +33,7 @@ prd-builder/
 
 ```bash
 /plugin marketplace add ArquitetoMovel/markv-ai-plugins
-/plugin install prd-builder-plugin@arquiteto-movel-plugins
+/plugin install prd-builder-plugin@markv-ai-plugins
 ```
 
 ### GitHub Copilot CLI
