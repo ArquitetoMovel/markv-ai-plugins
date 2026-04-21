@@ -23,7 +23,7 @@ Repo-level marketplace manifests (all identical content):
 
 Per-plugin manifests inside a plugin directory (see `dotnet-unity-tests/`):
 
-- `.claude-plugin/plugin.json` — Claude Code manifest (points `agents` → `./agents/`, `skills` → `./skills/`)
+- `.claude-plugin/plugin.json` — Claude Code manifest (no `agents`/`skills` fields — Claude Code auto-scans the default `agents/` and `skills/` directories; the validator rejects explicit `"./agents/"` / `"./skills/"` strings)
 - `.cursor-plugin/plugin.json` — Cursor manifest (minimal — no agents/skills fields)
 - `plugin.json` at the plugin root — Copilot CLI manifest (points `agents` → `copilot-agents/`, `skills` → `["skills/"]`)
 
