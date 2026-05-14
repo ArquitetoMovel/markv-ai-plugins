@@ -1,0 +1,24 @@
+{
+  "name": "sonar-code-cleaner",
+  "description": "Conduz uma entrevista guiada, busca code smells no SonarQube/SonarCloud via MCP (escopo New Code ou Overall, por projectKey ou pull request) e despacha um especialista de desenvolvimento por relatório de issue.",
+  "version": "0.3.0",
+  "author": {
+    "name": "Alexandre",
+    "email": ""
+  },
+  "license": "MIT",
+  "keywords": [
+    "sonar",
+    "sonarqube",
+    "sonarcloud",
+    "codesmell",
+    "clean-code",
+    "quality",
+    "refactoring",
+    "orchestration",
+    "mcp"
+  ],
+  "agents": "agents/",
+  "skills": "skills/",
+  "mcpServers": ".mcp.json"
+}
