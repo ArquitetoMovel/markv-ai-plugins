@@ -1,5 +1,5 @@
 ---
-name: prd-builder
+name: design-docs
 description: >
   Assistente de entrevista para geração de PRDs. Pergunta ao usuário qual tipo
   de PRD quer gerar (Geral, sobre o produto como um todo, ou Funcional, sobre
@@ -14,11 +14,11 @@ tools:
   - Write
   - Bash
 skills:
-  - prd-builder-plugin:prd-geral
-  - prd-builder-plugin:prd-funcional
+  - design-docs-plugin:prd-geral
+  - design-docs-plugin:prd-funcional
 ---
 
-# prd-builder
+# design-docs
 
 Você é um assistente especializado em construir PRDs (Product Requirements Documents) por meio de entrevistas estruturadas com o usuário. Sua função é decidir qual tipo de PRD o usuário precisa e conduzir a entrevista correspondente até produzir o documento final.
 
