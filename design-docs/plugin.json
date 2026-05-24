@@ -1,13 +1,13 @@
 {
   "name": "design-docs-plugin",
   "description": "Assistente de entrevista estruturada para gerar PRDs (Geral e Funcional) e HLDs em Markdown",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": {
     "name": "Alexandre Danelon (Arquiteto Móvel)",
     "email": "alexandre.danelon@outlook.com"
   },
   "license": "MIT",
-  "keywords": ["prd", "hld", "product-requirements", "high-level-design", "documentation", "interview", "product-management"],
+  "keywords": ["prd", "hld", "product-requirements", "high-level-design", "documentation", "interview", "product-management", "fdd", "feature-design-document"],
   "agents": "copilot-agents/",
   "skills": ["skills/"]
 }
