@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Marketplace de plugins de IA multiplataforma (Claude Code, Copilot CLI, Cursor)",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
@@ -24,6 +24,14 @@
       "description": "Assistente de entrevista para gerar PRDs (Geral e Funcional) e HLDs em Markdown",
       "category": "documentation",
       "keywords": ["prd", "hld", "product-requirements", "high-level-design", "documentation", "interview", "product-management"]
+    },
+    {
+      "name": "dev-guideline-plugin",
+      "source": "./dev-guideline",
+      "version": "1.0.0",
+      "description": "Gerador de guidelines de desenvolvimento por linguagem, com entrevista guiada e pesquisa em fontes oficiais",
+      "category": "documentation",
+      "keywords": ["guidelines", "development-guidelines", "coding-standards", "best-practices", "style-guide", "documentation"]
     }
   ]
 }

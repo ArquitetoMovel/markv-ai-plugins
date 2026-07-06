@@ -1,0 +1,12 @@
+{
+  "name": "dev-guideline-plugin",
+  "description": "Gerador de guidelines de desenvolvimento por linguagem, com entrevista guiada e pesquisa em fontes oficiais",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexandre Danelon (Arquiteto Móvel)",
+    "email": "alexandre.danelon@outlook.com"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ArquitetoMovel/markv-ai-plugins",
+  "keywords": ["guidelines", "development-guidelines", "coding-standards", "best-practices", "style-guide", "documentation"]
+}
