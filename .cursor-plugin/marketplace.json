@@ -32,6 +32,14 @@
       "description": "Gerador de guidelines de desenvolvimento por linguagem, com entrevista guiada e pesquisa em fontes oficiais",
       "category": "documentation",
       "keywords": ["guidelines", "development-guidelines", "coding-standards", "best-practices", "style-guide", "documentation"]
+    },
+    {
+      "name": "plugin-creator-plugin",
+      "source": "./plugin-creator",
+      "version": "1.0.0",
+      "description": "Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor)",
+      "category": "development",
+      "keywords": ["plugin", "plugin-creator", "scaffold", "marketplace", "claude", "copilot", "cursor", "agents", "skills"]
     }
   ]
 }
