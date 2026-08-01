@@ -1,0 +1,12 @@
+{
+  "name": "plugin-creator-plugin",
+  "description": "Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexandre Danelon (Arquiteto Móvel)",
+    "email": "alexandre.danelon@outlook.com"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/ArquitetoMovel/markv-ai-plugins",
+  "keywords": ["plugin", "plugin-creator", "scaffold", "marketplace", "claude", "copilot", "cursor", "agents", "skills"]
+}

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv prd-builder *)",
+      "Bash(mv design-docs/agents/prd-builder.md design-docs/agents/design-docs.md)",
+      "Bash(mv design-docs/copilot-agents/prd-builder.agent.md design-docs/copilot-agents/design-docs.agent.md)",
+      "Bash(sed -i '' 's/prd-builder-plugin/design-docs-plugin/g; s/prd-builder/design-docs/g' design-docs/README.md)",
+      "Bash(sed -i '' 's/^# prd-builder/# design-docs/' design-docs/agents/design-docs.md design-docs/copilot-agents/design-docs.agent.md)"
+    ]
+  }
+}

@@ -14,37 +14,37 @@ description: >
 
 ---
 
-## Ponto de entrada canônico
+## Canonical entry point
 
-Quando esta skill for acionada automaticamente por palavras-chave do usuário (ex.: "migrar MSTest", "atualizar MSTest", "testes projeto legado"), o assistant **deve invocar o agente `dotnet-tester-coordinator`** como ponto de entrada — ele orquestra o fluxo completo `reviewer → planner → creator(s)` e gerencia o diretório de sessão `.dotnet-unity-tests/<session-id>/` na raiz da solução.
+When this skill is automatically activated by user keywords (e.g. "migrate MSTest", "update MSTest", "legacy project tests"), the assistant **must invoke the `dotnet-tester-coordinator` agent** as the entry point — it orchestrates the complete flow `reviewer → planner → creator(s)` and manages the session directory `.dotnet-unity-tests/<session-id>/` at the root of the solution.
 
-Consulte este documento diretamente **apenas** para referência pontual de padrões de código (escrever um `[TestMethod]` ad-hoc, tirar dúvida sobre breaking change v2→v3, lembrar versão de pacote). Para qualquer tarefa end-to-end de planejar + criar testes em uma solução, use o coordinator.
+Consult this document **only** for reference on specific code patterns (writing a `[TestMethod]` ad-hoc, asking about breaking changes from v2→v3, remembering package versions). For any end-to-end task of planning + creating tests in a solution, use the coordinator.
 
 ---
 
-## Decisão estratégica: quando usar MSTest
+## Strategic decision: when to use MSTest
 
 | Cenário                                  | Framework recomendado       |
 |-----------------------------------------|-----------------------------|
-| Projeto novo em .NET 8 / 9 / 10+        | **xUnit.net** (skill `dotnet-xunit`) |
-| Manutenção em .NET Framework 4.7.2      | **MSTest v3** (esta skill)  |
-| Ambiente 100% Microsoft (VS + ADO)      | **MSTest v3** (esta skill)  |
-| Migração de Java/JUnit para .NET moderno| NUnit → xUnit               |
+| New projects net8,9,10+        | **xUnit.net** (skill `dotnet-xunit`) |
+| Maintenance in net472          | **MSTest v3** (this skill)  |
+| 100% Microsoft environment (VS + ADO)      | **MSTest v3** (this skill)  |
+| Migration from Java/JUnit to modern .NET| NUnit → xUnit               |
 
 ---
 
-## Stack canônica para .NET Framework 4.7.2
+## Canonical stack for .NET Framework 4.7.2
 
-| Pacote                    | Versão | Finalidade                        |
+| Package                    | Version | Purpose                        |
 |--------------------------|--------|-----------------------------------|
 | `MSTest.TestFramework`   | 3.x    | Framework principal               |
 | `MSTest.TestAdapter`     | 3.x    | Runner / integração `dotnet test` |
 | `Microsoft.NET.Test.Sdk` | 17.x   | SDK de execução de testes         |
 
-> **Nota**: `MSTest.Sdk` (meta-package) **não** deve ser usado em projetos `.NET Framework 4.7.2`
-> pois exige SDK-style project format completo. Use os pacotes individuais acima.
+> **Note**: `MSTest.Sdk` (meta-package) **must not** be used in `.NET Framework 4.7.2` projects
+> because it requires a complete SDK-style project format. Use the individual packages above.
 
-### `.csproj` mínimo para projeto de testes
+### Minimum `.csproj` for test project
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -69,6 +69,17 @@ Consulte este documento diretamente **apenas** para referência pontual de padr�
 
 ---
 
+## Build e validação via CLI
+
+Projetos de teste SDK-style com `net472` rodam com os mesmos comandos do .NET moderno
+(`dotnet build` / `dotnet test`). Para projetos legados (formato clássico de `.csproj`),
+o equivalente é `msbuild` + `vstest.console.exe`.
+
+> Recomendações completas de build/test/cobertura por tipo de projeto, fallback para MSBuild
+> e matriz de detecção para o reviewer: ver [build-cli-reference.md](build-cli-reference.md).
+
+---
+
 ## Convenções de nomenclatura
 
 | Elemento   | Padrão                                 | Exemplo                                  |
@@ -80,9 +91,9 @@ Consulte este documento diretamente **apenas** para referência pontual de padr�
 
 ---
 
-## Padrões de teste MSTest v3
+## MSTest v3 test patterns
 
-### Teste simples com [TestMethod]
+### Simple test with [TestMethod]
 
 ```csharp
 [TestClass]
@@ -103,7 +114,7 @@ public class CalculatorTests
 }
 ```
 
-### Parametrizado com [DataRow] + [DataTestMethod]
+### Parameterized with [DataRow] + [DataTestMethod]
 
 ```csharp
 [TestClass]
@@ -127,7 +138,7 @@ public class CalculatorTests
 }
 ```
 
-### Parametrizado com [DynamicData] — dados complexos
+### Parameterized with [DynamicData] — complex data
 
 ```csharp
 [TestClass]
@@ -155,7 +166,7 @@ public class OrderProcessorTests
 }
 ```
 
-### Fixture de classe com [ClassInitialize] e [ClassCleanup]
+### Class fixture with [ClassInitialize] and [ClassCleanup]
 
 ```csharp
 [TestClass]
@@ -184,7 +195,7 @@ public class DatabaseTests
 }
 ```
 
-### Fixture global com [AssemblyInitialize] e [AssemblyCleanup]
+### Global fixture with [AssemblyInitialize] and [AssemblyCleanup]
 
 ```csharp
 [TestClass]
@@ -204,7 +215,7 @@ public class TestAssemblySetup
 }
 ```
 
-### Setup e teardown por método com [TestInitialize] e [TestCleanup]
+### Setup and teardown by method with [TestInitialize] and [TestCleanup]
 
 ```csharp
 [TestClass]
@@ -233,7 +244,7 @@ public class PaymentServiceTests
 }
 ```
 
-### Paralelismo (MSTest v3 apenas)
+### Parallelism (MSTest v3 only)
 
 ```csharp
 // Em AssemblyInfo.cs ou no arquivo de setup da assembly
@@ -245,29 +256,29 @@ public class PaymentServiceTests
 
 ---
 
-## Guia de migração MSTest v2 → MSTest v3
+## MSTest v2 → MSTest v3 migration guide
 
-### Phase 1 — Diagnóstico
+### Phase 1 — Diagnosis
 
-Localizar todos os projetos de teste com MSTest:
+Find all test projects with MSTest:
 
 ```bash
-# Encontrar projetos com referência ao MSTest
+# Find projects with reference to MSTest
 grep -rl "MSTest.TestFramework" --include="*.csproj" .
 
-# Ver versão atual dos pacotes
+# Check current package versions
 grep -A1 "MSTest" **/*.csproj
 ```
 
-Usando as ferramentas do Claude:
-- Glob `**/*.csproj` e Grep por `MSTest.TestFramework`
-- Identificar a versão atual (`2.x` confirma que é v2)
-- Listar todos os `[ClassInitialize]` sem parâmetro `TestContext` (breaking change)
-- Listar todos os `[DataRow]` em métodos sem `[DataTestMethod]` (breaking change)
+Using the Claude tools:
+- Glob `**/*.csproj` and Grep for `MSTest.TestFramework`
+- Check current version (`2.x` confirms it is v2)
+- List all `[ClassInitialize]` without `TestContext` parameter (breaking change)
+- List all `[DataRow]` in methods without `[DataTestMethod]` (breaking change)
 
-### Phase 2 — Atualização de pacotes
+### Phase 2 — Update packages
 
-Atualizar cada `.csproj` afetado:
+Update each affected `.csproj`:
 
 ```xml
 <!-- DE (MSTest v2) -->
@@ -279,59 +290,59 @@ Atualizar cada `.csproj` afetado:
 <PackageReference Include="MSTest.TestAdapter" Version="3.*" />
 ```
 
-Executar restore para validar:
+Run restore to validate:
 ```bash
 dotnet restore
 ```
 
-### Phase 3 — Corrigir breaking changes
+### Phase 3 — Fix breaking changes
 
-| Mudança | Comportamento v2 | Comportamento v3 | Ação necessária |
+| Change | v2 behavior | v3 behavior | Required action |
 |---------|-----------------|-----------------|-----------------|
-| `[DataRow]` sem `[DataTestMethod]` | Ignorado silenciosamente | Erro de compilação | Trocar `[TestMethod]` por `[DataTestMethod]` |
-| `[ClassInitialize]` sem `TestContext` | Permitido | Obrigatório | Adicionar `TestContext context` como parâmetro |
-| `Assert.ThrowsException` assíncrono | Limitado / workaround | `Assert.ThrowsExceptionAsync<T>` | Migrar para versão async |
-| Nullable annotations | Sem suporte | Totalmente anotado | Revisar warnings nullable |
+| `[DataRow]` without `[DataTestMethod]` | Ignored silently | Compilation error | Replace `[TestMethod]` with `[DataTestMethod]` |
+| `[ClassInitialize]` without `TestContext` | Allowed | Required | Add `TestContext context` as parameter |
+| `Assert.ThrowsException` async | Limited / workaround | `Assert.ThrowsExceptionAsync<T>` | Migrate to async version |
+| Nullable annotations | Not supported | Fully annotated | Review nullable warnings |
 
-**Corrigir [ClassInitialize] sem TestContext:**
+**Fix `[ClassInitialize]` without TestContext:**
 
 ```csharp
-// v2 — permitido mas não recomendado
+// v2 — allowed but not recommended
 [ClassInitialize]
 public static void ClassInit() { }
 
-// v3 — parâmetro TestContext obrigatório
+// v3 — TestContext parameter is required
 [ClassInitialize]
 public static void ClassInit(TestContext context) { }
 ```
 
-**Corrigir [DataRow] em [TestMethod]:**
+**Fix `[DataRow]` in `[TestMethod]`:**
 
 ```csharp
-// v2 — [DataRow] com [TestMethod] era ignorado silenciosamente
+// v2 — [DataRow] with [TestMethod] was ignored silently
 [TestMethod]
 [DataRow(1, 2)]
 public void Add_TwoNumbers_ReturnsSum(int a, int b) { }
 
-// v3 — deve usar [DataTestMethod]
+// v3 — must use [DataTestMethod]
 [DataTestMethod]
 [DataRow(1, 2)]
 public void Add_TwoNumbers_ReturnsSum(int a, int b) { }
 ```
 
-**Migrar Assert.ThrowsException assíncrono:**
+**Migrate `Assert.ThrowsException` async:**
 
 ```csharp
-// v2 — workaround comum
+// v2 — common workaround
 Assert.ThrowsException<Exception>(() => asyncMethod().GetAwaiter().GetResult());
 
-// v3 — forma correta
+// v3 — correct way
 await Assert.ThrowsExceptionAsync<Exception>(() => asyncMethod());
 ```
 
 ### Phase 4 — Habilitar paralelismo (opcional)
 
-Criar ou atualizar `AssemblyInfo.cs` no projeto de testes:
+Create or update `AssemblyInfo.cs` in the test project:
 
 ```csharp
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -339,48 +350,48 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 [assembly: Parallelize(Workers = 0, Scope = ExecutionScope.MethodLevel)]
 ```
 
-Identificar testes com estado compartilhado que **não devem** rodar em paralelo:
+Identify tests with shared state that **should not** run in parallel:
 
 ```csharp
 [TestClass]
-[DoNotParallelize]  // Protege classe inteira
+[DoNotParallelize]  // Protects entire class
 public class StatefulIntegrationTests { }
 
-// Ou por método individual:
+// Or by individual method:
 [TestMethod]
 [DoNotParallelize]
 public void Test_WithSharedResource() { }
 ```
 
-### Phase 5 — Verificação final
+### Phase 5 — Final validation
 
 ```bash
-# Executar todos os testes
+# Run all tests
 dotnet test --logger "console;verbosity=normal"
 
-# Verificar sem warnings de obsolescência
+# Check for obsolete warnings
 dotnet build --warnaserror
 
-# Comparar contagem de testes (deve ser igual antes e depois)
+# Compare test count (should be equal before and after)
 dotnet test --logger "trx;LogFileName=results.trx"
 ```
 
-Checklist de validação:
-- [ ] Contagem de testes igual ou maior que antes da migração
-- [ ] Zero erros de build
-- [ ] Zero warnings de `[Obsolete]` relacionados ao MSTest
-- [ ] Testes parametrizados executando todos os casos de dados
-- [ ] Fixtures de classe e assembly inicializando/limpando corretamente
+Validation checklist:
+- [ ] Test count equal or greater than before migration
+- [ ] Zero build errors
+- [ ] Zero warnings of `[Obsolete]` related to MSTest
+- [ ] Parameterized tests executing all data cases
+- [ ] Class and assembly fixtures initializing/cleaning correctly
 
 ---
 
-## Anti-patterns a evitar
+## Anti-patterns to avoid
 
-| Anti-pattern                                    | Por quê é problema                                          |
+| Anti-pattern                                    | Why is it a problem                                          |
 |------------------------------------------------|-------------------------------------------------------------|
 | `[Theory]` / `[InlineData]`                    | São atributos do xUnit — não existem no MSTest              |
 | `[SetUp]` / `[TearDown]`                       | São atributos do NUnit — use `[TestInitialize]` / `[TestCleanup]` |
-| `MSTest.Sdk` em projetos .NET Framework 4.7.2  | Meta-package exige SDK-style project; incompatível com FW   |
-| `[DataRow]` com `[TestMethod]` (v3)            | Gera erro de compilação; use `[DataTestMethod]`             |
-| Herança entre classes `[TestClass]`            | MSTest não suporta herança de atributos de teste de forma confiável |
-| Estado estático mutável em testes paralelos    | Race conditions; use `[DoNotParallelize]` onde necessário   |
+| `MSTest.Sdk` in .NET Framework 4.7.2 projects  | Meta-package requires SDK-style project; incompatible with FW   |
+| `[DataRow]` with `[TestMethod]` (v3)            | Compilation error; use `[DataTestMethod]`             |
+| Inheritance between classes `[TestClass]`            | MSTest does not support reliable inheritance of test attributes |
+| Static mutable state in parallel tests    | Race conditions; use `[DoNotParallelize]` where necessary   |
