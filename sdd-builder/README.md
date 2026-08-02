@@ -37,6 +37,7 @@ O agente detecta a stack e despacha o especialista correspondente:
 | PL/SQL, Oracle | `sdd-plsql-specialist` |
 | Java | `sdd-java-specialist` |
 | Go | `sdd-go-specialist` |
+| Swift, SwiftUI | `sdd-swift-specialist` |
 
 Passos independentes da mesma fase rodam em paralelo quando tocam arquivos disjuntos. Passos que mexem em manifesto de dependência, injeção de dependência, configuração global, rotas ou migrações nunca são paralelizados.
 
@@ -77,6 +78,7 @@ Escrita concorrente é evitada por contrato, não por sorte: cada etapa tem um �
 | `sdd-plsql-specialist` | Implementação PL/SQL e Oracle. |
 | `sdd-java-specialist` | Implementação Java. |
 | `sdd-go-specialist` | Implementação Go. |
+| `sdd-swift-specialist` | Implementação Swift e SwiftUI. |
 
 ## Skills
 
@@ -104,7 +106,8 @@ sdd-builder/
 │   ├── sdd-node-angular-specialist.md
 │   ├── sdd-plsql-specialist.md
 │   ├── sdd-java-specialist.md
-│   └── sdd-go-specialist.md
+│   ├── sdd-go-specialist.md
+│   └── sdd-swift-specialist.md
 ├── copilot-agents/                 # Agentes para Copilot CLI (*.agent.md)
 └── skills/                         # Skills compartilhadas entre as 3 plataformas
     ├── prd-builder/SKILL.md

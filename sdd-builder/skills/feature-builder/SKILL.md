@@ -114,6 +114,7 @@ Detect the technology of the files this feature will touch, then pick the specia
 | PL/SQL / Oracle | `*.pks`, `*.pkb`, `*.plb`, `.sql` files with `CREATE OR REPLACE PACKAGE`, `liquibase`/`flyway` Oracle changelogs | `sdd-plsql-specialist` |
 | Java | `pom.xml`, `build.gradle`, `build.gradle.kts`, `settings.gradle` | `sdd-java-specialist` |
 | Go | `go.mod`, `go.work` | `sdd-go-specialist` |
+| Swift / SwiftUI | `Package.swift`, `*.xcodeproj`, `*.xcworkspace`, `Project.swift` (Tuist), `project.yml` (XcodeGen) | `sdd-swift-specialist` |
 
 Rules:
 
