@@ -79,8 +79,8 @@ If the PRD contains a **Foundation Features** subsection in Section 8, apply the
 Explore the codebase before writing the spec (before the interview in single-feature mode; before applying the Auto-Accept Policy in Batch Mode) to extract patterns. This is mandatory whenever the codebase is non-empty — do not wait for the user to provide paths.
 
 **Layer 1 — Baseline (floor, not ceiling):** at minimum, extract observable patterns in these categories. Examples are illustrative across multiple stacks — the categories are the stack-agnostic intent.
-- Runtime and language (any — Node, Python, Ruby, Go, Java, .NET, Rust, PL/SQL, etc.)
-- Framework and project layout (any — Next.js/Remix, Angular, Django/Flask/FastAPI, Rails, Spring, ASP.NET Core, etc.)
+- Runtime and language (any — Node, Python, Ruby, Go, Java, .NET, Rust, Swift, PL/SQL, etc.)
+- Framework and project layout (any — Next.js/Remix, Angular, Django/Flask/FastAPI, Rails, Spring, ASP.NET Core, SwiftUI/UIKit, etc.)
 - Database and data access (any — Postgres/MySQL/Mongo/SQLite/Oracle; Prisma/SQLAlchemy/ActiveRecord/GORM/Entity Framework; raw SQL)
 - Authentication strategy and library
 - API or entry-point style (REST, GraphQL, RPC, CLI, job queue, event handler — whatever the project uses) and response/error format

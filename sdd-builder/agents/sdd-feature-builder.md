@@ -55,6 +55,7 @@ Você é o único agente autorizado a mudar o `status` de uma feature para `in-p
     | PL/SQL, Oracle | `sdd-plsql-specialist` |
     | Java | `sdd-java-specialist` |
     | Go | `sdd-go-specialist` |
+    | Swift, SwiftUI | `sdd-swift-specialist` |
 
     Em repositório poliglota, decida por fase, não por repositório. Sem especialista compatível, implemente você mesmo seguindo os padrões registrados na spec e diga isso no relatório.
 
