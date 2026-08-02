@@ -12,6 +12,7 @@ Cada plugin é publicado simultaneamente para os três hosts a partir do mesmo r
 | [`design-docs-plugin`](./design-docs) | documentation | Assistente de entrevista estruturada para gerar PRDs (Geral e Funcional) e HLDs em Markdown, com exportação opcional em JSON. | Claude Code · Copilot CLI · Cursor |
 | [`dev-guideline-plugin`](./dev-guideline) | documentation | Gerador de guidelines de desenvolvimento por linguagem, com entrevista guiada e pesquisa em fontes oficiais. | Claude Code · Copilot CLI · Cursor |
 | [`plugin-creator-plugin`](./plugin-creator) | development | Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor). | Claude Code · Copilot CLI · Cursor |
+| [`sdd-builder-plugin`](./sdd-builder) | development | Fluxo de desenvolvimento orientado a spec em três etapas: PRD com roadmap, specs por feature e implementação com especialistas por tecnologia. | Claude Code · Copilot CLI · Cursor |
 
 ## Plugins
 
@@ -50,6 +51,15 @@ Assistente para scaffold de novos plugins de IA multiplataforma neste repositór
 - **Skills:** `create-ai-plugin` (layout obrigatório, templates de manifest por host, diferenças de frontmatter Claude/Cursor vs Copilot, registro em lockstep nos quatro `marketplace.json` e checklist de validação).
 - **Palavras-chave:** `plugin`, `plugin-creator`, `scaffold`, `marketplace`, `claude`, `copilot`, `cursor`, `agents`, `skills`.
 - **Instalação e detalhes:** [`plugin-creator/README.md`](./plugin-creator/README.md).
+
+### sdd-builder-plugin
+
+Jornada completa de desenvolvimento orientado a spec, do PRD até a feature implementada, com o roadmap `.sdd-builder/prd_map_progress.json` amarrando as três etapas.
+
+- **Agentes:** `sdd-builder` (orquestrador que diagnostica o estado do projeto e roteia a etapa), `sdd-prd-builder` (PRD de 9 seções para projeto novo ou existente, mais a criação do roadmap), `sdd-spec-builder` (gera `spec.md`, `plan.md` e `tests.md` por feature, em modo single ou batch por onda), `sdd-feature-builder` (implementa fase a fase, commita, verifica e atualiza o roadmap) e seis especialistas por tecnologia: `sdd-dotnet-specialist`, `sdd-python-specialist`, `sdd-node-angular-specialist`, `sdd-plsql-specialist`, `sdd-java-specialist` e `sdd-go-specialist`.
+- **Skills:** `prd-builder` (PRD de 9 seções, caminhos greenfield e projeto existente, ondas de execução e criação do roadmap), `spec-builder` (descoberta de padrões do código, mapeamento PRD para spec, casos de teste rastreáveis e modo batch por onda), `feature-builder` (execução por fases, detecção de stack, despacho de especialista, paralelismo seguro e verificação final) e `progress-tracker` (schema do roadmap, escritor único por etapa e protocolo de escrita com lock).
+- **Palavras-chave:** `sdd`, `spec-driven-development`, `prd`, `spec`, `feature-builder`, `roadmap`, `planning`, `workflow`.
+- **Instalação e detalhes:** [`sdd-builder/README.md`](./sdd-builder/README.md).
 
 ## Instalação genérica
 
