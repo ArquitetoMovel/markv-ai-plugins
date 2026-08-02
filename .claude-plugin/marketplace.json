@@ -40,6 +40,14 @@
       "description": "Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor)",
       "category": "development",
       "keywords": ["plugin", "plugin-creator", "scaffold", "marketplace", "claude", "copilot", "cursor", "agents", "skills"]
+    },
+    {
+      "name": "sdd-builder-plugin",
+      "source": "./sdd-builder",
+      "version": "1.0.0",
+      "description": "Fluxo completo de desenvolvimento orientado a spec: PRD com roadmap de features, specs técnicas por feature e implementação com subagentes por tecnologia",
+      "category": "development",
+      "keywords": ["sdd", "spec-driven-development", "prd", "spec", "feature-builder", "roadmap", "planning", "workflow"]
     }
   ]
 }
