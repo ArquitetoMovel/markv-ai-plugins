@@ -13,6 +13,7 @@ Cada plugin é publicado simultaneamente para os três hosts a partir do mesmo r
 | [`dev-guideline-plugin`](./dev-guideline) | documentation | Gerador de guidelines de desenvolvimento por linguagem, com entrevista guiada e pesquisa em fontes oficiais. | Claude Code · Copilot CLI · Cursor |
 | [`plugin-creator-plugin`](./plugin-creator) | development | Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor). | Claude Code · Copilot CLI · Cursor |
 | [`sdd-builder-plugin`](./sdd-builder) | development | Fluxo de desenvolvimento orientado a spec em três etapas: PRD com roadmap, specs por feature e implementação com especialistas por tecnologia. | Claude Code · Copilot CLI · Cursor |
+| [`adrs-management-plugin`](./adrs-management) | documentation | Gestão completa de Architecture Decision Records (ADRs): mapeamento do codebase, identificação com scoring e histórico git, geração MADR e vínculos bidirecionais. | Claude Code · Copilot CLI · Cursor |
 
 ## Plugins
 
@@ -60,6 +61,15 @@ Jornada completa de desenvolvimento orientado a spec, do PRD até a feature impl
 - **Skills:** `prd-builder` (PRD de 9 seções, caminhos greenfield e projeto existente, ondas de execução e criação do roadmap), `spec-builder` (descoberta de padrões do código, mapeamento PRD para spec, casos de teste rastreáveis e modo batch por onda), `feature-builder` (execução por fases, detecção de stack, despacho de especialista, paralelismo seguro e verificação final) e `progress-tracker` (schema do roadmap, escritor único por etapa e protocolo de escrita com lock).
 - **Palavras-chave:** `sdd`, `spec-driven-development`, `prd`, `spec`, `feature-builder`, `roadmap`, `planning`, `workflow`.
 - **Instalação e detalhes:** [`sdd-builder/README.md`](./sdd-builder/README.md).
+
+### adrs-management-plugin
+
+Gestão estruturada de Architecture Decision Records (ADRs), desde a descoberta até a criação do grafo de relacionamentos navegável.
+
+- **Agentes:** `adr-analyzer` (mapeia a arquitetura e identifica ADRs potenciais com scoring e histórico git), `adr-generator` (transforma decisões em documentos formais no padrão MADR de 7 seções) e `adr-linker` (descobre relacionamentos temporais/técnicos e cria links bidirecionais clicáveis).
+- **Skills:** `adr-map` (mapeamento modular da base de código gerando `mapping.md`), `adr-identify` (regras de filtragem Passo 0 e Red Flags com pontuação até 150 pontos), `adr-generate` (padrão MADR estrito, Tiers 1/2 e marcadores `[NEEDS INPUT]`) e `adr-link` (detecção de conexões Supersedes, Depends on, Related to e Amends com relatórios de validação).
+- **Palavras-chave:** `adr`, `architecture`, `madr`, `documentation`, `codebase-analysis`, `decision-records`.
+- **Instalação e detalhes:** [`adrs-management/README.md`](./adrs-management/README.md).
 
 ## Instalação genérica
 
