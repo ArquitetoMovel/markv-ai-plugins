@@ -48,6 +48,14 @@
       "description": "Fluxo completo de desenvolvimento orientado a spec: PRD com roadmap de features, specs técnicas por feature e implementação com subagentes por tecnologia",
       "category": "development",
       "keywords": ["sdd", "spec-driven-development", "prd", "spec", "feature-builder", "roadmap", "planning", "workflow"]
+    },
+    {
+      "name": "adrs-management-plugin",
+      "source": "./adrs-management",
+      "version": "1.0.0",
+      "description": "Análise de arquitetura da base de código, identificação automatizada de decisões arquiteturais (ADRs), geração no padrão MADR e vinculação de relacionamentos bidirecionais.",
+      "category": "documentation",
+      "keywords": ["adr", "architecture", "madr", "documentation", "codebase-analysis", "decision-records"]
     }
   ]
 }

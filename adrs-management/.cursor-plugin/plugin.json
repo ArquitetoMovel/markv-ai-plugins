@@ -1,0 +1,11 @@
+{
+  "name": "adrs-management-plugin",
+  "description": "Análise de arquitetura da base de código, identificação automatizada de decisões arquiteturais (ADRs), geração no padrão MADR e vinculação de relacionamentos bidirecionais.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexandre Danelon (Arquiteto Móvel)",
+    "email": "alexandre.danelon@outlook.com"
+  },
+  "license": "MIT",
+  "keywords": ["adr", "architecture", "madr", "documentation", "codebase-analysis", "decision-records"]
+}
