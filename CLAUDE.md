@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-`markv-ai-plugins` is a **multi-platform AI plugin marketplace**. Every plugin in this repo must work across three hosts: **Claude Code**, **GitHub Copilot CLI**, and **Cursor**. The repo has no application code, build step, or test suite — it ships Markdown (agents/skills) and JSON (manifests).
+`markv-ai-plugins` is a **multi-platform AI plugin marketplace**. Every plugin in this repo must work across three hosts: **Claude Code**, **GitHub Copilot CLI**, and **Cursor**. The marketplace ships Markdown (agents/skills) and JSON (manifests), with no global application build. Plugins such as `swe-dependency-map` also ship deterministic helper scripts and their focused tests.
 
 Spec of record: `spec-modular-plugins.md`. Platform docs are mirrored locally as `claude-plugins-ref.md`, `claude-plugins-market-place.md`, `copilot-plugins-ref.md`, `copilot-plugins-market-place.md`, `cursor-plugins-ref.md` — prefer these over fetching upstream docs.
 
@@ -69,7 +69,7 @@ Framework selection rule (hardcoded in the skills): `net472` → MSTest v3 (`ski
 
 ## Commands
 
-There is no build, lint, or test for this repo itself. Useful end-user install commands (document these when shipping a new plugin):
+There is no global build, lint, or test for the marketplace itself. Run plugin-specific checks when changing executable helpers (for example, `python3 -m unittest discover -s swe-dependency-map/tests -v`). Useful end-user install commands (document these when shipping a new plugin):
 
 ```bash
 # Claude Code

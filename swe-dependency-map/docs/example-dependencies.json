@@ -1,0 +1,430 @@
+{
+  "analyzer_version": "1.0.0",
+  "config": {
+    "exclude": [],
+    "include_external": false,
+    "include_tests": false,
+    "languages": [
+      "dotnet"
+    ],
+    "python_roots": [],
+    "thresholds": {
+      "pain_max_a": 0.2,
+      "pain_max_i": 0.2,
+      "pain_min_ca": 2,
+      "useless_min_a": 0.8,
+      "useless_min_i": 0.8
+    }
+  },
+  "coverage": "partial_static",
+  "libraries": {
+    "cycles": [],
+    "edges": [
+      {
+        "evidence": [
+          {
+            "line": 1,
+            "path": "Api/Api.csproj",
+            "reason": "declared:package:newtonsoft.json"
+          }
+        ],
+        "source": "dotnet:library:Api/Api.csproj",
+        "target": "dotnet:external:package:newtonsoft.json"
+      },
+      {
+        "evidence": [
+          {
+            "line": 2,
+            "path": "Api/Api.cs",
+            "reason": "import:Example.Contracts"
+          },
+          {
+            "line": 1,
+            "path": "Api/Api.csproj",
+            "reason": "declared:project_path:Contracts/Contracts.csproj"
+          }
+        ],
+        "source": "dotnet:library:Api/Api.csproj",
+        "target": "dotnet:library:Contracts/Contracts.csproj"
+      },
+      {
+        "evidence": [
+          {
+            "line": 1,
+            "path": "Api/Api.cs",
+            "reason": "import:Example.Core"
+          },
+          {
+            "line": 1,
+            "path": "Api/Api.csproj",
+            "reason": "declared:project_path:Core/Core.csproj"
+          }
+        ],
+        "source": "dotnet:library:Api/Api.csproj",
+        "target": "dotnet:library:Core/Core.csproj"
+      },
+      {
+        "evidence": [
+          {
+            "line": 2,
+            "path": "Worker/Worker.cs",
+            "reason": "import:Example.Contracts"
+          },
+          {
+            "line": 1,
+            "path": "Worker/Worker.csproj",
+            "reason": "declared:project_path:Contracts/Contracts.csproj"
+          }
+        ],
+        "source": "dotnet:library:Worker/Worker.csproj",
+        "target": "dotnet:library:Contracts/Contracts.csproj"
+      },
+      {
+        "evidence": [
+          {
+            "line": 1,
+            "path": "Worker/Worker.cs",
+            "reason": "import:Example.Core"
+          },
+          {
+            "line": 1,
+            "path": "Worker/Worker.csproj",
+            "reason": "declared:project_path:Core/Core.csproj"
+          }
+        ],
+        "source": "dotnet:library:Worker/Worker.csproj",
+        "target": "dotnet:library:Core/Core.csproj"
+      }
+    ],
+    "nodes": [
+      {
+        "abstract_types": 0,
+        "abstractness": null,
+        "afferent": [
+          "dotnet:library:Api/Api.csproj"
+        ],
+        "ca": 1,
+        "ce": 0,
+        "ce_external": 0,
+        "ce_internal": 0,
+        "distance": null,
+        "efferent_external": [],
+        "efferent_internal": [],
+        "external": true,
+        "files": [],
+        "id": "dotnet:external:package:newtonsoft.json",
+        "instability": null,
+        "kind": "package",
+        "language": "dotnet",
+        "library": null,
+        "metric_status": "observed_consumers_only",
+        "name": "newtonsoft.json",
+        "pain_zone": null,
+        "path": "",
+        "total_types": 0,
+        "uselessness_zone": null
+      },
+      {
+        "abstract_types": 0,
+        "abstractness": 0.0,
+        "afferent": [],
+        "ca": 0,
+        "ce": 2,
+        "ce_external": 1,
+        "ce_internal": 2,
+        "distance": 0.0,
+        "efferent_external": [
+          "dotnet:external:package:newtonsoft.json"
+        ],
+        "efferent_internal": [
+          "dotnet:library:Contracts/Contracts.csproj",
+          "dotnet:library:Core/Core.csproj"
+        ],
+        "external": false,
+        "files": [
+          "Api/Api.cs"
+        ],
+        "id": "dotnet:library:Api/Api.csproj",
+        "instability": 1.0,
+        "kind": "library",
+        "language": "dotnet",
+        "library": null,
+        "metric_status": "static_observation",
+        "name": "Api",
+        "pain_zone": false,
+        "path": "Api/Api.csproj",
+        "total_types": 1,
+        "uselessness_zone": false
+      },
+      {
+        "abstract_types": 1,
+        "abstractness": 1.0,
+        "afferent": [
+          "dotnet:library:Api/Api.csproj",
+          "dotnet:library:Worker/Worker.csproj"
+        ],
+        "ca": 2,
+        "ce": 0,
+        "ce_external": 0,
+        "ce_internal": 0,
+        "distance": 0.0,
+        "efferent_external": [],
+        "efferent_internal": [],
+        "external": false,
+        "files": [
+          "Contracts/ICache.cs"
+        ],
+        "id": "dotnet:library:Contracts/Contracts.csproj",
+        "instability": 0.0,
+        "kind": "library",
+        "language": "dotnet",
+        "library": null,
+        "metric_status": "static_observation",
+        "name": "Contracts",
+        "pain_zone": false,
+        "path": "Contracts/Contracts.csproj",
+        "total_types": 1,
+        "uselessness_zone": false
+      },
+      {
+        "abstract_types": 0,
+        "abstractness": 0.0,
+        "afferent": [
+          "dotnet:library:Api/Api.csproj",
+          "dotnet:library:Worker/Worker.csproj"
+        ],
+        "ca": 2,
+        "ce": 0,
+        "ce_external": 0,
+        "ce_internal": 0,
+        "distance": 1.0,
+        "efferent_external": [],
+        "efferent_internal": [],
+        "external": false,
+        "files": [
+          "Core/Cache.Partial.cs",
+          "Core/Cache.cs"
+        ],
+        "id": "dotnet:library:Core/Core.csproj",
+        "instability": 0.0,
+        "kind": "library",
+        "language": "dotnet",
+        "library": null,
+        "metric_status": "static_observation",
+        "name": "Core",
+        "pain_zone": true,
+        "path": "Core/Core.csproj",
+        "total_types": 1,
+        "uselessness_zone": false
+      },
+      {
+        "abstract_types": 0,
+        "abstractness": 0.0,
+        "afferent": [],
+        "ca": 0,
+        "ce": 2,
+        "ce_external": 0,
+        "ce_internal": 2,
+        "distance": 0.0,
+        "efferent_external": [],
+        "efferent_internal": [
+          "dotnet:library:Contracts/Contracts.csproj",
+          "dotnet:library:Core/Core.csproj"
+        ],
+        "external": false,
+        "files": [
+          "Worker/Worker.cs"
+        ],
+        "id": "dotnet:library:Worker/Worker.csproj",
+        "instability": 1.0,
+        "kind": "library",
+        "language": "dotnet",
+        "library": null,
+        "metric_status": "static_observation",
+        "name": "Worker",
+        "pain_zone": false,
+        "path": "Worker/Worker.csproj",
+        "total_types": 1,
+        "uselessness_zone": false
+      }
+    ],
+    "stability_violations": []
+  },
+  "modules": {
+    "cycles": [],
+    "edges": [
+      {
+        "evidence": [
+          {
+            "line": 2,
+            "path": "Api/Api.cs",
+            "reason": "import:Example.Contracts"
+          }
+        ],
+        "source": "dotnet:module:Api/Api.csproj:Example.Api",
+        "target": "dotnet:module:Contracts/Contracts.csproj:Example.Contracts"
+      },
+      {
+        "evidence": [
+          {
+            "line": 1,
+            "path": "Api/Api.cs",
+            "reason": "import:Example.Core"
+          }
+        ],
+        "source": "dotnet:module:Api/Api.csproj:Example.Api",
+        "target": "dotnet:module:Core/Core.csproj:Example.Core"
+      },
+      {
+        "evidence": [
+          {
+            "line": 2,
+            "path": "Worker/Worker.cs",
+            "reason": "import:Example.Contracts"
+          }
+        ],
+        "source": "dotnet:module:Worker/Worker.csproj:Example.Worker",
+        "target": "dotnet:module:Contracts/Contracts.csproj:Example.Contracts"
+      },
+      {
+        "evidence": [
+          {
+            "line": 1,
+            "path": "Worker/Worker.cs",
+            "reason": "import:Example.Core"
+          }
+        ],
+        "source": "dotnet:module:Worker/Worker.csproj:Example.Worker",
+        "target": "dotnet:module:Core/Core.csproj:Example.Core"
+      }
+    ],
+    "nodes": [
+      {
+        "abstract_types": 0,
+        "abstractness": 0.0,
+        "afferent": [],
+        "ca": 0,
+        "ce": 2,
+        "ce_external": 0,
+        "ce_internal": 2,
+        "distance": 0.0,
+        "efferent_external": [],
+        "efferent_internal": [
+          "dotnet:module:Contracts/Contracts.csproj:Example.Contracts",
+          "dotnet:module:Core/Core.csproj:Example.Core"
+        ],
+        "external": false,
+        "files": [
+          "Api/Api.cs"
+        ],
+        "id": "dotnet:module:Api/Api.csproj:Example.Api",
+        "instability": 1.0,
+        "kind": "module",
+        "language": "dotnet",
+        "library": "dotnet:library:Api/Api.csproj",
+        "metric_status": "static_observation",
+        "name": "Example.Api",
+        "pain_zone": false,
+        "path": "Api",
+        "total_types": 1,
+        "uselessness_zone": false
+      },
+      {
+        "abstract_types": 1,
+        "abstractness": 1.0,
+        "afferent": [
+          "dotnet:module:Api/Api.csproj:Example.Api",
+          "dotnet:module:Worker/Worker.csproj:Example.Worker"
+        ],
+        "ca": 2,
+        "ce": 0,
+        "ce_external": 0,
+        "ce_internal": 0,
+        "distance": 0.0,
+        "efferent_external": [],
+        "efferent_internal": [],
+        "external": false,
+        "files": [
+          "Contracts/ICache.cs"
+        ],
+        "id": "dotnet:module:Contracts/Contracts.csproj:Example.Contracts",
+        "instability": 0.0,
+        "kind": "module",
+        "language": "dotnet",
+        "library": "dotnet:library:Contracts/Contracts.csproj",
+        "metric_status": "static_observation",
+        "name": "Example.Contracts",
+        "pain_zone": false,
+        "path": "Contracts",
+        "total_types": 1,
+        "uselessness_zone": false
+      },
+      {
+        "abstract_types": 0,
+        "abstractness": 0.0,
+        "afferent": [
+          "dotnet:module:Api/Api.csproj:Example.Api",
+          "dotnet:module:Worker/Worker.csproj:Example.Worker"
+        ],
+        "ca": 2,
+        "ce": 0,
+        "ce_external": 0,
+        "ce_internal": 0,
+        "distance": 1.0,
+        "efferent_external": [],
+        "efferent_internal": [],
+        "external": false,
+        "files": [
+          "Core/Cache.Partial.cs",
+          "Core/Cache.cs"
+        ],
+        "id": "dotnet:module:Core/Core.csproj:Example.Core",
+        "instability": 0.0,
+        "kind": "module",
+        "language": "dotnet",
+        "library": "dotnet:library:Core/Core.csproj",
+        "metric_status": "static_observation",
+        "name": "Example.Core",
+        "pain_zone": true,
+        "path": "Core",
+        "total_types": 1,
+        "uselessness_zone": false
+      },
+      {
+        "abstract_types": 0,
+        "abstractness": 0.0,
+        "afferent": [],
+        "ca": 0,
+        "ce": 2,
+        "ce_external": 0,
+        "ce_internal": 2,
+        "distance": 0.0,
+        "efferent_external": [],
+        "efferent_internal": [
+          "dotnet:module:Contracts/Contracts.csproj:Example.Contracts",
+          "dotnet:module:Core/Core.csproj:Example.Core"
+        ],
+        "external": false,
+        "files": [
+          "Worker/Worker.cs"
+        ],
+        "id": "dotnet:module:Worker/Worker.csproj:Example.Worker",
+        "instability": 1.0,
+        "kind": "module",
+        "language": "dotnet",
+        "library": "dotnet:library:Worker/Worker.csproj",
+        "metric_status": "static_observation",
+        "name": "Example.Worker",
+        "pain_zone": false,
+        "path": "Worker",
+        "total_types": 1,
+        "uselessness_zone": false
+      }
+    ],
+    "stability_violations": []
+  },
+  "schema_version": "1.0",
+  "warnings": [
+    "dotnet: coletor C# lexical de using e csproj; nomes totalmente qualificados, binding de símbolos, arquivos linked, VB/F# e avaliação MSBuild não cobertos"
+  ]
+}

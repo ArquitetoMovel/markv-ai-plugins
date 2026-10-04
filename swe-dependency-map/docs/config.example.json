@@ -1,0 +1,14 @@
+{
+  "languages": ["dotnet", "java", "typescript", "python", "go"],
+  "exclude": ["generated/**", "**/*.g.cs", "**/*.Designer.cs"],
+  "include_tests": false,
+  "include_external": false,
+  "python_roots": [],
+  "thresholds": {
+    "pain_min_ca": 2,
+    "pain_max_i": 0.2,
+    "pain_max_a": 0.2,
+    "useless_min_i": 0.8,
+    "useless_min_a": 0.8
+  }
+}
