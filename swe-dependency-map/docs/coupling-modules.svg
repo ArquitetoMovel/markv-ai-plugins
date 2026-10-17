@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 680" role="img" aria-labelledby="chart-modules-title chart-modules-desc">
+<title id="chart-modules-title">Módulos internos: abstração × instabilidade</title>
+<desc id="chart-modules-desc">4 componentes em 3 pontos. Eixo X: I de zero a um; eixo Y: A de zero a um. Pontos coincidentes são agrupados; a tabela identifica cada componente.</desc>
+<rect width="720" height="680" fill="#ffffff"/>
+<g font-family="system-ui, sans-serif" fill="#172b4d">
+<text x="100" y="34" font-size="21" font-weight="700">Módulos internos · A × I</text>
+<rect x="100" y="78" width="250" height="250" fill="#e4f3f0"/>
+<text x="118" y="118" font-size="16" font-weight="600">Abstrato estável</text>
+<text x="118" y="140" font-size="13">Contratos centrais</text>
+<rect x="350" y="78" width="250" height="250" fill="#fff1d7"/>
+<text x="368" y="118" font-size="16" font-weight="600">Abstrato instável</text>
+<text x="368" y="140" font-size="13">Zona de inutilidade</text>
+<rect x="100" y="328" width="250" height="250" fill="#fde7e7"/>
+<text x="118" y="368" font-size="16" font-weight="600">Concreto estável</text>
+<text x="118" y="390" font-size="13">Zona de Dor</text>
+<rect x="350" y="328" width="250" height="250" fill="#e8effc"/>
+<text x="368" y="368" font-size="16" font-weight="600">Concreto instável</text>
+<text x="368" y="390" font-size="13">Detalhes e adaptadores</text>
+<path d="M 100 78 V 578 M 100 578 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="100" y="603" text-anchor="middle" font-size="12">0</text>
+<text x="84" y="582" text-anchor="end" font-size="12">0</text>
+<path d="M 225 78 V 578 M 100 453 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="225" y="603" text-anchor="middle" font-size="12">0.25</text>
+<text x="84" y="457" text-anchor="end" font-size="12">0.25</text>
+<path d="M 350 78 V 578 M 100 328 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="350" y="603" text-anchor="middle" font-size="12">0.5</text>
+<text x="84" y="332" text-anchor="end" font-size="12">0.5</text>
+<path d="M 475 78 V 578 M 100 203 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="475" y="603" text-anchor="middle" font-size="12">0.75</text>
+<text x="84" y="207" text-anchor="end" font-size="12">0.75</text>
+<path d="M 600 78 V 578 M 100 78 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="600" y="603" text-anchor="middle" font-size="12">1</text>
+<text x="84" y="82" text-anchor="end" font-size="12">1</text>
+<rect x="100" y="78" width="500" height="500" fill="none" stroke="#536580"/>
+<path d="M 100 578 L 600 78" fill="none" stroke="#536580" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="350" y="632" text-anchor="middle" font-size="15">Instabilidade (I) →</text>
+<text transform="translate(34 328) rotate(-90)" text-anchor="middle" font-size="15">Abstração (A) →</text>
+<g id="chart-modules-point-1" class="chart-point" tabindex="0" aria-label="Ponto 1: I=0.0000, A=0.0000
+dotnet:module:Core/Core.csproj:Example.Core · CA=2, CE=0 · Zona de Dor detectada">
+<title>Ponto 1: I=0.0000, A=0.0000
+dotnet:module:Core/Core.csproj:Example.Core · CA=2, CE=0 · Zona de Dor detectada</title>
+<circle cx="100.000000" cy="578.000000" r="8" fill="#ac2335" stroke="#ffffff" stroke-width="2"/>
+<text x="113.000000" y="565.000000" text-anchor="start" font-size="13" font-weight="700" fill="#ac2335" stroke="#ffffff" stroke-width="3" paint-order="stroke">1</text>
+</g>
+<g id="chart-modules-point-2" class="chart-point" tabindex="0" aria-label="Ponto 2: I=0.0000, A=1.0000
+dotnet:module:Contracts/Contracts.csproj:Example.Contracts · CA=2, CE=0 · não atende aos limites das zonas de risco">
+<title>Ponto 2: I=0.0000, A=1.0000
+dotnet:module:Contracts/Contracts.csproj:Example.Contracts · CA=2, CE=0 · não atende aos limites das zonas de risco</title>
+<circle cx="100.000000" cy="78.000000" r="8" fill="#234e88" stroke="#ffffff" stroke-width="2"/>
+<text x="113.000000" y="102.000000" text-anchor="start" font-size="13" font-weight="700" fill="#234e88" stroke="#ffffff" stroke-width="3" paint-order="stroke">2</text>
+</g>
+<g id="chart-modules-point-3" class="chart-point" tabindex="0" aria-label="Ponto 3: I=1.0000, A=0.0000
+dotnet:module:Api/Api.csproj:Example.Api · CA=0, CE=2 · não atende aos limites das zonas de risco
+dotnet:module:Worker/Worker.csproj:Example.Worker · CA=0, CE=2 · não atende aos limites das zonas de risco">
+<title>Ponto 3: I=1.0000, A=0.0000
+dotnet:module:Api/Api.csproj:Example.Api · CA=0, CE=2 · não atende aos limites das zonas de risco
+dotnet:module:Worker/Worker.csproj:Example.Worker · CA=0, CE=2 · não atende aos limites das zonas de risco</title>
+<circle cx="600.000000" cy="578.000000" r="8" fill="#234e88" stroke="#ffffff" stroke-width="2"/>
+<text x="587.000000" y="565.000000" text-anchor="end" font-size="13" font-weight="700" fill="#234e88" stroke="#ffffff" stroke-width="3" paint-order="stroke">3 · 2</text>
+</g>
+<text x="100" y="662" font-size="12">Linha tracejada: A + I = 1 · Quadrantes: corte visual em 0,5</text>
+</g>
+</svg>

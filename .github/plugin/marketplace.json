@@ -56,6 +56,23 @@
       "description": "Análise de arquitetura da base de código, identificação automatizada de decisões arquiteturais (ADRs), geração no padrão MADR e vinculação de relacionamentos bidirecionais.",
       "category": "documentation",
       "keywords": ["adr", "architecture", "madr", "documentation", "codebase-analysis", "decision-records"]
+    },
+    {
+      "name": "swe-dependency-map-plugin",
+      "source": "./swe-dependency-map",
+      "version": "1.0.0",
+      "description": "Mapeia dependências entre LIBs e módulos, calcula acoplamento aferente, eferente e Zona de Dor e gera relatórios de análise.",
+      "category": "development",
+      "keywords": [
+        "architecture",
+        "dependencies",
+        "coupling",
+        "dotnet",
+        "java",
+        "typescript",
+        "python",
+        "go"
+      ]
     }
   ]
 }

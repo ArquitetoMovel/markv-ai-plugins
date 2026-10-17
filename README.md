@@ -14,6 +14,7 @@ Cada plugin é publicado simultaneamente para os três hosts a partir do mesmo r
 | [`plugin-creator-plugin`](./plugin-creator) | development | Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor). | Claude Code · Copilot CLI · Cursor |
 | [`sdd-builder-plugin`](./sdd-builder) | development | Fluxo de desenvolvimento orientado a spec em três etapas: PRD com roadmap, specs por feature e implementação com especialistas por tecnologia. | Claude Code · Copilot CLI · Cursor |
 | [`adrs-management-plugin`](./adrs-management) | documentation | Gestão completa de Architecture Decision Records (ADRs): mapeamento do codebase, identificação com scoring e histórico git, geração MADR e vínculos bidirecionais. | Claude Code · Copilot CLI · Cursor |
+| [`swe-dependency-map-plugin`](./swe-dependency-map) | development | Mapeia dependências entre LIBs e módulos, calcula CA/CE, instabilidade, abstração e Zona de Dor e gera relatórios determinísticos. | Claude Code · Copilot CLI · Cursor |
 
 ## Plugins
 
@@ -70,6 +71,16 @@ Gestão estruturada de Architecture Decision Records (ADRs), desde a descoberta 
 - **Skills:** `adr-map` (mapeamento modular da base de código gerando `mapping.md`), `adr-identify` (regras de filtragem Passo 0 e Red Flags com pontuação até 150 pontos), `adr-generate` (padrão MADR estrito, Tiers 1/2 e marcadores `[NEEDS INPUT]`) e `adr-link` (detecção de conexões Supersedes, Depends on, Related to e Amends com relatórios de validação).
 - **Palavras-chave:** `adr`, `architecture`, `madr`, `documentation`, `codebase-analysis`, `decision-records`.
 - **Instalação e detalhes:** [`adrs-management/README.md`](./adrs-management/README.md).
+
+### swe-dependency-map-plugin
+
+Mapeamento determinístico das dependências e análise do acoplamento em soluções .NET, Java, TypeScript, Python e Go.
+
+- **Agente:** `dependency-analyzer` (executa os scripts, verifica as evidências e interpreta o relatório).
+- **Skill:** `dependency-map` (coletores offline, grafos de LIBs e módulos, CA/CE, instabilidade, abstração, Zona de Dor e ciclos).
+- **Scripts:** Python 3.11+ com biblioteca padrão, sem build ou execução do código analisado.
+- **Relatórios:** `dependencies.json`, `report.md` e `report.html`, com gráficos SVG de quatro quadrantes A × I, métricas, diagnóstico, relações, evidências e limitações.
+- **Instalação e detalhes:** [`swe-dependency-map/README.md`](./swe-dependency-map/README.md).
 
 ## Instalação genérica
 

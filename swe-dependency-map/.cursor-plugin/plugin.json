@@ -1,0 +1,20 @@
+{
+  "name": "swe-dependency-map-plugin",
+  "description": "Mapeia dependências entre LIBs e módulos, calcula acoplamento aferente, eferente e Zona de Dor e gera relatórios de análise.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexandre Danelon",
+    "email": "alexandre.danelon@outlook.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "dependencies",
+    "coupling",
+    "dotnet",
+    "java",
+    "typescript",
+    "python",
+    "go"
+  ]
+}

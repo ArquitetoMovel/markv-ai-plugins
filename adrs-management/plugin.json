@@ -9,5 +9,5 @@
   "license": "MIT",
   "keywords": ["adr", "architecture", "madr", "documentation", "codebase-analysis", "decision-records"],
   "agents": "copilot-agents/",
-  "skills": ["skills/"]
+  "skills": ["skills/"] 
 }

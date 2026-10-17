@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+<title>Análise do acoplamento · swe-dependency-map</title>
+<style>
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #172b4d; background: #eef2f7; }
+body { margin: 0; line-height: 1.6; }
+main { max-width: 1120px; margin: 24px auto; padding: 28px 36px; background: white; border-radius: 16px; }
+nav { display: flex; flex-wrap: wrap; gap: 20px; padding: 16px 0; border-bottom: 1px solid #d9e1ec; }
+a { color: #245496; } h1 { line-height: 1.2; } h2 { margin-top: 44px; } h3 { margin-top: 28px; }
+p, li, td { overflow-wrap: anywhere; } figure { max-width: 800px; margin: 24px auto; }
+svg { display: block; width: 100%; height: auto; } .chart-point { cursor: help; }
+.chart-point:focus, .chart-point:target { outline: none; } .chart-point:focus circle, .chart-point:target circle { stroke: #0c1524; stroke-width: 4; }
+.table-scroll { overflow-x: auto; } table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 10px 12px; border-bottom: 1px solid #d9e1ec; text-align: left; vertical-align: top; }
+th { background: #eef2f7; } tr:nth-child(even) { background: #f8fafc; }
+code { background: #eef2f7; border-radius: 4px; padding: 2px 4px; } pre { overflow: auto; padding: 16px; background: #eef2f7; }
+pre code { padding: 0; } @media (max-width: 640px) { main { margin: 0; padding: 20px 14px; border-radius: 0; } }
+@media print { :root { background: white; } main { max-width: none; margin: 0; padding: 0; } nav { display: none; } figure, tr { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+<nav aria-label="Seções do relatório"><a href="#libraries">LIBs e projetos</a><a href="#modules">Módulos internos</a><a href="#coverage">Cobertura e limitações</a></nav>
+<h1>Análise do acoplamento</h1>
+<p><strong>Exemplo gerado de uma solução sintética .NET com Core, Contracts, Api e Worker. Não representa uma solução real.</strong></p>
+<p>Relatório gerado por análise estática determinística. Relação <code>origem → destino</code> significa que a origem depende do destino.</p>
+<h2>Escopo e método</h2>
+<ul>
+<li>Linguagens: dotnet.
+</li>
+<li>CE usado em I: somente interno.
+</li>
+<li>CA e CE contam vizinhos distintos, não ocorrências, tipos ou dependências transitivas.
+</li>
+<li>I = CE / (CA + CE); A = tipos abstratos / tipos totais; D = |A + I - 1| (distância normalizada).
+</li>
+<li>I de componente isolado, A sem tipos e métricas sem código de bibliotecas externas são indeterminados.
+</li>
+<li>A é uma aproximação sintática específica de cada linguagem; não mede a qualidade dos contratos.
+</li>
+<li>Os valores refletem o escopo observado. Referências não resolvidas podem subestimar CA/CE.
+</li>
+</ul>
+<h3>Limites configurados</h3>
+<pre><code>{
+  &quot;pain_max_a&quot;: 0.2,
+  &quot;pain_max_i&quot;: 0.2,
+  &quot;pain_min_ca&quot;: 2,
+  &quot;useless_min_a&quot;: 0.8,
+  &quot;useless_min_i&quot;: 0.8
+}</code></pre>
+<p>Os limites das zonas são políticas configuráveis deste plugin, não cortes definidos pelo material de apoio.</p>
+<h2 id="libraries">LIBs e projetos</h2>
+<p>4 componentes internos; 5 relações observadas; 0 ciclos (grupos fortemente conexos).</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 680" role="img" aria-labelledby="chart-libraries-title chart-libraries-desc">
+<title id="chart-libraries-title">LIBs e projetos: abstração × instabilidade</title>
+<desc id="chart-libraries-desc">4 componentes em 3 pontos. Eixo X: I de zero a um; eixo Y: A de zero a um. Pontos coincidentes são agrupados; a tabela identifica cada componente.</desc>
+<rect width="720" height="680" fill="#ffffff"/>
+<g font-family="system-ui, sans-serif" fill="#172b4d">
+<text x="100" y="34" font-size="21" font-weight="700">LIBs e projetos · A × I</text>
+<rect x="100" y="78" width="250" height="250" fill="#e4f3f0"/>
+<text x="118" y="118" font-size="16" font-weight="600">Abstrato estável</text>
+<text x="118" y="140" font-size="13">Contratos centrais</text>
+<rect x="350" y="78" width="250" height="250" fill="#fff1d7"/>
+<text x="368" y="118" font-size="16" font-weight="600">Abstrato instável</text>
+<text x="368" y="140" font-size="13">Zona de inutilidade</text>
+<rect x="100" y="328" width="250" height="250" fill="#fde7e7"/>
+<text x="118" y="368" font-size="16" font-weight="600">Concreto estável</text>
+<text x="118" y="390" font-size="13">Zona de Dor</text>
+<rect x="350" y="328" width="250" height="250" fill="#e8effc"/>
+<text x="368" y="368" font-size="16" font-weight="600">Concreto instável</text>
+<text x="368" y="390" font-size="13">Detalhes e adaptadores</text>
+<path d="M 100 78 V 578 M 100 578 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="100" y="603" text-anchor="middle" font-size="12">0</text>
+<text x="84" y="582" text-anchor="end" font-size="12">0</text>
+<path d="M 225 78 V 578 M 100 453 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="225" y="603" text-anchor="middle" font-size="12">0.25</text>
+<text x="84" y="457" text-anchor="end" font-size="12">0.25</text>
+<path d="M 350 78 V 578 M 100 328 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="350" y="603" text-anchor="middle" font-size="12">0.5</text>
+<text x="84" y="332" text-anchor="end" font-size="12">0.5</text>
+<path d="M 475 78 V 578 M 100 203 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="475" y="603" text-anchor="middle" font-size="12">0.75</text>
+<text x="84" y="207" text-anchor="end" font-size="12">0.75</text>
+<path d="M 600 78 V 578 M 100 78 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="600" y="603" text-anchor="middle" font-size="12">1</text>
+<text x="84" y="82" text-anchor="end" font-size="12">1</text>
+<rect x="100" y="78" width="500" height="500" fill="none" stroke="#536580"/>
+<path d="M 100 578 L 600 78" fill="none" stroke="#536580" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="350" y="632" text-anchor="middle" font-size="15">Instabilidade (I) →</text>
+<text transform="translate(34 328) rotate(-90)" text-anchor="middle" font-size="15">Abstração (A) →</text>
+<g id="chart-libraries-point-1" class="chart-point" tabindex="0" aria-label="Ponto 1: I=0.0000, A=0.0000
+dotnet:library:Core/Core.csproj · CA=2, CE=0 · Zona de Dor detectada">
+<title>Ponto 1: I=0.0000, A=0.0000
+dotnet:library:Core/Core.csproj · CA=2, CE=0 · Zona de Dor detectada</title>
+<circle cx="100.000000" cy="578.000000" r="8" fill="#ac2335" stroke="#ffffff" stroke-width="2"/>
+<text x="113.000000" y="565.000000" text-anchor="start" font-size="13" font-weight="700" fill="#ac2335" stroke="#ffffff" stroke-width="3" paint-order="stroke">1</text>
+</g>
+<g id="chart-libraries-point-2" class="chart-point" tabindex="0" aria-label="Ponto 2: I=0.0000, A=1.0000
+dotnet:library:Contracts/Contracts.csproj · CA=2, CE=0 · não atende aos limites das zonas de risco">
+<title>Ponto 2: I=0.0000, A=1.0000
+dotnet:library:Contracts/Contracts.csproj · CA=2, CE=0 · não atende aos limites das zonas de risco</title>
+<circle cx="100.000000" cy="78.000000" r="8" fill="#234e88" stroke="#ffffff" stroke-width="2"/>
+<text x="113.000000" y="102.000000" text-anchor="start" font-size="13" font-weight="700" fill="#234e88" stroke="#ffffff" stroke-width="3" paint-order="stroke">2</text>
+</g>
+<g id="chart-libraries-point-3" class="chart-point" tabindex="0" aria-label="Ponto 3: I=1.0000, A=0.0000
+dotnet:library:Api/Api.csproj · CA=0, CE=2 · não atende aos limites das zonas de risco
+dotnet:library:Worker/Worker.csproj · CA=0, CE=2 · não atende aos limites das zonas de risco">
+<title>Ponto 3: I=1.0000, A=0.0000
+dotnet:library:Api/Api.csproj · CA=0, CE=2 · não atende aos limites das zonas de risco
+dotnet:library:Worker/Worker.csproj · CA=0, CE=2 · não atende aos limites das zonas de risco</title>
+<circle cx="600.000000" cy="578.000000" r="8" fill="#234e88" stroke="#ffffff" stroke-width="2"/>
+<text x="587.000000" y="565.000000" text-anchor="end" font-size="13" font-weight="700" fill="#234e88" stroke="#ffffff" stroke-width="3" paint-order="stroke">3 · 2</text>
+</g>
+<text x="100" y="662" font-size="12">Linha tracejada: A + I = 1 · Quadrantes: corte visual em 0,5</text>
+</g>
+</svg>
+</figure>
+<p>Eixo X: instabilidade I, calculada por CA/CE. Eixo Y: abstração A, calculada pelos tipos reconhecidos. Linha tracejada: A + I = 1.</p>
+<p>Os quatro quadrantes usam corte visual em 0,5: concreto estável (região da Zona de Dor), abstrato estável (contratos centrais), concreto instável (detalhes/adaptadores) e abstrato instável (região da Zona de Inutilidade). Valores iguais a 0,5 pertencem ao lado alto de cada eixo. O quadrante não substitui os limites configurados: pontos vermelhos atendem à Zona de Dor; pontos âmbar atendem à Zona de Inutilidade; os demais são azuis.</p>
+<p>O número identifica o ponto na tabela; “número · quantidade” reúne componentes nas mesmas coordenadas, sem deslocá-los. Passe o cursor sobre o ponto no HTML para consultar seus componentes. I ou A indeterminado: sem posição no gráfico. Classes contribuem para A do componente; não há grafo de dependências individuais por classe.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>Ponto</th><th>Componente</th><th>CA</th><th>CE interno</th><th>CE externo</th><th>I</th><th>A</th><th>D</th><th>Zona de Dor</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#chart-libraries-point-3">3</a></td><td>dotnet:library:Api/Api.csproj</td><td>0</td><td>2</td><td>1</td><td>1.0000</td><td>0.0000</td><td>0.0000</td><td>não</td></tr>
+<tr><td><a href="#chart-libraries-point-2">2</a></td><td>dotnet:library:Contracts/Contracts.csproj</td><td>2</td><td>0</td><td>0</td><td>0.0000</td><td>1.0000</td><td>0.0000</td><td>não</td></tr>
+<tr><td><a href="#chart-libraries-point-1">1</a></td><td>dotnet:library:Core/Core.csproj</td><td>2</td><td>0</td><td>0</td><td>0.0000</td><td>0.0000</td><td>1.0000</td><td>sim</td></tr>
+<tr><td><a href="#chart-libraries-point-3">3</a></td><td>dotnet:library:Worker/Worker.csproj</td><td>0</td><td>2</td><td>0</td><td>1.0000</td><td>0.0000</td><td>0.0000</td><td>não</td></tr>
+</tbody>
+</table></div>
+<h3>Diagnóstico e prioridades</h3>
+<ul>
+<li><strong>Zona de Dor: dotnet:library:Core/Core.csproj</strong>. CA=2, I=0.0000, A=0.0000. Avaliar contratos e pontos de variação antes de alterar este componente; revisar seus consumidores.
+</li>
+<li><strong>Impacto de mudança: dotnet:library:Contracts/Contracts.csproj</strong> tem 2 consumidores diretos. CA alto indica criticidade; sozinho não comprova defeito.
+</li>
+<li><strong>Impacto de mudança: dotnet:library:Core/Core.csproj</strong> tem 2 consumidores diretos. CA alto indica criticidade; sozinho não comprova defeito.
+</li>
+<li><strong>Exposição: dotnet:library:Api/Api.csproj</strong> depende de 2 componentes internos. Revisar responsabilidades e volatilidade dos destinos; CE alto sozinho não comprova fragilidade.
+</li>
+<li><strong>Exposição: dotnet:library:Worker/Worker.csproj</strong> depende de 2 componentes internos. Revisar responsabilidades e volatilidade dos destinos; CE alto sozinho não comprova fragilidade.
+</li>
+</ul>
+<h3>Ciclos</h3>
+<ul>
+<li>Nenhum ciclo observado.
+</li>
+</ul>
+<h3>Dependências contrárias à estabilidade</h3>
+<ul>
+<li>Nenhuma relação com I(origem) &lt; I(destino) observada.
+</li>
+</ul>
+<h3>Relações e evidências</h3>
+<ul>
+<li>dotnet:library:Api/Api.csproj → dotnet:external:package:newtonsoft.json
+<ul><li><code>Api/Api.csproj:1</code>: declared:package:newtonsoft.json.</li></ul>
+</li>
+<li>dotnet:library:Api/Api.csproj → dotnet:library:Contracts/Contracts.csproj
+<ul><li><code>Api/Api.cs:2</code>: import:Example.Contracts.</li><li><code>Api/Api.csproj:1</code>: declared:project_path:Contracts/Contracts.csproj.</li></ul>
+</li>
+<li>dotnet:library:Api/Api.csproj → dotnet:library:Core/Core.csproj
+<ul><li><code>Api/Api.cs:1</code>: import:Example.Core.</li><li><code>Api/Api.csproj:1</code>: declared:project_path:Core/Core.csproj.</li></ul>
+</li>
+<li>dotnet:library:Worker/Worker.csproj → dotnet:library:Contracts/Contracts.csproj
+<ul><li><code>Worker/Worker.cs:2</code>: import:Example.Contracts.</li><li><code>Worker/Worker.csproj:1</code>: declared:project_path:Contracts/Contracts.csproj.</li></ul>
+</li>
+<li>dotnet:library:Worker/Worker.csproj → dotnet:library:Core/Core.csproj
+<ul><li><code>Worker/Worker.cs:1</code>: import:Example.Core.</li><li><code>Worker/Worker.csproj:1</code>: declared:project_path:Core/Core.csproj.</li></ul>
+</li>
+</ul>
+<h3>Dependências externas observadas</h3>
+<ul>
+<li>dotnet:external:package:newtonsoft.json: 1 consumidor interno observado; I/A/D/Zona de Dor indeterminados sem código externo.
+</li>
+</ul>
+<h2 id="modules">Módulos internos</h2>
+<p>4 componentes internos; 4 relações observadas; 0 ciclos (grupos fortemente conexos).</p>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 680" role="img" aria-labelledby="chart-modules-title chart-modules-desc">
+<title id="chart-modules-title">Módulos internos: abstração × instabilidade</title>
+<desc id="chart-modules-desc">4 componentes em 3 pontos. Eixo X: I de zero a um; eixo Y: A de zero a um. Pontos coincidentes são agrupados; a tabela identifica cada componente.</desc>
+<rect width="720" height="680" fill="#ffffff"/>
+<g font-family="system-ui, sans-serif" fill="#172b4d">
+<text x="100" y="34" font-size="21" font-weight="700">Módulos internos · A × I</text>
+<rect x="100" y="78" width="250" height="250" fill="#e4f3f0"/>
+<text x="118" y="118" font-size="16" font-weight="600">Abstrato estável</text>
+<text x="118" y="140" font-size="13">Contratos centrais</text>
+<rect x="350" y="78" width="250" height="250" fill="#fff1d7"/>
+<text x="368" y="118" font-size="16" font-weight="600">Abstrato instável</text>
+<text x="368" y="140" font-size="13">Zona de inutilidade</text>
+<rect x="100" y="328" width="250" height="250" fill="#fde7e7"/>
+<text x="118" y="368" font-size="16" font-weight="600">Concreto estável</text>
+<text x="118" y="390" font-size="13">Zona de Dor</text>
+<rect x="350" y="328" width="250" height="250" fill="#e8effc"/>
+<text x="368" y="368" font-size="16" font-weight="600">Concreto instável</text>
+<text x="368" y="390" font-size="13">Detalhes e adaptadores</text>
+<path d="M 100 78 V 578 M 100 578 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="100" y="603" text-anchor="middle" font-size="12">0</text>
+<text x="84" y="582" text-anchor="end" font-size="12">0</text>
+<path d="M 225 78 V 578 M 100 453 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="225" y="603" text-anchor="middle" font-size="12">0.25</text>
+<text x="84" y="457" text-anchor="end" font-size="12">0.25</text>
+<path d="M 350 78 V 578 M 100 328 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="350" y="603" text-anchor="middle" font-size="12">0.5</text>
+<text x="84" y="332" text-anchor="end" font-size="12">0.5</text>
+<path d="M 475 78 V 578 M 100 203 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="475" y="603" text-anchor="middle" font-size="12">0.75</text>
+<text x="84" y="207" text-anchor="end" font-size="12">0.75</text>
+<path d="M 600 78 V 578 M 100 78 H 600" fill="none" stroke="#a5b3c5" stroke-opacity="0.5"/>
+<text x="600" y="603" text-anchor="middle" font-size="12">1</text>
+<text x="84" y="82" text-anchor="end" font-size="12">1</text>
+<rect x="100" y="78" width="500" height="500" fill="none" stroke="#536580"/>
+<path d="M 100 578 L 600 78" fill="none" stroke="#536580" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="350" y="632" text-anchor="middle" font-size="15">Instabilidade (I) →</text>
+<text transform="translate(34 328) rotate(-90)" text-anchor="middle" font-size="15">Abstração (A) →</text>
+<g id="chart-modules-point-1" class="chart-point" tabindex="0" aria-label="Ponto 1: I=0.0000, A=0.0000
+dotnet:module:Core/Core.csproj:Example.Core · CA=2, CE=0 · Zona de Dor detectada">
+<title>Ponto 1: I=0.0000, A=0.0000
+dotnet:module:Core/Core.csproj:Example.Core · CA=2, CE=0 · Zona de Dor detectada</title>
+<circle cx="100.000000" cy="578.000000" r="8" fill="#ac2335" stroke="#ffffff" stroke-width="2"/>
+<text x="113.000000" y="565.000000" text-anchor="start" font-size="13" font-weight="700" fill="#ac2335" stroke="#ffffff" stroke-width="3" paint-order="stroke">1</text>
+</g>
+<g id="chart-modules-point-2" class="chart-point" tabindex="0" aria-label="Ponto 2: I=0.0000, A=1.0000
+dotnet:module:Contracts/Contracts.csproj:Example.Contracts · CA=2, CE=0 · não atende aos limites das zonas de risco">
+<title>Ponto 2: I=0.0000, A=1.0000
+dotnet:module:Contracts/Contracts.csproj:Example.Contracts · CA=2, CE=0 · não atende aos limites das zonas de risco</title>
+<circle cx="100.000000" cy="78.000000" r="8" fill="#234e88" stroke="#ffffff" stroke-width="2"/>
+<text x="113.000000" y="102.000000" text-anchor="start" font-size="13" font-weight="700" fill="#234e88" stroke="#ffffff" stroke-width="3" paint-order="stroke">2</text>
+</g>
+<g id="chart-modules-point-3" class="chart-point" tabindex="0" aria-label="Ponto 3: I=1.0000, A=0.0000
+dotnet:module:Api/Api.csproj:Example.Api · CA=0, CE=2 · não atende aos limites das zonas de risco
+dotnet:module:Worker/Worker.csproj:Example.Worker · CA=0, CE=2 · não atende aos limites das zonas de risco">
+<title>Ponto 3: I=1.0000, A=0.0000
+dotnet:module:Api/Api.csproj:Example.Api · CA=0, CE=2 · não atende aos limites das zonas de risco
+dotnet:module:Worker/Worker.csproj:Example.Worker · CA=0, CE=2 · não atende aos limites das zonas de risco</title>
+<circle cx="600.000000" cy="578.000000" r="8" fill="#234e88" stroke="#ffffff" stroke-width="2"/>
+<text x="587.000000" y="565.000000" text-anchor="end" font-size="13" font-weight="700" fill="#234e88" stroke="#ffffff" stroke-width="3" paint-order="stroke">3 · 2</text>
+</g>
+<text x="100" y="662" font-size="12">Linha tracejada: A + I = 1 · Quadrantes: corte visual em 0,5</text>
+</g>
+</svg>
+</figure>
+<p>Eixo X: instabilidade I, calculada por CA/CE. Eixo Y: abstração A, calculada pelos tipos reconhecidos. Linha tracejada: A + I = 1.</p>
+<p>Os quatro quadrantes usam corte visual em 0,5: concreto estável (região da Zona de Dor), abstrato estável (contratos centrais), concreto instável (detalhes/adaptadores) e abstrato instável (região da Zona de Inutilidade). Valores iguais a 0,5 pertencem ao lado alto de cada eixo. O quadrante não substitui os limites configurados: pontos vermelhos atendem à Zona de Dor; pontos âmbar atendem à Zona de Inutilidade; os demais são azuis.</p>
+<p>O número identifica o ponto na tabela; “número · quantidade” reúne componentes nas mesmas coordenadas, sem deslocá-los. Passe o cursor sobre o ponto no HTML para consultar seus componentes. I ou A indeterminado: sem posição no gráfico. Classes contribuem para A do componente; não há grafo de dependências individuais por classe.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr><th>Ponto</th><th>Componente</th><th>CA</th><th>CE interno</th><th>CE externo</th><th>I</th><th>A</th><th>D</th><th>Zona de Dor</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#chart-modules-point-3">3</a></td><td>dotnet:module:Api/Api.csproj:Example.Api</td><td>0</td><td>2</td><td>0</td><td>1.0000</td><td>0.0000</td><td>0.0000</td><td>não</td></tr>
+<tr><td><a href="#chart-modules-point-2">2</a></td><td>dotnet:module:Contracts/Contracts.csproj:Example.Contracts</td><td>2</td><td>0</td><td>0</td><td>0.0000</td><td>1.0000</td><td>0.0000</td><td>não</td></tr>
+<tr><td><a href="#chart-modules-point-1">1</a></td><td>dotnet:module:Core/Core.csproj:Example.Core</td><td>2</td><td>0</td><td>0</td><td>0.0000</td><td>0.0000</td><td>1.0000</td><td>sim</td></tr>
+<tr><td><a href="#chart-modules-point-3">3</a></td><td>dotnet:module:Worker/Worker.csproj:Example.Worker</td><td>0</td><td>2</td><td>0</td><td>1.0000</td><td>0.0000</td><td>0.0000</td><td>não</td></tr>
+</tbody>
+</table></div>
+<h3>Diagnóstico e prioridades</h3>
+<ul>
+<li><strong>Zona de Dor: dotnet:module:Core/Core.csproj:Example.Core</strong>. CA=2, I=0.0000, A=0.0000. Avaliar contratos e pontos de variação antes de alterar este componente; revisar seus consumidores.
+</li>
+<li><strong>Impacto de mudança: dotnet:module:Contracts/Contracts.csproj:Example.Contracts</strong> tem 2 consumidores diretos. CA alto indica criticidade; sozinho não comprova defeito.
+</li>
+<li><strong>Impacto de mudança: dotnet:module:Core/Core.csproj:Example.Core</strong> tem 2 consumidores diretos. CA alto indica criticidade; sozinho não comprova defeito.
+</li>
+<li><strong>Exposição: dotnet:module:Api/Api.csproj:Example.Api</strong> depende de 2 componentes internos. Revisar responsabilidades e volatilidade dos destinos; CE alto sozinho não comprova fragilidade.
+</li>
+<li><strong>Exposição: dotnet:module:Worker/Worker.csproj:Example.Worker</strong> depende de 2 componentes internos. Revisar responsabilidades e volatilidade dos destinos; CE alto sozinho não comprova fragilidade.
+</li>
+</ul>
+<h3>Ciclos</h3>
+<ul>
+<li>Nenhum ciclo observado.
+</li>
+</ul>
+<h3>Dependências contrárias à estabilidade</h3>
+<ul>
+<li>Nenhuma relação com I(origem) &lt; I(destino) observada.
+</li>
+</ul>
+<h3>Relações e evidências</h3>
+<ul>
+<li>dotnet:module:Api/Api.csproj:Example.Api → dotnet:module:Contracts/Contracts.csproj:Example.Contracts
+<ul><li><code>Api/Api.cs:2</code>: import:Example.Contracts.</li></ul>
+</li>
+<li>dotnet:module:Api/Api.csproj:Example.Api → dotnet:module:Core/Core.csproj:Example.Core
+<ul><li><code>Api/Api.cs:1</code>: import:Example.Core.</li></ul>
+</li>
+<li>dotnet:module:Worker/Worker.csproj:Example.Worker → dotnet:module:Contracts/Contracts.csproj:Example.Contracts
+<ul><li><code>Worker/Worker.cs:2</code>: import:Example.Contracts.</li></ul>
+</li>
+<li>dotnet:module:Worker/Worker.csproj:Example.Worker → dotnet:module:Core/Core.csproj:Example.Core
+<ul><li><code>Worker/Worker.cs:1</code>: import:Example.Core.</li></ul>
+</li>
+</ul>
+<h3>Dependências externas observadas</h3>
+<ul>
+<li>Nenhuma dependência externa observada.
+</li>
+</ul>
+<h2 id="coverage">Cobertura e limitações</h2>
+<ul>
+<li>dotnet: coletor C# lexical de using e csproj; nomes totalmente qualificados, binding de símbolos, arquivos linked, VB/F# e avaliação MSBuild não cobertos
+</li>
+</ul>
+<h2>Referências metodológicas</h2>
+<ul>
+<li>Architectural_Coupling_Science.pdf: material de apoio fornecido, especialmente páginas 3 a 11. Não redistribuído pelo plugin.
+</li>
+<li><a href="https://objectmentor.com/resources/articles/Principles_and_Patterns.pdf">Robert C. Martin: Design Principles and Design Patterns</a>.
+</li>
+<li>Consulte <code>docs/methodology.md</code> do plugin para regras por linguagem e limites do reconhecimento estático.
+</li>
+</ul>
+</main>
+</body>
+</html>
