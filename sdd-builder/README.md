@@ -2,7 +2,7 @@
 
 Plugin de desenvolvimento orientado a spec (SDD), compatível com **Claude Code**, **GitHub Copilot CLI** e **Cursor**.
 
-Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação com subagentes especializados por tecnologia. O roadmap `.sdd-builder/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
+Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação por unidades independentes, com especialistas por tecnologia e modelo configurável para testes. O roadmap `.sdd-builder/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
 
 ## Fluxo de uso
 
@@ -39,9 +39,40 @@ O agente detecta a stack e despacha o especialista correspondente:
 | Go | `sdd-go-specialist` |
 | Swift, SwiftUI | `sdd-swift-specialist` |
 
-Passos independentes da mesma fase rodam em paralelo quando tocam arquivos disjuntos. Passos que mexem em manifesto de dependência, injeção de dependência, configuração global, rotas ou migrações nunca são paralelizados.
+Cada fase é dividida em unidades com objetivo, arquivos permitidos, dependências e critério de término. Especialistas implementam o código; o `sdd-test-specialist` escreve e executa os testes em unidades separadas. Cada worker recebe apenas os trechos de spec/plano, contratos, casos de teste e convenções necessários ao trabalho, em contexto próprio. Os especialistas carregam a skill curta `work-unit`, sem carregar o fluxo completo do orquestrador.
 
-Ao final, o agente roda a suíte completa, confere o Component Overview arquivo por arquivo, reexecuta os testes que cobrem cada critério de aceite e só marca a feature como `done` se tudo passar.
+Unidades da mesma fase rodam em paralelo somente quando não há conflito entre seus arquivos de escrita/leitura nem disputa por banco, build, simulador ou outros recursos. Manifestos, registros DI, configuração global, rotas, migrações, contratos e fixtures compartilhados são ajustados em janelas exclusivas. A autoria de testes pode acompanhar a implementação se depender apenas de contratos estáveis; a execução aguarda o código e os testes prontos.
+
+Depois que todos os writers terminam, o orquestrador confere as alterações e delega a validação conjunta. Ao final da feature, delega a suíte completa, confere o Component Overview e as evidências de cada critério de aceite, e só marca `done` se a verificação passar. Stage, commits e roadmap continuam com um único responsável.
+
+### Escolher modo de execução e modelo de testes
+
+Acrescente as opções ao pedido feito ao `sdd-feature-builder` ou à skill `feature-builder`. Elas são instruções interpretadas pelo agente, não flags de terminal, e valem apenas para a execução atual.
+
+| Opção | Padrão | Uso |
+| --- | --- | --- |
+| `execution=parallel` | Paralelo elegível | Executa unidades independentes da mesma fase em lotes. |
+| `execution=sequential` | Opcional | Mantém um worker por vez, preservando a separação de papéis e contextos. |
+| `max-workers=N` | `3` | Limita workers ativos, incluindo testes; respeita também os slots do host. Inteiro positivo. |
+| `test-model=inherit` | Modelo herdado | Usa o modelo da sessão que coordena a fase para os workers de testes. |
+| `test-model=<ID>` | Opcional | Escolhe um modelo disponível no host para autoria e execução de testes, inclusive validação final. |
+
+Exemplo com um modelo menor no Claude Code, quando o alias `haiku` estiver disponível:
+
+```text
+Implemente F03 com execution=parallel max-workers=3 test-model=haiku.
+```
+
+Para execução sequencial ou sem subagentes:
+
+```text
+Implemente F03 com execution=sequential test-model=inherit.
+Implemente F03 sem subagentes.
+```
+
+A escolha de modelo dos testes não muda o modelo de implementação. Ela precisa ser aplicada pela ferramenta do host; apenas mencionar o modelo no prompt do worker não o troca. Se o host só aceitar modelo por perfil, a seleção exige um perfil de testes já configurado. O plugin não altera perfis instalados ou configurações globais durante a execução. Consulte os mecanismos de seleção em [Claude Code](https://code.claude.com/docs/en/sub-agents#choose-a-model), [Cursor](https://cursor.com/docs/subagents) e [Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
+
+Sem suporte a seleção por worker ou com modelo indisponível, o fluxo continua com o padrão disponível e informa a preferência não aplicada. Sem concorrência, as unidades rodam em sequência; sem delegação, os papéis são aplicados inline. O relatório informa modo, unidades, limite de workers e modelos solicitado/efetivo; quando o host não informa o modelo efetivo, isso aparece explicitamente. Não há promessa de economia sem confirmação da seleção.
 
 ## Roadmap de progresso
 
@@ -71,7 +102,8 @@ Escrita concorrente é evitada por contrato, não por sorte: cada etapa tem um �
 | `sdd-builder` | Orquestrador. Diagnostica o estado do projeto e roteia para a etapa certa. |
 | `sdd-prd-builder` | Etapa 1. PRD de 9 seções e criação do roadmap. |
 | `sdd-spec-builder` | Etapa 2. `spec.md`, `plan.md` e `tests.md`, em modo single ou batch por onda. |
-| `sdd-feature-builder` | Etapa 3. Implementa, valida, commita por fase e atualiza o roadmap. |
+| `sdd-feature-builder` | Etapa 3. Decompõe fases, coordena unidades, valida a integração, commita e atualiza o roadmap. |
+| `sdd-test-specialist` | Autoria e execução de testes em unidades delimitadas, com modelo selecionável e evidências por TC/AC. |
 | `sdd-dotnet-specialist` | Implementação .NET e C#. |
 | `sdd-python-specialist` | Implementação Python. |
 | `sdd-node-angular-specialist` | Implementação Node, Angular e TypeScript. |
@@ -86,7 +118,8 @@ Escrita concorrente é evitada por contrato, não por sorte: cada etapa tem um �
 | --- | --- |
 | `prd-builder` | PRD de 9 seções, caminhos greenfield e projeto existente, sistema de IDs de feature, ondas de execução, checklist de validação e criação do roadmap. |
 | `spec-builder` | Descoberta de padrões do código em duas camadas, mapeamento PRD para spec, estrutura do `tests.md`, regra de idioma e modo batch por onda. |
-| `feature-builder` | Execução por fases, detecção de stack, despacho de especialista, regras de paralelismo, commits, verificação final e atualização do roadmap. |
+| `feature-builder` | Execução por fases e unidades independentes, seleção de modelo de testes, limites de concorrência, commits, verificação final e roadmap. |
+| `work-unit` | Contrato curto dos workers: papel, contexto mínimo, arquivos, dependências, recursos e retorno com evidências. |
 | `progress-tracker` | Schema do `prd_map_progress.json`, semântica dos status, escritor único por etapa e protocolo de escrita com lock e troca atômica. |
 
 ## Estrutura de diretórios multiplataforma
@@ -101,6 +134,7 @@ sdd-builder/
 │   ├── sdd-prd-builder.md
 │   ├── sdd-spec-builder.md
 │   ├── sdd-feature-builder.md
+│   ├── sdd-test-specialist.md
 │   ├── sdd-dotnet-specialist.md
 │   ├── sdd-python-specialist.md
 │   ├── sdd-node-angular-specialist.md
@@ -114,7 +148,10 @@ sdd-builder/
     ├── spec-builder/
     │   ├── SKILL.md
     │   └── references/feature-template.md
-    ├── feature-builder/SKILL.md
+    ├── feature-builder/
+    │   ├── SKILL.md
+    │   └── references/parallel-execution.md
+    ├── work-unit/SKILL.md
     └── progress-tracker/SKILL.md
 ```
 
