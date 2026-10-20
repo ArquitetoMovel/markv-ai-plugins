@@ -1,8 +1,8 @@
 # sdd-builder-plugin
 
-Plugin de desenvolvimento orientado a spec (SDD), compatível com **Claude Code**, **GitHub Copilot CLI** e **Cursor**.
+Plugin de desenvolvimento orientado a spec (SDD), com fluxo de implementação independente do provedor de LLM. A escolha de modelos se adapta ao harness da sessão: **Codex**, **Claude Code**, **Cursor**, **Antigravity**, **Copilot** ou outro ambiente que carregue as skills e forneça as ferramentas necessárias. Os manifests de distribuição existentes atendem Claude Code, Copilot CLI e Cursor.
 
-Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação por unidades independentes, com especialistas por tecnologia e modelo configurável para testes. O roadmap `.sdd-builder/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
+Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação por unidades independentes, com especialistas por tecnologia e plano inicial para escolher modelos de programação e testes por harness. O roadmap `.sdd-builder/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
 
 ## Fluxo de uso
 
@@ -25,7 +25,7 @@ Os documentos saem no **mesmo idioma do PRD**, lido do campo `lang` do roadmap. 
 
 ### Etapa 3: implementação (`sdd-feature-builder` e especialistas)
 
-Implementa a feature fase a fase, com um commit por fase, e atualiza o roadmap ao final.
+Apresenta o plano de execução e permite escolher os modelos dos especialistas antes de iniciar. Depois das escolhas, implementa a feature fase a fase, com um commit por fase, e atualiza o roadmap ao final.
 
 O agente detecta a stack e despacha o especialista correspondente:
 
@@ -45,34 +45,73 @@ Unidades da mesma fase rodam em paralelo somente quando não há conflito entre 
 
 Depois que todos os writers terminam, o orquestrador confere as alterações e delega a validação conjunta. Ao final da feature, delega a suíte completa, confere o Component Overview e as evidências de cada critério de aceite, e só marca `done` se a verificação passar. Stage, commits e roadmap continuam com um único responsável.
 
-### Escolher modo de execução e modelo de testes
+### Plano inicial e escolha de modelos por harness
 
-Acrescente as opções ao pedido feito ao `sdd-feature-builder` ou à skill `feature-builder`. Elas são instruções interpretadas pelo agente, não flags de terminal, e valem apenas para a execução atual.
+Antes de alterar código, testes ou roadmap, o `feature-builder` detecta o harness, consulta os modelos disponíveis e apresenta fases, unidades, dependências, especialistas, concorrência e validações. O plano traz duas escolhas independentes:
+
+| Harness detectado | Sugestão para programação | Sugestão para testes |
+| --- | --- | --- |
+| Codex | GPT-6.1 Sol | GPT-6 Luna |
+| Claude Code | Claude Sonnet 5.5 | Claude Haiku 5.5 |
+| Cursor | Claude Sonnet 5.5 | Claude Haiku 5.5 |
+| Antigravity, Copilot ou outro | Modelo de programação disponível na sessão | Modelo mais leve disponível para testes, quando identificado |
+
+Essas combinações são sugestões do plugin. O catálogo da sessão determina a disponibilidade e os IDs usados no despacho. Os nomes são conferidos nas fontes oficiais de [OpenAI](https://developers.openai.com/api/docs/models), [Sonnet 5.5](https://platform.claude.com/docs/en/models/sonnet-5-5/overview) e [Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/overview); isso não garante acesso pela conta ou pelo harness. Para Antigravity, consulte o [catálogo do ambiente](https://www.antigravity.google/docs/models/).
+
+Você pode aceitar as recomendações, herdar o modelo da sessão nos dois papéis ou escolher cada modelo. Se já informou escolhas válidas, o agente apresenta o plano e continua sem perguntar novamente; se informou apenas uma, pergunta pela outra. Sem resposta, a implementação aguarda. Todos os perfis usam herança em vez de um modelo de provedor fixo.
+
+Exemplo de plano no Codex, com os IDs confirmados no catálogo da sessão:
+
+```text
+Plano: F03 | Harness: Codex | Execução: parallel | Máximo de workers: 3
+Fase 1: contratos em sequência.
+Fase 2: implementação e autoria de testes independentes; execução após convergência.
+Fase 3: integração, suíte completa e critérios de aceite.
+Programação: GPT-6.1 Sol (gpt-6.1-sol), recomendado.
+Testes: GPT-6 Luna (gpt-6-luna), recomendado.
+Seleção: aguardando escolha do usuário.
+```
+
+### Opções da execução
+
+Acrescente as opções ao pedido feito ao `sdd-feature-builder` ou à skill `feature-builder`. São instruções interpretadas pelo agente, não flags de terminal, e valem para a execução atual, inclusive retries e verificação final.
 
 | Opção | Padrão | Uso |
 | --- | --- | --- |
 | `execution=parallel` | Paralelo elegível | Executa unidades independentes da mesma fase em lotes. |
 | `execution=sequential` | Opcional | Mantém um worker por vez, preservando a separação de papéis e contextos. |
-| `max-workers=N` | `3` | Limita workers ativos, incluindo testes; respeita também os slots do host. Inteiro positivo. |
-| `test-model=inherit` | Modelo herdado | Usa o modelo da sessão que coordena a fase para os workers de testes. |
-| `test-model=<ID>` | Opcional | Escolhe um modelo disponível no host para autoria e execução de testes, inclusive validação final. |
+| `max-workers=N` | `3` | Limita todos os workers ativos aos slots disponíveis no host. Inteiro positivo. |
+| `implementation-model=<ID>` ou `implementation-model=inherit` | Escolha no plano | Modelo de programação para implementação, integração e correções. |
+| `test-model=<ID>` ou `test-model=inherit` | Escolha no plano | Modelo para autoria e execução de testes, inclusive validação final. |
 
-Exemplo com um modelo menor no Claude Code, quando o alias `haiku` estiver disponível:
+Pedido que abre o plano para escolher os modelos:
 
 ```text
-Implemente F03 com execution=parallel max-workers=3 test-model=haiku.
+Implemente F03 com execution=parallel max-workers=3.
 ```
 
-Para execução sequencial ou sem subagentes:
+Escolhas antecipadas no Codex, quando os IDs estiverem disponíveis:
 
 ```text
-Implemente F03 com execution=sequential test-model=inherit.
+Implemente F03 com implementation-model=gpt-6.1-sol test-model=gpt-6-luna.
+```
+
+Escolha por nome no Claude Code/Cursor, resolvida para os IDs do harness:
+
+```text
+Implemente F03 com Sonnet 5.5 na programação e Haiku 5.5 nos testes.
+```
+
+Herança explícita ou execução sem subagentes:
+
+```text
+Implemente F03 com execution=sequential implementation-model=inherit test-model=inherit.
 Implemente F03 sem subagentes.
 ```
 
-A escolha de modelo dos testes não muda o modelo de implementação. Ela precisa ser aplicada pela ferramenta do host; apenas mencionar o modelo no prompt do worker não o troca. Se o host só aceitar modelo por perfil, a seleção exige um perfil de testes já configurado. O plugin não altera perfis instalados ou configurações globais durante a execução. Consulte os mecanismos de seleção em [Claude Code](https://code.claude.com/docs/en/sub-agents#choose-a-model), [Cursor](https://cursor.com/docs/subagents) e [Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
+A escolha precisa ser aplicada pelo mecanismo real do harness, por chamada ou por perfil existente. Mencionar o modelo no prompt do worker não troca o LLM. A escolha dos especialistas não muda o modelo do orquestrador nem reescreve configurações globais. Sem seleção por worker, o plano informa a limitação e oferece herança, execução inline ou ajuste manual.
 
-Sem suporte a seleção por worker ou com modelo indisponível, o fluxo continua com o padrão disponível e informa a preferência não aplicada. Sem concorrência, as unidades rodam em sequência; sem delegação, os papéis são aplicados inline. O relatório informa modo, unidades, limite de workers e modelos solicitado/efetivo; quando o host não informa o modelo efetivo, isso aparece explicitamente. Não há promessa de economia sem confirmação da seleção.
+Modelo indisponível ou substituição imposta pelo host exige uma alternativa aceita pelo usuário, salvo fallback já autorizado. O relatório informa harness, unidades e modelo solicitado, ID resolvido e modelo efetivo por papel. Quando o host não informa o efetivo, isso fica explícito; não há promessa de economia sem evidência. O contrato completo está em [Seleção de modelos por harness](skills/feature-builder/references/model-selection.md).
 
 ## Roadmap de progresso
 
@@ -102,7 +141,7 @@ Escrita concorrente é evitada por contrato, não por sorte: cada etapa tem um �
 | `sdd-builder` | Orquestrador. Diagnostica o estado do projeto e roteia para a etapa certa. |
 | `sdd-prd-builder` | Etapa 1. PRD de 9 seções e criação do roadmap. |
 | `sdd-spec-builder` | Etapa 2. `spec.md`, `plan.md` e `tests.md`, em modo single ou batch por onda. |
-| `sdd-feature-builder` | Etapa 3. Decompõe fases, coordena unidades, valida a integração, commita e atualiza o roadmap. |
+| `sdd-feature-builder` | Etapa 3. Apresenta plano e escolhas de modelos por harness, coordena unidades, valida, commita e atualiza o roadmap. |
 | `sdd-test-specialist` | Autoria e execução de testes em unidades delimitadas, com modelo selecionável e evidências por TC/AC. |
 | `sdd-dotnet-specialist` | Implementação .NET e C#. |
 | `sdd-python-specialist` | Implementação Python. |
@@ -118,7 +157,7 @@ Escrita concorrente é evitada por contrato, não por sorte: cada etapa tem um �
 | --- | --- |
 | `prd-builder` | PRD de 9 seções, caminhos greenfield e projeto existente, sistema de IDs de feature, ondas de execução, checklist de validação e criação do roadmap. |
 | `spec-builder` | Descoberta de padrões do código em duas camadas, mapeamento PRD para spec, estrutura do `tests.md`, regra de idioma e modo batch por onda. |
-| `feature-builder` | Execução por fases e unidades independentes, seleção de modelo de testes, limites de concorrência, commits, verificação final e roadmap. |
+| `feature-builder` | Plano inicial, escolha de modelos de programação/testes por harness, unidades independentes, concorrência, commits, verificação final e roadmap. |
 | `work-unit` | Contrato curto dos workers: papel, contexto mínimo, arquivos, dependências, recursos e retorno com evidências. |
 | `progress-tracker` | Schema do `prd_map_progress.json`, semântica dos status, escritor único por etapa e protocolo de escrita com lock e troca atômica. |
 
@@ -150,7 +189,9 @@ sdd-builder/
     │   └── references/feature-template.md
     ├── feature-builder/
     │   ├── SKILL.md
-    │   └── references/parallel-execution.md
+    │   └── references/
+    │       ├── parallel-execution.md
+    │       └── model-selection.md
     ├── work-unit/SKILL.md
     └── progress-tracker/SKILL.md
 ```

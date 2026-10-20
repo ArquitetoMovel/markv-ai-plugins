@@ -12,51 +12,38 @@ globais do host. Valem só para a execução atual, inclusive retries e verifica
 | --- | --- | --- |
 | `execution=parallel` ou `execution=sequential` | `parallel` | Paralelo somente entre unidades elegíveis da mesma fase; sequencial mantém um worker ativo por vez. |
 | `max-workers=N` | `3` | Inteiro positivo. Limita todos os workers ativos, incluindo testes, ao menor valor entre N e os slots disponíveis no host. |
-| `test-model=inherit` ou `test-model=<ID>` | `inherit` | Modelo dos workers de autoria e execução de testes, inclusive validações de fase e finais. Não altera o modelo de implementação ou do orquestrador. |
+| `implementation-model=inherit` ou `implementation-model=<ID>` | Escolha no plano inicial | Modelo de programação para unidades de implementação e integração, inclusive correções. |
+| `test-model=inherit` ou `test-model=<ID>` | Escolha no plano inicial | Modelo dos workers de autoria e execução de testes, inclusive validações finais. |
 
-Aceite equivalentes como `modo paralelo`, `sem paralelismo`, `no máximo 2 agentes` e
-`use haiku nos testes`. `max-workers=1` serializa sem eliminar os contextos separados.
-`não use subagentes` força execução inline e sequencial; uma seleção de modelo de testes
-fica inaplicável nesse caso. Registre opções inválidas/contraditórias em Overrides ignored
-e mantenha o padrão da opção afetada. Restrições explícitas de não delegar ou não
-paralelizar sempre prevalecem. Em sequencial, o teto efetivo de workers é 1.
+Aceite equivalentes como `modo paralelo`, `sem paralelismo`, `no máximo 2 agentes`,
+`Sol 6.1 para programação e Luna para testes` e `Sonnet 5.5 para programação e Haiku 5.5
+para testes`. Resolva nomes/IDs no harness atual conforme [Seleção de modelos](model-selection.md).
+`max-workers=1` serializa sem eliminar os contextos separados. Restrições explícitas
+de não delegar/paralelizar prevalecem; em sequencial, o teto efetivo de workers é 1.
 
-`modelo menor` sem um ID não identifica um modelo portável: peça ao usuário a escolha
-entre os modelos disponíveis enquanto prepara unidades independentes dessa escolha.
-Sem escolha, mantenha `inherit` e não anuncie redução de custo. Não fixe tabela de preços
-ou mapeamento universal entre aliases de provedores.
+Opções inválidas/contraditórias de execução mantêm o padrão da opção afetada e são
+registradas em Overrides ignored. Escolhas de **modelo** inválidas ou ambíguas voltam
+à seleção pelo usuário; nunca aplique herança ou outro modelo como escolha implícita.
 
 ## Capacidade do host e seleção efetiva do modelo
 
-Antes de despachar, confira as ferramentas realmente disponíveis na sessão: delegação,
-concorrência, profundidade permitida e seleção de modelo por chamada. Use a ferramenta
-nativa (Agent/Task, agent ou equivalente); não invente parâmetros ou chamadas.
+Antes de iniciar a implementação, siga [Plano de execução e escolha de modelos por
+harness](model-selection.md): identifique o harness e seu catálogo, apresente o plano com
+as sugestões e resolva as escolhas de programação e testes. Não marque `in-progress`
+nem despache workers enquanto faltar uma escolha necessária. Opções já informadas e
+aplicáveis dispensam nova pergunta, mas o plano sempre é mostrado.
 
-- Prefira override de modelo **na chamada do worker de testes** quando suportado. Passe
-  o ID escolhido também nos retries; escrever `use modelo X` no prompt não troca o LLM.
-- `inherit` pede o modelo da sessão que coordena a fase, pelo mecanismo suportado. Quando
-  só houver herança implícita, não envie literalmente `inherit` como ID desconhecido.
-- Se o host só aceitar seleção por perfil, use um perfil de testes já configurado com o
-  modelo solicitado. Não reescreva o plugin instalado, o perfil compartilhado ou a
-  configuração global durante a execução: isso afetaria outras chamadas concorrentes.
-- Modelo indisponível, substituição imposta pelo host ou ausência de seleção por worker:
-  registre solicitado, efetivo (ou `não informado pelo host`) e motivo. Continue com o
-  padrão disponível, avisando que a preferência não foi aplicada. Não alegue economia
-  nem seleção confirmada sem evidência do host; não eleve o modelo em resposta a falhas.
-- Sem concorrência, execute as unidades em sequência. Sem delegação, aplique os papéis e
-  convenções inline e registre o fallback. Nenhuma dessas limitações dispensa testes.
+Aplique `implementation-model` em `implementation`/`integration` e `test-model` em
+`test-authoring`/`test-execution`, com a ferramenta nativa de delegação e seu mecanismo
+real de seleção. Perfis herdam o modelo; não há modelo de provedor fixo em agente algum.
+Solicitado, ID resolvido e modelo efetivo são registrados separadamente. Um modelo
+indisponível exige alternativa aceita, salvo fallback já autorizado pelo usuário.
 
 Se `sdd-builder` já estiver coordenando a sessão e o host impedir delegação aninhada,
 ele aplica `feature-builder` na sessão atual e despacha os workers diretamente. Há um
 único orquestrador da etapa 3. Se a restrição só for descoberta dentro de um subagente,
-continue inline e informe a limitação; não abra outra árvore de agentes.
-
-Os perfis do plugin preservam o formato de cada plataforma: Claude/Cursor usam
-`model: inherit` no agente de testes; Copilot mantém seu frontmatter sem `model` e recebe
-a seleção pela ferramenta quando disponível. A capacidade instalada é verificada em
-tempo de execução. Referências oficiais: [Claude Code](https://code.claude.com/docs/en/sub-agents#choose-a-model),
-[Cursor](https://cursor.com/docs/subagents) e
-[Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
+reavalie com o usuário a execução inline e a herança de modelo quando diferirem do plano
+aceito; não abra outra árvore de agentes nem dispense testes.
 
 ## Decomposição da fase
 
@@ -73,7 +60,7 @@ Cada unidade tem:
 - Trechos relevantes de spec/plano, TC/ACs, convenções locais, comandos com cwd e critério
   de término. Encaminhe apenas o contexto necessário, sem histórico completo do chat.
 - Estado `pending`, `running`, `completed`, `blocked` ou `failed`, modelo solicitado e
-  efetivo, tentativas e retorno compacto.
+  resolvido/efetivo, tentativas e retorno compacto.
 
 Separe implementação e testes. `implementation` vai ao especialista da tecnologia;
 `test-authoring` e `test-execution` vão ao `sdd-test-specialist`, acompanhados das

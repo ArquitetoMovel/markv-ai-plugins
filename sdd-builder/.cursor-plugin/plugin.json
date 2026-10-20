@@ -1,7 +1,7 @@
 {
   "name": "sdd-builder-plugin",
-  "description": "Desenvolvimento orientado a spec: PRD com roadmap, specs por feature e implementação paralela por unidades independentes, com modelo configurável para testes",
-  "version": "1.1.0",
+  "description": "Desenvolvimento orientado a spec: PRD com roadmap, specs por feature e implementação paralela com escolha de modelos de programação e testes por harness",
+  "version": "1.2.0",
   "author": {
     "name": "Alexandre Danelon (Arquiteto Móvel)",
     "email": "alexandre.danelon@outlook.com"

@@ -22,7 +22,9 @@ dos workers; não execute o fluxo do orquestrador nem carregue a skill `feature-
   com seus IDs. Sem `tests.md`, expectativas derivadas da estratégia de testes da spec.
 - Convenções aplicáveis do projeto e da stack, comandos autorizados, diretório de
   execução e recursos exclusivos concedidos (build, banco, porta, simulador, fixtures).
-- Critério de término, modelo solicitado e orçamento de tentativas restante.
+- Critério de término, harness, modelo solicitado pelo usuário, ID resolvido para
+  despacho, fallbacks já autorizados e orçamento de tentativas restante. Programação/integração recebem
+  `implementation-model`; autoria/execução de testes recebem `test-model`.
 
 Se faltar escopo, contrato ou dependência necessária, devolva `blocked` com a informação
 que falta. Não invente uma interface nem amplie o escopo por conta própria.
@@ -71,14 +73,19 @@ histórico das outras unidades; retries recebem apenas o contrato e o erro neces
   decide a classificação final e controla o limite de retries entre workers.
 - O worker não escolhe nem troca seu próprio modelo. Repita o modelo informado pelo host
   quando disponível; caso contrário, escreva `não informado pelo host`, sem inferir pela
-  identidade do agente ou pelo texto do prompt.
+  identidade do agente ou pelo texto do prompt. Se o host informar substituição em
+  relação ao ID resolvido sem fallback autorizado, devolva `blocked` antes de editar/executar
+  para o orquestrador resolver a divergência. Com fallback autorizado, registre solicitado,
+  resolvido e efetivo; não interprete herança do perfil como autorização de fallback.
 
 ## Retorno obrigatório
 
 ```text
 Unidade: <ID> | Feature: <ID> | Fase: <nome> | Papel: <papel>
 Status: completed | blocked | failed
-Modelo solicitado: <inherit ou ID> | Efetivo: <ID ou não informado pelo host>
+Harness: <nome>
+Modelo solicitado: <nome/inherit/ID> | Resolvido: <herança ou ID do harness>
+Modelo efetivo: <ID ou não informado pelo host>
 Arquivos criados/modificados: <lista exata ou nenhum>
 Contratos entregues: <assinaturas/exports relevantes>
 Comandos: <diretório, comando, código de saída, resumo ou não executado e motivo>

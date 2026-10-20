@@ -14,7 +14,9 @@ Siga a skill `work-unit`. Você recebe uma unidade `implementation` ou `integrat
 com ID, fase, objetivo, arquivos de leitura/escrita, dependências concluídas, recursos,
 trechos relevantes da spec/plano e TC/ACs. Recebe também as convenções locais, comandos
 autorizados e critério de término. Não carregue a skill `feature-builder` nem o histórico
-completo da feature; abra só os arquivos necessários à unidade.
+completo da feature; abra só os arquivos necessários à unidade. O orquestrador aplica
+`implementation-model`, escolhido no plano inicial conforme o harness, também nas
+unidades de integração e correções. Você não fixa nem troca seu próprio modelo.
 
 Implemente apenas os arquivos concedidos. Autoria e execução de testes pertencem ao
 `sdd-test-specialist`; use os casos recebidos como contrato de comportamento. Alteração

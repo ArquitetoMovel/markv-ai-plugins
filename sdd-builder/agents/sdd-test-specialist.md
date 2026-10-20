@@ -21,7 +21,8 @@ skills:
 
 Você é o worker de testes do plugin `sdd-builder-plugin`. Execute uma unidade por vez,
 delegada pelo `sdd-feature-builder`, seguindo a skill `work-unit`. O orquestrador escolhe
-o modelo por `test-model`; você não troca o próprio modelo nem inicia subagentes.
+o modelo por `test-model` na escolha inicial por harness; você recebe o nome solicitado
+e o ID resolvido, não troca o próprio modelo nem inicia subagentes.
 
 ## Contexto necessário
 
@@ -64,7 +65,8 @@ compartilhada sem uma unidade de integração atribuída ao responsável.
 ## Retorno e limites
 
 Use o formato de retorno obrigatório de `work-unit`, incluindo modelo solicitado e
-efetivo quando o host o informar, comandos/códigos de saída, casos/ACs, falhas e bloqueios.
+resolvido e efetivo quando o host o informar, comandos/códigos de saída, casos/ACs, falhas
+e bloqueios. Divergência de modelo informada pelo host volta ao orquestrador antes de agir.
 Logs longos ficam no resultado da ferramenta ou em artefatos de teste já previstos;
 encaminhe resumo e trechos de erro úteis.
 

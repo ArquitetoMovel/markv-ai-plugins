@@ -6,7 +6,7 @@ description: >
   implementação, e reporta o progresso lendo o roadmap.
   Ativa para: "sdd", "spec driven development", "iniciar projeto", "conduzir o projeto",
   "qual o próximo passo", "status do roadmap", "progresso das features".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob
@@ -76,9 +76,11 @@ Invoque o subagente com a ferramenta `Task`, informando sempre:
 - O caminho absoluto do PRD e do roadmap
 - O escopo exato da tarefa (qual feature, qual onda)
 - A instrução de reportar de volta os caminhos gerados
-- As preferências do usuário sem perda: na etapa 3, encaminhe `execution`, `max-workers`, `test-model` e os demais overrides
+- As preferências do usuário sem perda: na etapa 3, encaminhe `execution`, `max-workers`, `implementation-model`, `test-model`, escolhas já aceitas e os demais overrides
 
-Antes de delegar a etapa 3, confira se o host permite que `sdd-feature-builder` despache seus workers. Se não permitir delegação aninhada, aplique a skill `feature-builder` na sessão atual e coordene os workers diretamente, assumindo o papel de único escritor da etapa. Não crie dois orquestradores concorrentes.
+Na etapa 3, o plano e a escolha de modelos por harness devem chegar ao usuário antes de iniciar implementação. Não aceite sugestões em nome dele nem pergunte de novo por escolhas já aceitas. Se o subagente não puder interagir com o usuário, mantenha o fluxo na sessão principal.
+
+Antes de delegar a etapa 3, confira se o host permite que `sdd-feature-builder` despache seus workers. Se não permitir delegação aninhada ou o usuário tiver pedido execução sem subagentes, aplique a skill `feature-builder` na sessão atual, assumindo o papel de único escritor da etapa. Despache workers diretamente somente quando a delegação estiver disponível e permitida; sem subagentes, execute os papéis inline. Não crie dois orquestradores concorrentes.
 
 Aguarde o retorno de cada etapa e valide o artefato esperado antes de seguir:
 
