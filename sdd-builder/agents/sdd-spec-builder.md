@@ -6,7 +6,7 @@ description: >
   single (entrevista) e modo batch por onda (subagentes em paralelo).
   Ativa para: "gerar spec", "spec da feature", "plano de implementação", "spec da onda",
   "casos de teste da feature", "detalhar feature".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob
