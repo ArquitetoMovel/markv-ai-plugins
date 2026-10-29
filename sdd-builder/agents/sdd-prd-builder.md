@@ -6,7 +6,7 @@ description: >
   (`.sdd-builder/prd_map_progress.json`) que controla o progresso do produto.
   Ativa para: "criar PRD", "gerar PRD", "documento de requisitos", "mapear features",
   "roadmap de features", "documentar produto existente".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

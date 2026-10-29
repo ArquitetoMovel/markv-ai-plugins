@@ -108,8 +108,9 @@ Concurrency is handled by restricting who writes, not by hoping writes interleav
 
 **Forbidden writers**
 
-- Technology specialist sub-agents (`sdd-dotnet-specialist` and siblings) never open this
-  file for writing. They report back to `feature-builder`, which performs the write.
+- Workers de implementação, integração e testes (`sdd-dotnet-specialist` e demais
+  especialistas, inclusive `sdd-test-specialist`) nunca abrem este arquivo para escrita,
+  nem no modo sequencial. Reportam ao `feature-builder`, que realiza a atualização.
 - Any sub-agent dispatched in parallel. Parallel fan-out must always converge on a single
   writer before touching the roadmap.
 

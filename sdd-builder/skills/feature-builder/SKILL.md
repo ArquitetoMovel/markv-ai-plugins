@@ -1,17 +1,21 @@
 ---
 name: feature-builder
 description: >
-  Implements a feature autonomously from its spec, plan and test-case spec, detecting the
-  project stack, dispatching the matching technology specialist, committing one commit per
-  phase, updating the feature roadmap and reporting results against the PRD acceptance
-  criteria. Use when: implementing a spec'd feature, executing a plan.md, or resuming a
-  partially implemented feature. Keywords: "implement feature", "build feature", "execute
-  plan", "feature-builder".
+  Implementa uma feature a partir de spec, plano e casos de teste, dividindo cada fase
+  em unidades independentes de implementação e testes, com contexto mínimo e plano
+  inicial para escolher modelos por papel conforme o harness. Detecta a stack,
+  coordena especialistas em paralelo ou em
+  sequência, commita por fase e atualiza o roadmap após a verificação dos critérios de
+  aceite. Use para implementar feature, executar plan.md ou retomar implementação.
 ---
 
 # Feature Builder
 
-Autonomously implement a feature from its existing `spec.md` + `plan.md` + `tests.md`. The skill reads the feature's technical specification, implementation plan and test-case specification, detects the technology stack, delegates the coding work to the matching technology specialist, validates each phase, commits, updates `.sdd-builder/prd_map_progress.json`, and reports results against the acceptance criteria declared in the PRD.
+Implemente a feature a partir de `spec.md` + `plan.md` + `tests.md`. Antes de iniciar, apresente o plano e permita escolher os modelos de programação e testes conforme o harness. Depois de resolver essas escolhas, execute autonomamente as fases, delegue aos especialistas, valide, commite, atualize o roadmap e reporte contra os critérios de aceite do PRD.
+
+A execução usa unidades delimitadas: implementação com o especialista da stack e autoria/execução de testes com `sdd-test-specialist`. Leia [Execução por unidades independentes](references/parallel-execution.md) para opções, dependências, despacho e escolha de modelo. Workers usam apenas o contrato da skill [work-unit](../work-unit/SKILL.md), sem carregar este fluxo completo.
+
+A escolha por harness segue [Plano de execução e escolha de modelos](references/model-selection.md). Todos os perfis herdam o modelo quando não há override nativo; nenhum especialista fixa Sonnet, Sol ou outro provedor. A herança do perfil não substitui a escolha do usuário no plano inicial.
 
 This is **Step 3 of the SDD journey** and the only skill allowed to move a feature to `in-progress` or `done` in the roadmap.
 
@@ -24,6 +28,7 @@ Free-form. The skill figures out what was passed. Any combination works:
 - A file inside the feature folder: `.sdd-builder/F09-session-control-file-transfer/spec.md`.
 - A PRD path: `@.sdd-builder/PRD.md`, `sdd-builder/PRD.md`, `@PRD.md`.
 - Extra natural-language instructions appended anywhere (see **Overrides**).
+- Opções por execução: `execution=parallel|sequential`, `max-workers=N`, `implementation-model=inherit|<ID>` e `test-model=inherit|<ID>`, conforme o catálogo do harness. São instruções da skill, não flags de CLI.
 
 The skill only needs to locate three files and one reference source:
 
@@ -36,8 +41,10 @@ The skill only needs to locate three files and one reference source:
 - **Commits**: one per phase of `plan.md`, on the current branch (no branch creation, no branch switching).
 - **Roadmap update**: the feature's `status` in `.sdd-builder/prd_map_progress.json` moves to `in-progress` when work starts and to `done` only when Step 8 says the run succeeded.
 - **Chat report** at the end: the feature's acceptance-criteria checklist marked ✓ / ✗ / — against actual test results, plus sections for Deviations, Soft-fails, Pre-existing failures, Overrides applied, Overrides ignored, and Phase status.
+- **Plano inicial**: fases/unidades, harness, concorrência, especialistas, sugestões e escolhas de modelos para programação e testes. Se faltar uma escolha, aguarde antes de iniciar alterações.
+- **Resumo de execução**: modos solicitado/efetivo, unidades por fase, limite de workers, modelos solicitado/resolvido/efetivo para ambos os papéis e fallbacks autorizados. O quadro de unidades fica em memória ou nas tarefas do host.
 
-No files are written besides code changes, the roadmap entry, and commit objects. The chat report is ephemeral.
+Não crie artefatos extras de planejamento no projeto alvo: o quadro de unidades e o relatório ficam nas tarefas do host/chat. Além do código, testes, roadmap e commits, comandos podem gerar seus artefatos usuais de build/teste nos diretórios autorizados; não os inclua no commit por padrão.
 
 ---
 
@@ -79,19 +86,24 @@ Interpret extra instructions as natural-language overrides on the defaults:
 | Default | Example overrides |
 |---|---|
 | Hard-fail retry limit = 3 | "no retry limit", "max 5 tries" |
-| Fully autonomous | "pause between phases" — skill waits in chat for a reply containing `ok`, `continue`, `segue`, `yes`, or similar |
+| Autonomia após resolver a escolha de modelos | "pause between phases"; a autonomia não autoriza escolher modelos pendentes pelo usuário |
 | 1 commit per phase | "single commit at the end", "no commits, just implement" |
 | Run lint + typecheck + tests | "skip tests", "skip lint", "skip typecheck" |
 | Implement all phases | "only phases 1 and 2", "skip phase 3" — phase positions are ordinal; labels like `A/B/C` map to `1/2/3` |
 | Abort tests on external dep missing | "stub missing services", "assume empty response for missing APIs" — substitutes stubs **ONLY in test code**, never in production modules |
 | Dispatch the detected specialist | "don't use subagents", "implement it yourself", "use the python specialist" |
-| Parallelize independent steps | "run everything sequentially", "no parallel" |
+| `execution=parallel` | `execution=sequential`, "modo sequencial", "no parallel" |
+| `max-workers=3` | `max-workers=2`, "no máximo 2 agentes" |
+| Modelo de programação escolhido no plano inicial | `implementation-model=gpt-6.1-sol` (quando disponível), `implementation-model=inherit` |
+| Modelo de testes escolhido no plano inicial | `test-model=gpt-6-luna` (quando disponível), `test-model=inherit` |
 
 For each recognized override, record before/after for the final report's "Overrides applied" section.
 
 **Immutable core (cannot be overridden):** the final AC checklist and its traceability to the PRD, and the roadmap update. Instructions that would disable either are logged under "Overrides ignored" with the reason.
 
-Ambiguous or contradictory instructions → default wins; logged under "Overrides ignored" with "ambiguous, kept default".
+Para instruções ambíguas/contraditórias, mantenha o padrão e registre em Overrides ignored, **exceto escolhas de modelo**: solicite resolução antes de despachar o papel afetado. Nunca substitua uma escolha ambígua por herança automática.
+
+Para as opções de execução, aplique a precedência e os fallbacks da [referência](references/parallel-execution.md): proibição explícita de subagentes/paralelismo prevalece; seleção de modelo só vale quando aplicada pelo host. `skip tests` limita a execução por fase, mas não dispensa a verificação final obrigatória do Step 8.
 
 ### Step 4: Pre-flight Dependency Check
 
@@ -118,17 +130,29 @@ Detect the technology of the files this feature will touch, then pick the specia
 
 Rules:
 
-- **Polyglot repositories:** decide per phase, not per repository. A phase that touches only SQL packages goes to the PL/SQL specialist even in a Java monorepo. Record the mapping phase → specialist before starting.
-- **Ambiguous or unsupported stack:** no specialist. Implement the phase directly, following the patterns recorded in the spec, and note "no specialist available for `<stack>`" in the report.
-- **Multiple markers of equal weight:** pick the one that owns the majority of the files in the spec's Component Overview; document the choice.
+- **Repositórios poliglotas:** selecione por unidade dentro da fase, não pela maioria dos arquivos do repositório. Registre fase/unidade → especialista; testes recebem as convenções da stack correspondente.
+- **Stack ambígua ou sem especialista:** planeje a unidade inline seguindo a spec e apresente essa limitação na escolha de modelos, antes de executar. A unidade inline também conta como writer para conflitos e barreiras.
+- **Marcadores de mesmo peso:** escolha a stack que realmente possui os arquivos da unidade e documente a decisão; se a unidade mistura stacks independentes, divida-a.
 - **User override:** an explicit "use the X specialist" instruction wins over detection.
-- **Host without sub-agent dispatch** (some CLI hosts have no delegation primitive): do not fail. Apply the specialist's conventions inline yourself and state in the report that the specialist was applied inline rather than dispatched.
+- **Host sem delegação:** inclua a execução inline no plano e resolva a escolha de herança conforme `model-selection.md`; não substitua um modelo selecionado apenas emitindo aviso.
 
-The specialist receives, in its prompt: the absolute path of the feature folder, the phase name and its steps, the relevant sections of `spec.md`, the test cases from `tests.md` that cover the phase, and the explicit constraint that it must not commit and must not write to the roadmap. Specialists implement and validate; this skill commits and tracks.
+Selecione `sdd-test-specialist` para autoria e execução de testes em ambas as modalidades. Unidades `implementation` e `integration` usam `implementation-model`; `test-authoring` e `test-execution` usam `test-model`. Resolva ambas as escolhas conforme a capacidade real do harness no passo abaixo. Não altere o modelo do orquestrador.
+
+**5.1: Apresentar plano e escolher modelos antes de iniciar**
+
+Siga integralmente [Plano de execução e escolha de modelos por harness](references/model-selection.md). Identifique o harness pela sessão/ferramentas, consulte seu catálogo e apresente fases, unidades previstas, dependências, paralelismo, validação e dois seletores de modelo. Sugira GPT-6.1 Sol + GPT-6 Luna no Codex e Claude Sonnet 5.5 + Claude Haiku 5.5 no Claude Code/Cursor, somente conforme disponibilidade. No Antigravity e demais harnesses, ofereça os modelos do catálogo atual.
+
+Respeite valores explícitos de `implementation-model`/`test-model` e escolhas já aceitas nesta execução. Se ambos estiverem resolvidos e aplicáveis, mostre o plano e prossiga sem reconfirmação. Se faltar algum, peça somente a escolha pendente e aguarde antes de marcar `in-progress`, despachar workers ou alterar arquivos. Silêncio ou timeout não selecionam as recomendações. Sem interação, entregue o plano com a seleção pendente; a execução ainda não começou.
+
+Se não houver seleção por worker, apresente a limitação e ofereça herança/execução inline ou ajuste manual. Não aplique fallback diferente da escolha aceita sem autorização prévia. Se a delegação aninhada estiver indisponível, mantenha a coordenação na sessão principal quando possível; respeite a decisão de modelos também no fallback inline.
+
+Cada worker recebe o contrato `work-unit`: objetivo, papel, caminhos absolutos, arquivos de leitura/escrita, dependências, recursos, trechos relevantes da spec/plano, TC/ACs, convenções locais e da stack, comandos, critério de término, harness e modelo solicitado/resolvido para aquele papel. Use contexto novo por unidade e o mecanismo nativo de modelo, sem encaminhar PRD completo, roadmap, outras fases ou histórico inteiro do chat. Retornos contêm resumo, caminhos e evidências; só carregue logs extensos quando precisar diagnosticar uma falha.
+
+Workers não fazem stage/commit, não escrevem no roadmap e não delegam novamente. O orquestrador integra, valida, commita e acompanha o progresso.
 
 ### Step 6: Mark the feature in progress
 
-Before the first phase runs, follow the `progress-tracker` skill to set the feature's `status` to `in-progress`, with `note` describing the run (e.g. `"implementation started from plan.md, 4 phases"`). Skip this when the roadmap is missing, and record the skip under soft-fails.
+Somente após resolver as escolhas do plano inicial, siga `progress-tracker` para marcar `in-progress` antes da primeira fase, com nota curta sobre a execução. Enquanto a seleção estiver pendente, preserve o roadmap. Se ele não existir, registre o soft-fail e prossiga sem rastreamento, conforme o comportamento existente.
 
 Do this once, not per phase. Keep the locked window short.
 
@@ -142,19 +166,17 @@ Inspect the last ~20 commits on the current branch. If any commit message indica
 
 **7.2 — Plan the parallelism inside the phase**
 
-Within a single phase, two steps may run in parallel only when ALL of these hold:
+Monte o quadro de unidades seguindo [Execução por unidades independentes](references/parallel-execution.md). Separe `implementation`, `integration`, `test-authoring` e `test-execution`, com IDs, arquivos concretos, dependências, recursos e critérios de término. Confira que todo passo e caso de teste da fase tem dono. Observe o estado inicial do working tree para preservar mudanças preexistentes.
 
-- Their file sets, as declared in the spec's Component Overview, are disjoint.
-- Neither consumes an artifact the other creates in this same phase.
-- Neither touches shared/foundational files: dependency manifests, DI or module registration, global config, routing tables, database schema and migrations, shared type definitions.
+Estabilize contratos e arquivos compartilhados em unidades de integração exclusivas. Unidades paralelas precisam ter escritas disjuntas, nenhuma leitura de arquivo em alteração por outra unidade e recursos isolados. Comandos que leem o projeto inteiro aguardam a barreira de validação.
 
-Dispatch every eligible step of the phase in a single message with multiple specialist invocations. Everything else runs sequentially, in plan order. Never parallelize across phases: phases are the commit unit and usually build on each other.
-
-When in doubt about disjointness, run sequentially. A wrong parallel edit costs more than a slower run.
+Em `parallel`, despache lotes elegíveis até `min(max-workers, slots disponíveis)`; em `sequential`, apenas uma unidade por vez. Aguarde e confira os retornos antes de liberar dependentes. Não paralelize fases nem inicie workers além da capacidade do host. Se houver dúvida sobre independência, serialize ou reagrupe.
 
 **7.3 — Implement**
 
-Read the `spec.md` sections relevant to the phase. The specialist (or this skill, when no specialist applies) edits/creates files to fulfill the phase's steps.
+O especialista implementa somente os arquivos da sua unidade com `implementation-model`. `sdd-test-specialist` escreve os testes em unidades separadas com `test-model`. A autoria pode acompanhar a implementação apenas quando se apoia em contratos já estabilizados e não lê o código em edição. Testes embutidos no arquivo de produção exigem autoria sequencial com escopo limitado à seção de testes.
+
+Testes escritos ficam pendentes de execução. Aguarde implementação, autoria e integração antes de executá-los contra o estado conjunto. Pedidos de mudança de contrato ou escopo voltam ao orquestrador para reagendamento; workers não editam arquivos pertencentes a outra unidade.
 
 **What counts as "done" for a phase** — all of the following, not just "I wrote the code":
 
@@ -179,13 +201,15 @@ Missing external dependencies needed only by *tests* (e.g., `OPENAI_API_KEY` una
 
 Discover validation commands at runtime: inspect `package.json` `scripts`, or for non-Node stacks inspect the equivalent (`Makefile`, `pyproject.toml`, `*.csproj`, `pom.xml`, `build.gradle`, `go.mod`, `Cargo.toml`, `vitest.config.*`, `jest.config.*`). The technology specialist knows the canonical commands for its stack — use them. Run the available ones.
 
+Depois que todos os writers retornarem, confira os diffs contra os escopos autorizados e despache unidades `test-execution` com `write_files` vazio e o modelo de testes selecionado. Inclua comandos, cwd e recursos exclusivos. O runner não corrige código: falha em produção volta à implementação; falha no teste volta à autoria. Aguarde cada correção e reexecute os checks afetados e a validação integrada. A contagem de retries pertence à fase e não reinicia ao trocar de worker/modelo.
+
 - **Hard fail** = non-zero exit from lint, typecheck, or unit tests, where the failure is attributable to code this run changed. Retry up to the configured limit (default 3). Each retry reads the error, adjusts the code, re-runs. After the limit, abort the whole run and go to Step 8.
 - **Soft fail** = validation cannot execute in this environment (e2e requiring browser/server not present; integration test requiring an external credential not set; suite explicitly marked non-runnable; command not found). Skip, log under `Soft-fails`, proceed.
 - **Pre-existing failure** = validation fails but the failure is not attributable to code this run changed (touched unrelated files, existed on the branch before this run). Log under `Pre-existing failures`, do NOT count against the retry budget, proceed.
 
 Warnings without non-zero exit are never failures.
 
-When steps ran in parallel, validate the phase as a whole after all of them return, not per step. A phase is only valid when its combined output builds and passes.
+Valide a fase inteira após a convergência, mesmo que checks locais tenham passado. Testes sobre o mesmo banco, cache de build, simulador ou relatórios compartilhados rodam em sequência, salvo isolamento comprovado. Registre comandos/códigos de saída e TC → AC → teste → resultado; zero casos executados, casos pulados ou mera autoria não comprovam aprovação.
 
 **7.5 — Commit**
 
@@ -193,15 +217,21 @@ If validation passed (all hard fails resolved; only soft fails and pre-existing 
 
 Stage specific files only (no `git add -A` / `git add .`). Commit on the current branch. Do not skip hooks. Specialists never commit — the commit is always performed here, after the whole phase converges.
 
+Não commite enquanto houver worker ou comando ativo da fase. Preserve e exclua do stage alterações preexistentes não pertencentes à fase, inclusive quando compartilham um arquivo com a implementação.
+
 If an override disabled commits, skip this sub-step and keep working-tree changes.
 
 **7.6 — Proceed**
 
 Move to the next phase. A run-level abort (hard fail past retry limit, dependency missing mid-phase) stops execution and goes to Step 8 with whatever phases already committed.
 
+Em abort, cancelamento ou timeout, pare novos despachos e encerre/aguarde todos os workers e comandos ativos antes de verificar ou reportar. Liste unidades bloqueadas e pendentes; não deixe escritores em execução após o retorno do orquestrador.
+
 ### Step 8: Final Verification
 
 After the last phase commits (or when the run aborted), run an independent verification pass over the whole feature before writing the report. This step exists because per-phase checks can miss regressions, and because AI commonly claims "done" when it isn't.
+
+Com o workspace estável, delegue os comandos de testes a novas unidades `test-execution` usando `test-model`, inclusive nesta verificação final. O orquestrador continua responsável por conferir arquivos, rastreabilidade, evidências e decidir o status. Falha não autoriza o runner a editar fontes. Após correção, descarte evidências anteriores dos checks afetados e valide novamente; comandos da suíte completa podem comprovar os casos de 8.3 se identificarem cada caso no mesmo estado final.
 
 Perform all of the following — no step is optional:
 
@@ -236,7 +266,7 @@ The run's final status is determined by this step, not by whether phases committ
 
 - `success` — full suite green, every Component Overview item present, every test case implemented, every AC's test passes in 8.3, every smoke check passed or soft-failed.
 - `completed with regressions` — phases committed but 8.1 or 8.3 uncovered failures that the skill couldn't resolve.
-- `incomplete` — `Missing from spec` (8.2 or 8.3) is non-empty.
+- `incomplete` — há itens em `Missing from spec` (8.2 ou 8.3), unidades obrigatórias pendentes/bloqueadas ou testes/ACs sem evidência de aprovação no estado final. Registre checks pulados ou indisponíveis em Soft-fails; eles não equivalem a testes aprovados. Smoke checks seguem a exceção explícita de 8.4.
 - `aborted at phase <N>` — run stopped during Step 7 before reaching here.
 
 Never report `success` when any of the checks above has an unresolved failure, even if every phase individually committed clean.
@@ -267,6 +297,12 @@ Status: success | completed with regressions | incomplete | aborted at phase <N>
 Phases: <N> committed / <M> total
 Branch: <current-branch>
 Specialist: <agent used, or "none — implemented inline">
+Execução: <solicitada> → <efetiva> | Workers: <limite solicitado/efetivo>
+Harness: <nome/variante e capacidade de seleção>
+Modelo de programação: <solicitado> → <ID resolvido> → <efetivo ou não informado pelo host>
+Modelo de testes: <solicitado> → <ID resolvido> → <efetivo ou não informado pelo host>
+Unidades: <ID, fase, papel, dependências, agente, estado, TC/ACs e evidências>
+Fallbacks: <limitação de host/modelo/concorrência ou nenhum>
 Roadmap: <feature> → <new status>
 
 Acceptance Criteria (re-checked in Step 8.3):
@@ -320,7 +356,9 @@ If aborted, the report still lists whatever committed phases achieved and clearl
 - Load `tests.md` when present and treat its cases as the implementation contract.
 - Locate AC and dependency content in the PRD semantically, never by fixed section number.
 - Detect the stack and dispatch the matching technology specialist before writing code.
-- Parallelize only steps inside the same phase whose file sets are disjoint.
+- Separar implementação, autoria e execução de testes em unidades com contexto mínimo; paralelizar somente quando não há conflito de escrita/leitura ou recurso e as dependências estão concluídas.
+- Apresentar o plano inicial e resolver modelos de programação/testes conforme o harness antes de iniciar implementação ou atualizar o roadmap; não perguntar de novo por escolhas válidas já informadas.
+- Aplicar `implementation-model` e `test-model` pela seleção real do host e registrar solicitado/resolvido/efetivo; prompt com nome de modelo não comprova troca.
 - Commit 1 per phase (default), staging only the files that phase touched.
 - Match the project's recent commit-message style.
 - Adapt to minor spec/code divergences; log every adaptation under `Deviations`.
@@ -335,7 +373,7 @@ If aborted, the report still lists whatever committed phases achieved and clearl
 - Claim the run is `success` when Step 8 found regressions, missing-from-spec items, or unresolved failures — even if every phase individually committed clean.
 - Skip the AC report or its traceability (immutable core).
 - Skip Step 8 (Final Verification) or Step 9 (Roadmap Update).
-- Let a technology specialist commit, or write to `.sdd-builder/prd_map_progress.json`.
+- Deixar qualquer worker fazer stage/commit, escrever no roadmap, ampliar seu escopo ou despachar outros agentes.
 - Parallelize steps that touch shared files (manifests, DI registration, migrations, global config) or that cross a phase boundary.
 - Mark a feature `done` when the run ended in regressions, incomplete or aborted.
 - Create or switch branches.
@@ -361,10 +399,13 @@ Free-form instructions at the end of the invocation override defaults. Examples:
 - **Validation**: `skip tests`, `skip lint`, `skip typecheck`.
 - **Phase selection**: `only phases 1 and 2`, `skip phase 3` — phase positions are ordinal; labels `A/B/C` map to `1/2/3`.
 - **Specialist**: `use the java specialist`, `don't use subagents`.
-- **Parallelism**: `run everything sequentially`.
+- **Execução**: `execution=parallel`, `execution=sequential`, `run everything sequentially`.
+- **Concorrência**: `max-workers=2`, `no máximo 2 agentes` (inteiro positivo; padrão 3).
+- **Modelo de programação**: `implementation-model=inherit` ou ID confirmado no harness. Aplica à implementação e integração, inclusive correções.
+- **Modelo de testes**: `test-model=inherit` ou ID confirmado no harness. Aplica à autoria e execução, inclusive verificação final. Papéis sem escolha explícita são selecionados no plano inicial.
 - **External services**: `stub OpenAI`, `assume empty response for missing APIs` — stubs apply ONLY in test code; production modules keep the real call.
 
-Unrecognized or contradictory overrides: default wins; logged under `Overrides ignored`.
+Overrides não reconhecidos/contraditórios mantêm o padrão e são registrados em `Overrides ignored`, exceto escolhas de modelo, que exigem resolução com o usuário. Uma recomendação não é seleção automática.
 
 **Immutable core**: the AC checklist with its traceability to the PRD, and the roadmap update, cannot be overridden.
 
@@ -388,11 +429,15 @@ Unrecognized or contradictory overrides: default wins; logged under `Overrides i
 
 **Stack not covered by any specialist**: implement inline following the spec's recorded patterns; state it in the report.
 
-**Polyglot feature (phases in different stacks)**: pick a specialist per phase; the report lists all specialists used.
+**Feature poliglota**: escolha o especialista por unidade; o relatório lista a relação fase/unidade/stack e os agentes usados.
 
-**Host has no sub-agent dispatch**: apply the specialist conventions inline and say so in the report; never fail because delegation is unavailable.
+**Host sem despacho de subagentes**: apresente a alternativa inline no plano inicial e resolva a escolha de herança antes de iniciar. Preserve a seleção de modelos já aceita e registre a limitação no relatório.
 
-**Parallel steps produce conflicting edits to the same file**: treat the phase as failed, revert the conflicting edits, re-run the phase sequentially, and record the incident under `Deviations`.
+**Conflitos inesperados entre unidades**: pare e aguarde os workers envolvidos, preserve alterações preexistentes e diffs válidos, reconcilie com um único escritor e revalide. Não faça reset/revert geral. Registre o incidente em `Deviations` e reagende as unidades afetadas em sequência.
+
+**Modelo escolhido indisponível ou sem seleção por worker**: siga `model-selection.md`; ofereça alternativas e aguarde a escolha, salvo fallback já autorizado. Não prossiga com outro modelo apenas emitindo aviso. Registre solicitado/resolvido/efetivo para os dois papéis.
+
+**Host sem concorrência ou sem delegação aninhada**: mantenha a orquestração na sessão principal quando possível; caso contrário, ofereça execução em sequência/inline e registre o modo efetivo. Mudança de modelo em relação à escolha aceita exige resolução conforme `model-selection.md`. Testes e verificação final continuam obrigatórios.
 
 **Roadmap locked by another agent**: retry per the `progress-tracker` protocol. If the lock is stale, report it and ask before removing. Never bypass the lock silently.
 

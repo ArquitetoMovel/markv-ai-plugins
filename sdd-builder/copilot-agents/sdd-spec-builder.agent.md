@@ -1,6 +1,6 @@
 ---
 name: sdd-spec-builder
-description: Etapa 2 do fluxo SDD. Lê o PRD e o roadmap, escolhe as features em `todo` e gera `spec.md`, `plan.md` e `tests.md` por feature, no mesmo idioma do PRD. Suporta modo single (entrevista) e modo batch por onda (subagentes em paralelo). Ativa para: "gerar spec", "spec da feature", "plano de implementação", "spec da onda", "casos de teste da feature", "detalhar feature".
+description: "Etapa 2 do fluxo SDD. Lê o PRD e o roadmap, escolhe as features em `todo` e gera `spec.md`, `plan.md` e `tests.md` por feature, no mesmo idioma do PRD. Suporta modo single (entrevista) e modo batch por onda (subagentes em paralelo). Ativa para: \"gerar spec\", \"spec da feature\", \"plano de implementação\", \"spec da onda\", \"casos de teste da feature\", \"detalhar feature\"."
 tools: ["bash", "edit", "view", "agent", "todo"]
 ---
 

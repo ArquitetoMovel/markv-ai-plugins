@@ -1,6 +1,6 @@
 ---
 name: sdd-prd-builder
-description: Etapa 1 do fluxo SDD. Gera o PRD de 9 seções por entrevista estruturada, tratando projeto novo e projeto existente de formas diferentes, e cria o roadmap de features (`.sdd-builder/prd_map_progress.json`) que controla o progresso do produto. Ativa para: "criar PRD", "gerar PRD", "documento de requisitos", "mapear features", "roadmap de features", "documentar produto existente".
+description: "Etapa 1 do fluxo SDD. Gera o PRD de 9 seções por entrevista estruturada, tratando projeto novo e projeto existente de formas diferentes, e cria o roadmap de features (`.sdd-builder/prd_map_progress.json`) que controla o progresso do produto. Ativa para: \"criar PRD\", \"gerar PRD\", \"documento de requisitos\", \"mapear features\", \"roadmap de features\", \"documentar produto existente\"."
 tools: ["bash", "edit", "view"]
 ---
 
