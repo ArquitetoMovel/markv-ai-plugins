@@ -16,7 +16,7 @@ globais do host. Valem só para a execução atual, inclusive retries e verifica
 | `test-model=inherit` ou `test-model=<ID>` | Escolha no plano inicial | Modelo dos workers de autoria e execução de testes, inclusive validações finais. |
 
 Aceite equivalentes como `modo paralelo`, `sem paralelismo`, `no máximo 2 agentes`,
-`Sol 6.1 para programação e Luna para testes` e `Sonnet 5.5 para programação e Haiku 5.5
+`Sol 6.1 para programação e Terra 6.1 para testes` e `Sonnet 5.5 para programação e Haiku 5.5
 para testes`. Resolva nomes/IDs no harness atual conforme [Seleção de modelos](model-selection.md).
 `max-workers=1` serializa sem eliminar os contextos separados. Restrições explícitas
 de não delegar/paralelizar prevalecem; em sequencial, o teto efetivo de workers é 1.

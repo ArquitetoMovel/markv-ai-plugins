@@ -24,22 +24,22 @@ This is **Step 3 of the SDD journey** and the only skill allowed to move a featu
 Free-form. The skill figures out what was passed. Any combination works:
 
 - A feature identifier: `F09`, `Session Control`, or similar.
-- A feature folder: `.sdd-builder/F09-session-control-file-transfer/`, `./F09/`, etc.
-- A file inside the feature folder: `.sdd-builder/F09-session-control-file-transfer/spec.md`.
-- A PRD path: `@.sdd-builder/PRD.md`, `sdd-builder/PRD.md`, `@PRD.md`.
+- A feature folder: `docs/F09-session-control-file-transfer/`, `./F09/`, etc.
+- A file inside the feature folder: `docs/F09-session-control-file-transfer/spec.md`.
+- A PRD path: `@docs/PRD.md`, `docs/PRD.md`, `@PRD.md`.
 - Extra natural-language instructions appended anywhere (see **Overrides**).
 - Opções por execução: `execution=parallel|sequential`, `max-workers=N`, `implementation-model=inherit|<ID>` e `test-model=inherit|<ID>`, conforme o catálogo do harness. São instruções da skill, não flags de CLI.
 
 The skill only needs to locate three files and one reference source:
 
-1. **`spec.md` and `plan.md`** for the target feature. If the input points to a folder, look inside. If it points to a file, look in its parent folder. If it points to an ID or name, search under `.sdd-builder/` for a folder matching `<ID>-*` or whose name kebab-cases to the given name.
+1. **`spec.md` and `plan.md`** for the target feature. If the input points to a folder, look inside. If it points to a file, look in its parent folder. If it points to an ID or name, search under `docs/` for a folder matching `<ID>-*` or whose name kebab-cases to the given name.
 2. **`tests.md`** in the same folder. Optional but expected: when absent, note it under soft-fails and derive tests from the spec's Testing Strategy instead.
-3. **The PRD**. If explicitly passed, use it. Otherwise, auto-discover: `.sdd-builder/PRD.md` → `PRD.md` → any top-level `*.md` whose content reads like a product spec. If none found, abort. If multiple are plausible, abort and list them.
+3. **The PRD**. If explicitly passed, use it. Otherwise, auto-discover: `docs/PRD.md` → `PRD.md` → any top-level `*.md` whose content reads like a product spec. If none found, abort. If multiple are plausible, abort and list them.
 
 ## OUTPUT
 
 - **Commits**: one per phase of `plan.md`, on the current branch (no branch creation, no branch switching).
-- **Roadmap update**: the feature's `status` in `.sdd-builder/prd_map_progress.json` moves to `in-progress` when work starts and to `done` only when Step 8 says the run succeeded.
+- **Roadmap update**: the feature's `status` in `docs/prd_map_progress.json` moves to `in-progress` when work starts and to `done` only when Step 8 says the run succeeded.
 - **Chat report** at the end: the feature's acceptance-criteria checklist marked ✓ / ✗ / — against actual test results, plus sections for Deviations, Soft-fails, Pre-existing failures, Overrides applied, Overrides ignored, and Phase status.
 - **Plano inicial**: fases/unidades, harness, concorrência, especialistas, sugestões e escolhas de modelos para programação e testes. Se faltar uma escolha, aguarde antes de iniciar alterações.
 - **Resumo de execução**: modos solicitado/efetivo, unidades por fase, limite de workers, modelos solicitado/resolvido/efetivo para ambos os papéis e fallbacks autorizados. O quadro de unidades fica em memória ou nas tarefas do host.
@@ -54,7 +54,7 @@ Não crie artefatos extras de planejamento no projeto alvo: o quadro de unidades
 
 Parse the entire input as free-form. Extract:
 
-- **Feature reference**: the first token that resolves to a folder containing `spec.md` + `plan.md`. Matches: ID patterns like `F\d+`, folder paths, file paths (parent folder = target), feature names (kebab-case + fuzzy match to folder names under `.sdd-builder/`).
+- **Feature reference**: the first token that resolves to a folder containing `spec.md` + `plan.md`. Matches: ID patterns like `F\d+`, folder paths, file paths (parent folder = target), feature names (kebab-case + fuzzy match to folder names under `docs/`).
 - **PRD reference**: an explicit `*.md` path prefixed with `@` or written literally; if it looks like a PRD (product spec content at the top), accept it. Otherwise auto-discover.
 - **Extra instructions**: any remaining text that isn't a path/ID/name — treat as natural-language overrides (Step 3).
 
@@ -73,7 +73,7 @@ Read in full:
 - `plan.md` — phases and steps in order.
 - `tests.md` — test cases, their traceability table and their expected results. This is the contract the implementation must satisfy; the AC report in Step 9 is built on top of it.
 - **The PRD's acceptance-criteria content for this feature** — locate it semantically, not by section number. Typical headings: "Acceptance Criteria", "Critérios de Aceitação", "AC". Typical shape: a checkbox list `- [ ]` scoped to the feature (by ID or name). Also locate any cross-feature/integration checklist that references this feature. Do NOT assume a fixed section number — find content by its shape.
-- `.sdd-builder/prd_map_progress.json` — the roadmap. If the target feature is already `done`, report it and ask whether to re-implement before doing anything. If the roadmap is missing, continue and note it under soft-fails; progress simply will not be tracked.
+- `docs/prd_map_progress.json` — the roadmap. If the target feature is already `done`, report it and ask whether to re-implement before doing anything. If the roadmap is missing, continue and note it under soft-fails; progress simply will not be tracked.
 
 If the PRD has no acceptance-criteria content for this feature, proceed with an empty AC checklist and note it under soft-fails.
 
@@ -95,7 +95,7 @@ Interpret extra instructions as natural-language overrides on the defaults:
 | `execution=parallel` | `execution=sequential`, "modo sequencial", "no parallel" |
 | `max-workers=3` | `max-workers=2`, "no máximo 2 agentes" |
 | Modelo de programação escolhido no plano inicial | `implementation-model=gpt-6.1-sol` (quando disponível), `implementation-model=inherit` |
-| Modelo de testes escolhido no plano inicial | `test-model=gpt-6-luna` (quando disponível), `test-model=inherit` |
+| Modelo de testes escolhido no plano inicial | `test-model=gpt-6.1-terra` (quando disponível), `test-model=inherit` |
 
 For each recognized override, record before/after for the final report's "Overrides applied" section.
 
@@ -140,7 +140,7 @@ Selecione `sdd-test-specialist` para autoria e execução de testes em ambas as 
 
 **5.1: Apresentar plano e escolher modelos antes de iniciar**
 
-Siga integralmente [Plano de execução e escolha de modelos por harness](references/model-selection.md). Identifique o harness pela sessão/ferramentas, consulte seu catálogo e apresente fases, unidades previstas, dependências, paralelismo, validação e dois seletores de modelo. Sugira GPT-6.1 Sol + GPT-6 Luna no Codex e Claude Sonnet 5.5 + Claude Haiku 5.5 no Claude Code/Cursor, somente conforme disponibilidade. No Antigravity e demais harnesses, ofereça os modelos do catálogo atual.
+Siga integralmente [Plano de execução e escolha de modelos por harness](references/model-selection.md). Identifique o harness pela sessão/ferramentas, consulte seu catálogo e apresente fases, unidades previstas, dependências, paralelismo, validação e dois seletores de modelo. Sugira GPT-6.1 Sol + GPT-6.1 Terra no Codex e Claude Sonnet 5.5 + Claude Haiku 5.5 no Claude Code/Cursor, somente conforme disponibilidade. No Antigravity e demais harnesses, ofereça os modelos do catálogo atual.
 
 Respeite valores explícitos de `implementation-model`/`test-model` e escolhas já aceitas nesta execução. Se ambos estiverem resolvidos e aplicáveis, mostre o plano e prossiga sem reconfirmação. Se faltar algum, peça somente a escolha pendente e aguarde antes de marcar `in-progress`, despachar workers ou alterar arquivos. Silêncio ou timeout não selecionam as recomendações. Sem interação, entregue o plano com a seleção pendente; a execução ainda não começou.
 
@@ -273,7 +273,7 @@ Never report `success` when any of the checks above has an unresolved failure, e
 
 ### Step 9: Roadmap Update
 
-Following the `progress-tracker` skill, write the outcome of Step 8.5 to `.sdd-builder/prd_map_progress.json`:
+Following the `progress-tracker` skill, write the outcome of Step 8.5 to `docs/prd_map_progress.json`:
 
 | Status from 8.5 | Roadmap `status` | Roadmap `note` |
 |---|---|---|

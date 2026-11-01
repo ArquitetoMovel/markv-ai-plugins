@@ -1,7 +1,7 @@
 ---
 name: progress-tracker
 description: >
-  Canonical schema and single-writer protocol for `.sdd-builder/prd_map_progress.json`,
+  Canonical schema and single-writer protocol for `docs/prd_map_progress.json`,
   the feature roadmap that tracks every PRD feature through `todo`, `in-progress` and
   `done`. Use when creating, reading or updating the roadmap file, when several agents
   may touch it in the same run, or when reporting overall project progress.
@@ -15,7 +15,7 @@ Define one canonical artifact for feature progress across the whole SDD journey 
 protocol for writing to it safely. Every other skill in `sdd-builder-plugin` reads this
 file; only the writers named below may modify it.
 
-The file lives at `.sdd-builder/prd_map_progress.json`, next to the PRD.
+The file lives at `docs/prd_map_progress.json`, next to the PRD.
 
 ---
 
@@ -26,7 +26,7 @@ The file lives at `.sdd-builder/prd_map_progress.json`, next to the PRD.
   "project": "My Project",
   "version": "1.0",
   "lang": "en",
-  "prdPath": ".sdd-builder/PRD.md",
+  "prdPath": "docs/PRD.md",
   "updatedAt": "2026-08-01T20:28:00Z",
   "features": [
     {
@@ -35,7 +35,7 @@ The file lives at `.sdd-builder/prd_map_progress.json`, next to the PRD.
       "status": "done",
       "wave": 1,
       "priority": 1,
-      "specPath": ".sdd-builder/F01-authentication-system/",
+      "specPath": "docs/F01-authentication-system/",
       "updatedAt": "2026-08-01T20:28:00Z",
       "note": ""
     }
@@ -123,7 +123,7 @@ Never write the file from memory. Always run the full cycle:
 1. **Acquire the lock.** `mkdir` is atomic on POSIX, so it is the lock primitive:
 
    ```bash
-   mkdir .sdd-builder/prd_map_progress.lock 2>/dev/null \
+   mkdir docs/prd_map_progress.lock 2>/dev/null \
      && echo "acquired" \
      || echo "busy"
    ```
@@ -132,15 +132,15 @@ Never write the file from memory. Always run the full cycle:
 
    ```bash
    printf '%s %s %s\n' "$$" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "<agent-name>" \
-     > .sdd-builder/prd_map_progress.lock/owner
+     > docs/prd_map_progress.lock/owner
    ```
 
    On `busy`, wait 2 seconds and retry, up to 5 attempts. If still busy, read
-   `.sdd-builder/prd_map_progress.lock/owner`: when the stamp is older than 10 minutes the
+   `docs/prd_map_progress.lock/owner`: when the stamp is older than 10 minutes the
    lock is stale, so report it to the user and ask before removing it. Never remove a
    fresh lock.
 
-2. **Re-read** `.sdd-builder/prd_map_progress.json` from disk. Discard any copy loaded
+2. **Re-read** `docs/prd_map_progress.json` from disk. Discard any copy loaded
    earlier in the run: another agent may have changed it.
 
 3. **Mutate only your own scope.** Touch just the fields listed for your writer role above,
@@ -152,7 +152,7 @@ Never write the file from memory. Always run the full cycle:
 5. **Write atomically.** Write to a temporary file in the same directory, then rename:
 
    ```bash
-   mv .sdd-builder/prd_map_progress.json.tmp .sdd-builder/prd_map_progress.json
+   mv docs/prd_map_progress.json.tmp docs/prd_map_progress.json
    ```
 
    `mv` within the same filesystem is atomic, so a reader never sees a half-written file.
@@ -160,7 +160,7 @@ Never write the file from memory. Always run the full cycle:
 6. **Release the lock**, including on failure:
 
    ```bash
-   rm -rf .sdd-builder/prd_map_progress.lock
+   rm -rf docs/prd_map_progress.lock
    ```
 
 7. **Verify.** Re-read the file and confirm it parses as JSON and contains the change you
@@ -182,7 +182,7 @@ Run before any write is considered complete:
 - [ ] Every `status` is one of `todo`, `in-progress`, `done`.
 - [ ] `updatedAt` fields are UTC ISO-8601 ending in `Z`.
 - [ ] `lang` is present and matches the language the PRD was actually written in.
-- [ ] No lock directory left behind at `.sdd-builder/prd_map_progress.lock`.
+- [ ] No lock directory left behind at `docs/prd_map_progress.lock`.
 
 ---
 

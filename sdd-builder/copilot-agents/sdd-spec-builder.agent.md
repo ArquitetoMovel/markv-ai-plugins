@@ -37,7 +37,7 @@ Sem PRD não há spec. Se não encontrar um PRD no projeto, pare e oriente o usu
 
 5. **Geração**
 
-    Gere `spec.md`, `plan.md` e `tests.md` na pasta `.sdd-builder/<ID>-<nome-kebab>/`. Todo critério de aceite do PRD precisa aparecer na tabela de rastreabilidade do `tests.md`. Cobrir só o caminho feliz é considerado incompleto.
+    Gere `spec.md`, `plan.md` e `tests.md` na pasta `docs/<ID>-<nome-kebab>/`. Todo critério de aceite do PRD precisa aparecer na tabela de rastreabilidade do `tests.md`. Cobrir só o caminho feliz é considerado incompleto.
 
 6. **Validação e roadmap**
 

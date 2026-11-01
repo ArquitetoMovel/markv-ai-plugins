@@ -62,7 +62,7 @@ Você é o único agente autorizado a mudar o `status` de uma feature para `in-p
 
 3. **Apresentar o plano e escolher modelos por harness**
 
-    Siga `skills/feature-builder/references/model-selection.md`. Identifique o harness pela sessão e pelas ferramentas, consulte modelos disponíveis e mostre fases, unidades, especialistas, dependências, validações e concorrência. Apresente escolhas independentes para programação (`implementation-model`) e testes (`test-model`). Sugira Sol 6.1 + Luna no Codex e Sonnet 5.5 + Haiku 5.5 no Claude Code/Cursor, quando disponíveis; no Antigravity ou outro harness, use o catálogo atual.
+    Siga `skills/feature-builder/references/model-selection.md`. Identifique o harness pela sessão e pelas ferramentas, consulte modelos disponíveis e mostre fases, unidades, especialistas, dependências, validações e concorrência. Apresente escolhas independentes para programação (`implementation-model`) e testes (`test-model`). Sugira Sol 6.1 + Terra 6.1 no Codex e Sonnet 5.5 + Haiku 5.5 no Claude Code/Cursor, quando disponíveis; no Antigravity ou outro harness, use o catálogo atual.
 
     Respeite escolhas explícitas e já aceitas. Se os dois papéis estiverem resolvidos, mostre o plano e prossiga. Se faltar um, pergunte apenas por ele e aguarde antes de alterar arquivos, despachar workers ou marcar `in-progress`. Não trate silêncio ou autonomia como escolha automática. Uma limitação do host exige alternativa aceita, salvo fallback já autorizado.
 
