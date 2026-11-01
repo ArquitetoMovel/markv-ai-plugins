@@ -56,7 +56,7 @@ Assistente para scaffold de novos plugins de IA multiplataforma neste repositór
 
 ### sdd-builder-plugin
 
-Jornada completa de desenvolvimento orientado a spec, do PRD até a feature implementada, com o roadmap `.sdd-builder/prd_map_progress.json` amarrando as três etapas.
+Jornada completa de desenvolvimento orientado a spec, do PRD até a feature implementada, com o roadmap `docs/prd_map_progress.json` amarrando as três etapas.
 
 - **Agentes:** `sdd-builder` (roteia a etapa), `sdd-prd-builder` (PRD e roadmap), `sdd-spec-builder` (`spec.md`, `plan.md` e `tests.md` por feature), `sdd-feature-builder` (apresenta plano e escolha de modelos por harness, coordena unidades e verifica o resultado), `sdd-test-specialist` (autoria e execução de testes com modelo configurável) e sete especialistas de implementação: `sdd-dotnet-specialist`, `sdd-python-specialist`, `sdd-node-angular-specialist`, `sdd-plsql-specialist`, `sdd-java-specialist`, `sdd-go-specialist` e `sdd-swift-specialist`.
 - **Skills:** `prd-builder` (PRD e roadmap), `spec-builder` (specs e testes rastreáveis, em modo single ou batch), `feature-builder` (unidades independentes, modos paralelo/sequencial, limite de workers, modelos de programação/testes por harness e verificação final), `work-unit` (contrato dos workers com contexto mínimo) e `progress-tracker` (schema do roadmap e protocolo de escrita com lock).

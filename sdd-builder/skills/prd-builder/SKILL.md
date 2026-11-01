@@ -12,7 +12,7 @@ description: |
 
 # PRD Builder
 
-You generate complete and detailed PRDs (Product Requirements Documents) through an iterative process, and you create the feature roadmap (`.sdd-builder/prd_map_progress.json`) that `spec-builder` and `feature-builder` consume afterwards. Be direct and objective.
+You generate complete and detailed PRDs (Product Requirements Documents) through an iterative process, and you create the feature roadmap (`docs/prd_map_progress.json`) that `spec-builder` and `feature-builder` consume afterwards. Be direct and objective.
 
 This is **Step 1 of the SDD journey**. Nothing downstream works without the two artifacts this skill produces.
 
@@ -20,9 +20,9 @@ This is **Step 1 of the SDD journey**. Nothing downstream works without the two 
 
 From the invoking command, you receive:
 - `PROJECT_NAME`: Name of the project
-- `OUTPUT_FOLDER`: Folder where to save the PRD (default: `.sdd-builder/`)
-- `PRD_PATH`: Full path for the PRD file (default: `.sdd-builder/PRD.md`)
-- `ROADMAP_PATH`: Full path for the roadmap file (default: `.sdd-builder/prd_map_progress.json`)
+- `OUTPUT_FOLDER`: Folder where to save the PRD (default: `docs/`)
+- `PRD_PATH`: Full path for the PRD file (default: `docs/PRD.md`)
+- `ROADMAP_PATH`: Full path for the roadmap file (default: `docs/prd_map_progress.json`)
 - `PRODUCT_DESCRIPTION`: Combined content from context (file or folder) and/or description
 - `LANG`: Language of the PRD. Default English. See "Language selection" below.
 
@@ -67,7 +67,7 @@ Read the instruction and documentation files that describe the product:
 |---|---|
 | Agent instructions | `AGENTS.md`, `CLAUDE.md`, `.cursor/rules/*`, `.github/copilot-instructions.md` |
 | Product docs | `README.md`, `docs/**`, `CONTRIBUTING.md`, `CHANGELOG.md`, ADRs (`docs/adr/**`, `docs/decisions/**`) |
-| Existing PRDs | `.sdd-builder/PRD.md`, `PRD.md`, `docs/PRD*.md`, `.codekit/`, `.sdd-prd/`, and similar conventional locations |
+| Existing PRDs | `docs/PRD.md`, `PRD.md`, `docs/PRD*.md`, `.codekit/`, `.sdd-prd/`, and similar conventional locations |
 | Engineering logs | `log-dev*`, `DEVLOG*`, `NOTES.md`, `TODO.md`, `*.trace*`, `*.error` |
 | Code | entry points, route/controller definitions, domain modules, data models, test folders |
 
@@ -690,14 +690,14 @@ graph TD
 - [ ] Structured summary from processing (F03) renders correctly in summary section (F06)
 ````
 
-**Roadmap Example** (`.sdd-builder/prd_map_progress.json`, matching the PRD above on an existing project where auth already ships):
+**Roadmap Example** (`docs/prd_map_progress.json`, matching the PRD above on an existing project where auth already ships):
 
 ```json
 {
   "project": "Video Transcription Platform",
   "version": "1.0",
   "lang": "en",
-  "prdPath": ".sdd-builder/PRD.md",
+  "prdPath": "docs/PRD.md",
   "updatedAt": "2026-08-01T20:28:00Z",
   "features": [
     { "id": "F01", "name": "Authentication System", "status": "done", "wave": 1, "priority": 1, "specPath": "", "updatedAt": "2026-08-01T20:28:00Z", "note": "detected in src/auth/session.ts" },

@@ -31,7 +31,7 @@ Você diagnostica, roteia, acompanha e reporta. PRD e specs pertencem às etapas
 ## Artefatos da jornada
 
 ```text
-.sdd-builder/
+docs/
 ├── PRD.md                        # etapa 1
 ├── prd_map_progress.json         # etapa 1, atualizado nas etapas 2 e 3
 └── F01-nome-da-feature/
@@ -42,9 +42,9 @@ Você diagnostica, roteia, acompanha e reporta. PRD e specs pertencem às etapas
 
 ## Diagnóstico inicial (execute sempre antes de qualquer outra coisa)
 
-1. Procure `.sdd-builder/PRD.md` com `Glob` e, na ausência, procure `PRD.md` ou outros PRDs no repositório.
-2. Leia `.sdd-builder/prd_map_progress.json` quando existir e conte as features por status.
-3. Liste as pastas `.sdd-builder/F*/` para saber quais features já têm `spec.md`, `plan.md` e `tests.md`.
+1. Procure `docs/PRD.md` com `Glob` e, na ausência, procure `PRD.md` ou outros PRDs no repositório.
+2. Leia `docs/prd_map_progress.json` quando existir e conte as features por status.
+3. Liste as pastas `docs/F*/` para saber quais features já têm `spec.md`, `plan.md` e `tests.md`.
 4. Apresente um resumo curto do estado atual e a próxima ação recomendada, depois espere a decisão do usuário.
 
 Formato do resumo:

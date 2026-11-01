@@ -41,7 +41,7 @@ nem uma avaliação de desempenho ou preço válida para qualquer projeto.
 
 | Harness | Programação (`implementation-model`) | Testes (`test-model`) |
 | --- | --- | --- |
-| Codex | GPT-6.1 Sol | GPT-6 Luna |
+| Codex | GPT-6.1 Sol | GPT-6.1 Terra |
 | Claude Code | Claude Sonnet 5.5 | Claude Haiku 5.5 |
 | Cursor | Claude Sonnet 5.5 | Claude Haiku 5.5 |
 | Antigravity | Modelo de programação entre os disponíveis na sessão | Modelo mais leve entre os disponíveis para esse papel |
@@ -52,7 +52,7 @@ com justificativa curta baseada nas descrições disponíveis. Se não houver ev
 para comparar capacidade/custo, mostre as opções sem rotulá-las como "menor"/"melhor".
 
 Resolva nome de apresentação → ID exato aceito pelo harness. Por exemplo, `gpt-6.1-sol`
-e `gpt-6-luna` podem ser usados no Codex **se constarem no catálogo da sessão**. IDs da
+e `gpt-6.1-terra` podem ser usados no Codex **se constarem no catálogo da sessão**. IDs da
 API Claude, como `claude-sonnet-5-5` e `claude-haiku-5-5`, não devem ser copiados para o
 Cursor ou outro harness sem confirmar seu mapeamento. `sonnet` e `haiku` não garantem
 versão 5.5; não substitua uma versão solicitada por um alias móvel sem informar.
@@ -84,7 +84,7 @@ Fase 2: U1 serviço e U2 testes de contrato em paralelo; U3 execução aguarda a
 Fase 3: integração, suíte completa e conferência dos critérios de aceite.
 
 Programação: GPT-6.1 Sol (gpt-6.1-sol), recomendado, disponível.
-Testes: GPT-6 Luna (gpt-6-luna), recomendado, disponível.
+Testes: GPT-6.1 Terra (gpt-6.1-terra), recomendado, disponível.
 Alternativas: herdar o modelo da sessão ou escolher outros IDs do catálogo exibido.
 Seleção: aguardando escolha do usuário.
 ```

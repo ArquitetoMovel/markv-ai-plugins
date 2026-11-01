@@ -23,14 +23,14 @@ This is **Step 2 of the SDD journey**: it reads the PRD produced by `prd-builder
 2. `plan.md` - Implementation plan (phases and steps)
 3. `tests.md` - Test case specification for the feature
 
-**Output location:** `.sdd-builder/<feature-id>-<kebab-name>/spec.md`, `.../plan.md` and `.../tests.md`
-- The `<kebab-name>` is derived from the feature's name in the PRD Section 6 (lowercase, spaces → hyphens, special characters removed). Example: `F03. Session Control to File Transfer` → `.sdd-builder/F03-session-control-file-transfer/`.
+**Output location:** `docs/<feature-id>-<kebab-name>/spec.md`, `.../plan.md` and `.../tests.md`
+- The `<kebab-name>` is derived from the feature's name in the PRD Section 6 (lowercase, spaces → hyphens, special characters removed). Example: `F03. Session Control to File Transfer` → `docs/F03-session-control-file-transfer/`.
 
 ## Language rule
 
 The three output documents are written in the **same language as the PRD**. Resolve the language in this order:
 
-1. The `lang` field of `.sdd-builder/prd_map_progress.json` (authoritative — written by `prd-builder`).
+1. The `lang` field of `docs/prd_map_progress.json` (authoritative — written by `prd-builder`).
 2. If the roadmap is missing or has no `lang`, detect the language from the PRD body text.
 3. If detection is inconclusive, ask the user in single-feature mode; in Batch Mode default to the PRD's apparent language and record the assumption.
 
@@ -46,16 +46,16 @@ Note: These are internal agent execution steps. The OUTPUT plan document will ha
 
 **1.1: Identify the PRD and the target feature**
 
-Accept free-form input from the user. The user may reference the feature by ID (`F03`), by name (`Video Upload`), by path (`.sdd-builder/PRD.md F03`), or any combination. Resolve the reference:
+Accept free-form input from the user. The user may reference the feature by ID (`F03`), by name (`Video Upload`), by path (`docs/PRD.md F03`), or any combination. Resolve the reference:
 
-- Locate the PRD file from the user's reference or look for `.sdd-builder/PRD.md`, `PRD.md`, or similar conventional locations. If multiple plausible PRDs exist, ask the user which one.
+- Locate the PRD file from the user's reference or look for `docs/PRD.md`, `PRD.md`, or similar conventional locations. If multiple plausible PRDs exist, ask the user which one.
 - Identify the target feature within the PRD by ID or name.
 - If the input is ambiguous (e.g., "upload" matches multiple features), confirm with the user before proceeding.
 - If the referenced feature does not exist in the PRD, list available features from Section 8 and ask the user to clarify.
 
 **PRD is mandatory.** If no PRD is found in the project, stop and instruct the user to generate one first with the `prd-builder` skill. Do not fall back to an unstructured interview.
 
-Also read `.sdd-builder/prd_map_progress.json` when it exists: use `lang` for the language rule and `status` to detect features already marked `done`. If the target feature is `done`, tell the user and ask whether to re-spec it before continuing.
+Also read `docs/prd_map_progress.json` when it exists: use `lang` for the language rule and `status` to detect features already marked `done`. If the target feature is `done`, tell the user and ask whether to re-spec it before continuing.
 
 **1.2: Check dependency readiness and Foundation features (greenfield)**
 
@@ -309,7 +309,7 @@ TESTS document:
 All three documents:
 - [ ] Written in the language resolved by the Language rule
 
-**Save the three files to `.sdd-builder/<feature-id>-<kebab-name>/spec.md`, `.../plan.md` and `.../tests.md`.** Create the folder if it doesn't exist. Verify all three with the Read tool.
+**Save the three files to `docs/<feature-id>-<kebab-name>/spec.md`, `.../plan.md` and `.../tests.md`.** Create the folder if it doesn't exist. Verify all three with the Read tool.
 
 **Update the roadmap.** Following the `progress-tracker` skill, set `specPath` of this feature to the generated folder. Do NOT change `status` — spec generation does not start implementation, so the feature stays `todo`. In Batch Mode this update is performed once by the orchestrator after all sub-agents return; sub-agents never write to the roadmap.
 
@@ -348,14 +348,14 @@ Step 1 (Resolve Input and Pre-Analysis) is adapted for the batch context as desc
 
 **B.1: Resolve the batch**
 
-- **Locate the PRD** using Step 1.1 rules (user-provided path, `.sdd-builder/PRD.md`, `PRD.md`, or similar). If no PRD is found, stop and direct the user to `prd-builder`. If multiple plausible PRDs exist, ask the user which one BEFORE continuing — this is the first possible interactive pause in the orchestrator.
+- **Locate the PRD** using Step 1.1 rules (user-provided path, `docs/PRD.md`, `PRD.md`, or similar). If no PRD is found, stop and direct the user to `prd-builder`. If multiple plausible PRDs exist, ask the user which one BEFORE continuing — this is the first possible interactive pause in the orchestrator.
 - Read the roadmap for `lang` and current statuses. Pass the resolved language to every sub-agent.
 - Parse input into a list of target features (expand waves, merge lists, deduplicate).
 - If the PRD has no `Execution Waves` subsection in Section 8 and the input references a wave (e.g., `wave 3`), reject with: "Wave references require a 'Execution Waves' subsection in Section 8 of the PRD, which this PRD does not have. Use feature IDs directly or update the PRD." Do not attempt to synthesize waves.
 - If any feature name in the input is ambiguous (matches multiple features in the PRD, e.g., "upload" matches F03 and F11), list the candidates to the user and ask for disambiguation BEFORE proceeding to the rest of B.1. This is the second possible interactive pause before the consolidated plan.
 - If any feature ID or name does not exist in the PRD, reject with the list of available features.
 - Validate the same-wave rule.
-- For each target, check whether `.sdd-builder/<feature-id>-<kebab-name>/spec.md` already exists. Mark such features as "already has spec".
+- For each target, check whether `docs/<feature-id>-<kebab-name>/spec.md` already exists. Mark such features as "already has spec".
 
 **B.2: Greenfield and Foundation classification**
 
@@ -381,7 +381,7 @@ Mode: parallel (N sub-agents)   # or "sequential (Foundation detected)" when app
 Codebase state: Foundation complete   # or greenfield / Partial Foundation
 Output language: en   # resolved from the roadmap's lang field
 Auto-accept: all spec-builder recommendations will be applied
-Destination: .sdd-builder/F04-video-library/, .sdd-builder/F07-background-processing-pipeline/, .sdd-builder/F12-administration-panel/
+Destination: docs/F04-video-library/, docs/F07-background-processing-pipeline/, docs/F12-administration-panel/
 
 OK to proceed? (yes/no)
 ```
@@ -405,7 +405,7 @@ Proceed only on explicit "yes". On "no" or any negative/ambiguous response, abor
   - Instruction to execute Steps 1–6 of this SKILL.md for that feature
   - The Auto-Accept Policy below, replacing the interactive interview (Step 2)
   - Reminder to save `spec.md`, `plan.md` and `tests.md` per Step 5
-  - Explicit instruction NOT to write to `.sdd-builder/prd_map_progress.json`
+  - Explicit instruction NOT to write to `docs/prd_map_progress.json`
 
 Each sub-agent performs its own Pattern Discovery (Step 1.3) independently — no sharing between sub-agents.
 
@@ -415,9 +415,9 @@ Wait for all sub-agents. Then, as the single writer, update `specPath` for every
 
 ```
 Batch complete: 3/4 features generated successfully
-✓ F04 → .sdd-builder/F04-session-control-file-transfer/
-✓ F07 → .sdd-builder/F07-background-processing-pipeline/
-✓ F12 → .sdd-builder/F12-administration-panel/
+✓ F04 → docs/F04-session-control-file-transfer/
+✓ F07 → docs/F07-background-processing-pipeline/
+✓ F12 → docs/F12-administration-panel/
 ✗ F05 → failed: <reason>
 Roadmap updated: specPath set for F04, F07, F12
 ```
@@ -454,7 +454,7 @@ All other rules of this skill (PRD-driven content, codebase pattern adherence, S
 **Precedence:** When a feature is running in Batch Mode, the `(Batch Mode)` rule groups below override any conflicting rule in the general `Always`/`Never` lists — notably, Batch Mode overrides the interview-related rules ("Preserve the iterative interview style", "Skip interview questions...", etc.). All non-conflicting rules still apply.
 
 **Always:**
-- Generate THREE files (spec, plan and tests) in `.sdd-builder/<feature-id>-<kebab-name>/`
+- Generate THREE files (spec, plan and tests) in `docs/<feature-id>-<kebab-name>/`
 - Write all three documents in the language resolved by the Language rule
 - Validate all three documents before saving
 - Run Codebase Pattern Discovery in two layers (baseline + broad) before the interview
@@ -493,7 +493,7 @@ All other rules of this skill (PRD-driven content, codebase pattern adherence, S
 - Dispatch Foundation features in parallel when any Foundation is still unimplemented
 - Cancel running sub-agents because another sub-agent failed
 - Share a single Pattern Discovery across sub-agents — each runs its own
-- Let sub-agents write to `.sdd-builder/prd_map_progress.json`
+- Let sub-agents write to `docs/prd_map_progress.json`
 
 ---
 

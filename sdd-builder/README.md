@@ -2,7 +2,7 @@
 
 Plugin de desenvolvimento orientado a spec (SDD), com fluxo de implementação independente do provedor de LLM. A escolha de modelos se adapta ao harness da sessão: **Codex**, **Claude Code**, **Cursor**, **Antigravity**, **Copilot** ou outro ambiente que carregue as skills e forneça as ferramentas necessárias. Os manifests de distribuição existentes atendem Claude Code, Copilot CLI e Cursor.
 
-Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação por unidades independentes, com especialistas por tecnologia e plano inicial para escolher modelos de programação e testes por harness. O roadmap `.sdd-builder/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
+Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação por unidades independentes, com especialistas por tecnologia e plano inicial para escolher modelos de programação e testes por harness. O roadmap `docs/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
 
 ## Fluxo de uso
 
@@ -15,7 +15,7 @@ Gera `PRD.md` com 9 seções e cria o roadmap de features.
 
 ### Etapa 2: specs por feature (`sdd-spec-builder`)
 
-Lê o PRD, seleciona as features em `todo` e gera três documentos por feature em `.sdd-builder/<ID>-<nome-kebab>/`:
+Lê o PRD, seleciona as features em `todo` e gera três documentos por feature em `docs/<ID>-<nome-kebab>/`:
 
 - `spec.md`, a especificação técnica de 7 seções
 - `plan.md`, o plano de implementação em fases
@@ -51,7 +51,7 @@ Antes de alterar código, testes ou roadmap, o `feature-builder` detecta o harne
 
 | Harness detectado | Sugestão para programação | Sugestão para testes |
 | --- | --- | --- |
-| Codex | GPT-6.1 Sol | GPT-6 Luna |
+| Codex | GPT-6.1 Sol | GPT-6.1 Terra |
 | Claude Code | Claude Sonnet 5.5 | Claude Haiku 5.5 |
 | Cursor | Claude Sonnet 5.5 | Claude Haiku 5.5 |
 | Antigravity, Copilot ou outro | Modelo de programação disponível na sessão | Modelo mais leve disponível para testes, quando identificado |
@@ -68,7 +68,7 @@ Fase 1: contratos em sequência.
 Fase 2: implementação e autoria de testes independentes; execução após convergência.
 Fase 3: integração, suíte completa e critérios de aceite.
 Programação: GPT-6.1 Sol (gpt-6.1-sol), recomendado.
-Testes: GPT-6 Luna (gpt-6-luna), recomendado.
+Testes: GPT-6.1 Terra (gpt-6.1-terra), recomendado.
 Seleção: aguardando escolha do usuário.
 ```
 
@@ -93,7 +93,7 @@ Implemente F03 com execution=parallel max-workers=3.
 Escolhas antecipadas no Codex, quando os IDs estiverem disponíveis:
 
 ```text
-Implemente F03 com implementation-model=gpt-6.1-sol test-model=gpt-6-luna.
+Implemente F03 com implementation-model=gpt-6.1-sol test-model=gpt-6.1-terra.
 ```
 
 Escolha por nome no Claude Code/Cursor, resolvida para os IDs do harness:
@@ -115,17 +115,17 @@ Modelo indisponível ou substituição imposta pelo host exige uma alternativa a
 
 ## Roadmap de progresso
 
-`.sdd-builder/prd_map_progress.json` acompanha cada feature nos status `todo`, `in-progress` e `done`.
+`docs/prd_map_progress.json` acompanha cada feature nos status `todo`, `in-progress` e `done`.
 
 ```json
 {
   "project": "Meu Produto",
   "version": "1.0",
   "lang": "pt-BR",
-  "prdPath": ".sdd-builder/PRD.md",
+  "prdPath": "docs/PRD.md",
   "updatedAt": "2026-08-01T20:28:00Z",
   "features": [
-    { "id": "F01", "name": "Autenticação", "status": "done", "wave": 1, "priority": 1, "specPath": ".sdd-builder/F01-autenticacao/", "updatedAt": "2026-08-01T20:28:00Z", "note": "" }
+    { "id": "F01", "name": "Autenticação", "status": "done", "wave": 1, "priority": 1, "specPath": "docs/F01-autenticacao/", "updatedAt": "2026-08-01T20:28:00Z", "note": "" }
   ],
   "decisions": [],
   "notes": ""
@@ -199,7 +199,7 @@ sdd-builder/
 ## Artefatos gerados no projeto alvo
 
 ```text
-.sdd-builder/
+docs/
 ├── PRD.md
 ├── prd_map_progress.json
 └── F01-nome-da-feature/
