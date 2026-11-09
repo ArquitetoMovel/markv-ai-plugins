@@ -8,7 +8,26 @@ description: >
 
 # Unidade de trabalho SDD
 
-Execute somente a unidade recebida do `sdd-feature-builder`. Esta skill é o contrato
+## Unidade em modo solução
+
+Se a entrada contiver `mode=solution`, valide a raiz absoluta resolvida de
+`projects[].root`, `taskId`/tentativa, concessão Git e slots antes de executar. O
+orquestrador pode ser o `sdd-feature-builder` ou o root da solução despachando a unidade
+diretamente quando o host não permite delegação aninhada; o contrato de retorno é igual.
+
+- `read_files` pode incluir contratos de outros projetos somente quando autorizados
+  pelos links do pacote, presentes e na revisão esperada. Leia sem alterar.
+- Todos os `write_files`, diretórios gerados e cwds de comandos ficam no projeto alvo
+  ou em recursos temporários explicitamente reservados. Normalize caminhos reais,
+  inclusive symlinks, antes de conferir contenção. Escape de raiz retorna `blocked`.
+- `docs/solutions/` é reservado ao escritor global, inclusive no projeto líder.
+  Não edite PRDs, SPECs, roadmaps ou artefatos de solução como efeito colateral.
+- Use somente o token e os recursos concedidos; não readquira lock do Git pai nem
+  aumente workers. Um contrato mudou? Pare e reporte ao orquestrador, sem adaptá-lo
+  unilateralmente. Não faça stage/commit, mesmo sob concessão Git.
+
+Execute somente a unidade recebida do `sdd-feature-builder` ou do root da solução no
+despacho direto autorizado acima. Esta skill é o contrato
 dos workers; não execute o fluxo do orquestrador nem carregue a skill `feature-builder`.
 
 ## Entrada obrigatória

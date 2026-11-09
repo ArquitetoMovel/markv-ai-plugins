@@ -11,6 +11,38 @@ description: >
 
 # Feature Specs Builder
 
+## Contrato de execução por solução
+
+Com pacote `mode=solution`, estas regras prevalecem sobre batch local, entrevistas,
+permissões de escrita e avisos de dependência das seções seguintes. Consulte
+[Contratos da solução](../solution-builder/references/contracts.md).
+
+1. Resolva `PROJECT_ROOT`, PRD, roadmap e uma única feature do pacote. Contexto novo
+   por feature, sem fan-out interno e sem herdar o chat da solução. Múltiplos IDs ou
+   diretório fora do projeto retornam `blocked`. Explore padrões somente nesse projeto,
+   excluindo `docs/solutions/**`; contratos externos são somente os `readFiles` concedidos.
+2. Revalide os hashes das entradas e de cada provider. A SPEC fornecedora precisa estar
+   validada e o contrato presente na `contractRevision` esperada, inclusive fragmento.
+   Não invente endpoint/schema enquanto aguarda o fornecedor. Não mude o contrato externo.
+3. O portão externo da SPEC exige contrato validado, não implementação do provider.
+   Dependências locais/Foundation ainda não implementadas bloqueiam a liberação;
+   não use "Continue anyway?" nem Auto-Accept para contornar esse portão. Foundations
+   greenfield seguem a sequência de especificação/implementação antes de dependentes.
+4. Se `autoAccept=true` tiver sido autorizado pelo orquestrador para a onda da solução,
+   aplique apenas a política de decisões técnicas do batch, registrando premissas.
+   Uma janela continua tratando uma feature. Sem auto-aceite, mantenha entrevista;
+   se o filho não puder interagir, devolva perguntas/decisões pendentes para handoff.
+5. Gere os três documentos em `<PROJECT_ROOT>/docs/<ID>-<nome>/`, no idioma local.
+   Registre links, caminhos e revisões consumidas na SPEC e cubra os contratos/erros
+   externos em `tests.md`. Use os checklists normais; revalide contratos antes do retorno.
+6. No Step 5, **não escreva no roadmap**. Retorne `setSpecPath` com precondições, paths,
+   revisões e evidências de validação. `status` permanece intacto. A SPEC fornecedora
+   retorna também path/fragmento e hash candidato para o root validar e publicar no link.
+
+Somente o orquestrador aplica `specPath` e `contractRevision`. Nenhum filho edita
+`docs/solutions/`, faz stage/commit ou despacha outras features. Sem esse pacote,
+single e batch por onda local mantêm os contratos atuais.
+
 Generate implementation-ready technical specifications based on the project's PRD and existing codebase patterns. The skill has two modes:
 
 - **Single-feature mode (default):** operates on one feature at a time, identified by its PRD feature ID (F01, F02...), with an interactive interview (Steps 1–6 below).

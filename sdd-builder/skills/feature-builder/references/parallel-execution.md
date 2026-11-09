@@ -3,6 +3,21 @@
 Referência canônica de agendamento do `feature-builder`. Leia ao preparar cada fase.
 O contrato enviado aos workers está na skill [work-unit](../../work-unit/SKILL.md).
 
+## Precedência no modo solução
+
+Com `mode=solution`, leia [solution-builder](../../solution-builder/SKILL.md). O teto é
+global: janelas de PRD/SPEC/feature/integração e workers internos compartilham os slots,
+sem multiplicar `max-workers` por feature. Reserve espaço para filhos antes de abrir
+coordenadores. `workerSlotsGranted` limita o lote interno. Sem delegação aninhada, a
+janela `feature-plan` retorna unidades e termina; o root despacha workers diretamente,
+converge e usa outra janela `feature-review`. Sem contexto isolado, persista handoff
+`blocked`; não aplique o fallback inline descrito abaixo para single-project.
+
+Etapas mutáveis no mesmo `gitRoot` usam uma concessão exclusiva; workers da mesma fase
+compartilham seu token. Publicação das réplicas também reserva o Git e aguarda writers
+terminarem. Roadmap e `docs/solutions/` só são escritos pelo root. O quadro persistível
+de unidades/propostas fica no estado global, não em documentos de planejamento locais.
+
 ## Opções da invocação
 
 São instruções interpretadas pela skill, não flags de um executável nem configurações

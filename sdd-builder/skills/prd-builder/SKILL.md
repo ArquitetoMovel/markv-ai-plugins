@@ -12,6 +12,46 @@ description: |
 
 # PRD Builder
 
+## Contrato de escopo e revisão incremental
+
+Quando receber um pacote `mode=solution`, aplique estas regras antes das fases abaixo;
+elas prevalecem sobre instruções de descoberta, geração de IDs, criação e escrita do
+roadmap do modo single-project. Consulte os formatos em
+[Contratos da solução](../solution-builder/references/contracts.md).
+
+- Resolva `PROJECT_ROOT`, `PRD_PATH`, `ROADMAP_PATH` e `PRD_NOTES_PATH` a partir do pacote
+  e da base de workspace validada. Todos os documentos produzidos ficam em `docs/` do
+  próprio projeto, fora de `docs/solutions/`. Não descubra um PRD de projeto vizinho.
+- Classifique e analise somente o projeto alvo. Leia `AGENTS.md`, `CLAUDE.md`, README,
+  ADRs e código aplicáveis dentro de `PROJECT_ROOT`; respeite instruções ancestrais
+  fornecidas pelo host, sem minerar código/documentação de irmãos ou do workspace.
+  Exclua réplicas `docs/solutions/**` da mineração local; leia apenas as referências
+  transversais explicitamente concedidas no pacote.
+- Releia `PRD_NOTES_PATH` e confira os hashes de entrada antes de entrevistar. Após cada
+  resposta confirmada, registre pergunta/resposta, decisões, IDs reservados, pendências
+  e próximo passo nesse checkpoint local. Nunca replique o checkpoint de PRD.
+  Sem interação no filho, devolva a próxima pergunta e o checkpoint ao orquestrador;
+  nova janela retoma após a resposta. Não invente consentimento nem repita perguntas.
+- A revisão de um PRD existente é **incremental**: preserve IDs, estados, `specPath`,
+  decisões e evidências anteriores. Novos IDs seguem o maior já reservado no PRD,
+  roadmap e notas; nunca renumere/reutilize IDs removidos nem feche lacunas históricas.
+  Remoções deixam no roadmap `note: "no longer in PRD"` sem apagar o status histórico.
+  Mostre o diff; nunca reconstrua o roadmap em modo solução.
+- Alterar escopo/aceite de feature `done` exige reabertura explícita com impacto aceito
+  ou nova feature evolutiva. Sem decisão, preserve o PRD anterior e devolva `blocked`.
+  A seção 8 contém só dependências internas; IDs externos `projectId:Fxx` são referências
+  a `links` da solução, não linhas ou dependências da tabela local.
+- Grave o PRD validado e o checkpoint local sob a concessão Git recebida. Em vez de
+  escrever/criar o roadmap na fase 5.2, devolva proposta `mergePrd`, diff, evidências,
+  precondições e notas. O orquestrador valida e aplica a mesclagem sob lock. Um aviso de
+  documentação ausente também volta na proposta, sem criação de README/AGENTS.
+- Nunca escreva `docs/solutions/` ou roadmap, mesmo em execução sequencial. Não faça
+  stage/commit nem abra subagentes. Ao concluir, devolva caminhos locais e propostas.
+
+Sem `mode=solution`, mantenha caminhos, entrevista e escritores do fluxo existente.
+Em uma revisão incremental pedida no modo local, aplique também preservação de IDs e
+histórico; reconstrução só se explicitamente escolhida, após diff e impacto apresentado.
+
 You generate complete and detailed PRDs (Product Requirements Documents) through an iterative process, and you create the feature roadmap (`docs/prd_map_progress.json`) that `spec-builder` and `feature-builder` consume afterwards. Be direct and objective.
 
 This is **Step 1 of the SDD journey**. Nothing downstream works without the two artifacts this skill produces.
@@ -20,6 +60,8 @@ This is **Step 1 of the SDD journey**. Nothing downstream works without the two 
 
 From the invoking command, you receive:
 - `PROJECT_NAME`: Name of the project
+- `PROJECT_ROOT`: Raiz do projeto, obrigatória no pacote de solução; caminhos padrão abaixo são relativos a ela.
+- `PRD_NOTES_PATH`: Checkpoint local em `docs/runs/<run-id>/prd-notes.md` no modo solução.
 - `OUTPUT_FOLDER`: Folder where to save the PRD (default: `docs/`)
 - `PRD_PATH`: Full path for the PRD file (default: `docs/PRD.md`)
 - `ROADMAP_PATH`: Full path for the roadmap file (default: `docs/prd_map_progress.json`)
