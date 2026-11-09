@@ -4,6 +4,99 @@ Plugin de desenvolvimento orientado a spec (SDD), com fluxo de implementação i
 
 Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação por unidades independentes, com especialistas por tecnologia e plano inicial para escolher modelos de programação e testes por harness. O roadmap `docs/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
 
+Na versão **1.4.0**, o agente `sdd-solution-builder` adiciona coordenação de múltiplos
+projetos, PRDs incrementais, contratos por revisão e integração por incremento. Cada
+projeto mantém seu PRD e roadmap; o manifesto da solução conecta esses artefatos.
+
+## Soluções com múltiplos projetos
+
+Inicie `sdd-solution-builder` no diretório neutro do workspace ou peça ao `sdd-builder`
+para coordenar uma solução. O workspace **pode não estar versionado em Git**. Somente
+os projetos precisam de checkout Git; o plugin não cria `.git` ou exige `docs/` no
+diretório neutro.
+
+```text
+Inicie uma solução pagamentos neste workspace.
+Os projetos são billing em ./api-billing e checkout em ./web-checkout.
+Use billing como líder. O incremento I01 deve permitir criar uma fatura pelo checkout
+e exibir seu comprovante. Comece pelos requisitos e contratos entre os projetos.
+```
+
+Com dados insuficientes, o agente lista candidatos e entrevista uma pergunta por vez.
+Ele valida raízes e Git, confirma catálogo/líder e persiste as notas da solução. Sem
+líder confirmado, as primeiras respostas ainda ficam na sessão. Sem indicação de líder,
+propõe o menor ID de projeto em ordem lexicográfica; a escolha confirmada é estável.
+
+```text
+workspace/                                  # Sem Git obrigatório aqui
+├── api-billing/                             # Líder, Git próprio
+│   └── docs/
+│       ├── PRD.md
+│       ├── prd_map_progress.json
+│       ├── F02-invoices/{spec,plan,tests}.md
+│       ├── runs/<run-id>/prd-notes.md
+│       └── solutions/pagamentos/            # Fonte canônica da solução
+│           ├── SOLUTION.md
+│           ├── solution.json
+│           ├── snapshot.json
+│           └── runs/                        # Notas globais, estado, despacho e integração
+└── web-checkout/                            # Git próprio
+    └── docs/
+        ├── PRD.md
+        ├── prd_map_progress.json
+        ├── F04-checkout/{spec,plan,tests}.md
+        ├── runs/<run-id>/prd-notes.md
+        └── solutions/pagamentos/            # Cópia dos artefatos globais do líder
+```
+
+**Somente artefatos da solução vão em `docs/solutions/<solution-id>/`**, com cópia em
+todos os participantes, inclusive projetos de plataforma. PRDs, roadmaps, features,
+SPECs, planos, testes, checkpoints de PRD e contratos definidos nas SPECs continuam no
+`docs/` do projeto responsável. Links globais referenciam esses contratos sem copiá-los.
+O subdiretório por solução evita colisões quando um projeto participa de várias soluções.
+
+O líder mantém a fonte canônica; o mesmo orquestrador publica as réplicas com revisão
+e hashes idênticos. Snapshot incompleto, destino ignorado pelo Git, divergência ou
+participante ausente bloqueia novos despachos até reconciliação. Réplicas são de leitura
+e não viram líderes automaticamente. Replicar em disco não cria commits nem executa
+push. Locks e dados efêmeros de sessão não são replicados/versionados.
+
+O fluxo por incremento é PRD local incremental → SPEC fornecedora → validação do
+contrato → SPEC consumidora → implementação na ordem das dependências → integração.
+IDs globais usam `billing:F02`; localmente continuam `F02`. A onda da solução combina
+dependências internas e links externos e propaga atrasos aos dependentes locais.
+Consumidor só é especificado com contrato validado e só é implementado com fornecedores
+`done` e verificados. Incremento só termina com os critérios de ponta a ponta aprovados.
+Foundation features locais continuam em sequência até estabilizar a base.
+
+Cada PRD, SPEC, implementação e integração recebe um pacote em contexto novo, sem o
+histórico completo. Filhos devolvem propostas; o root valida e escreve os roadmaps.
+O limite padrão de **3 workers é global**, incluindo janelas e workers internos. Git
+distinto permite paralelismo elegível; mesmo `gitRoot` serializa etapas mutáveis e
+commits, inclusive em monorepos e durante a publicação das cópias.
+
+Se o host impedir delegação aninhada, a janela de feature planeja unidades e o root
+despacha os especialistas diretamente, com verificação final em nova janela. Se não
+houver contexto isolado, o plugin registra `blocked` e entrega um handoff para nova
+sessão externa. Execução inline no chat da solução não simula isolamento. Sem interação
+em filhos, perguntas e escolhas de modelos são resolvidas na sessão principal.
+
+```text
+Retome pagamentos a partir de ./web-checkout/docs/solutions/pagamentos/solution.json.
+Prepare o incremento I02 preservando IDs, SPECs e evidências das features done.
+```
+
+Revisões de PRD preservam histórico; novos IDs não reciclam IDs removidos. Mudança em
+feature `done` exige evolução ou reabertura explícita. Na retomada, snapshots, contratos,
+locks, tarefas e commits são reconciliados; writer ativo não é redisparado. Caminhos
+do manifesto resolvem contra a base do workspace confirmada, inclusive ao partir de
+uma réplica. Sem solução selecionada nem pedido multiprojeto, o fluxo local permanece.
+
+Contratos completos: [solution-builder](skills/solution-builder/SKILL.md),
+[formatos persistidos](skills/solution-builder/references/contracts.md) e
+[publicação/retomada](skills/solution-builder/references/publication.md).
+Os [cenários de validação](docs/validation-solution.md) cobrem o fluxo e as falhas esperadas.
+
 ## Fluxo de uso
 
 ### Etapa 1: PRD e roadmap (`sdd-prd-builder`)
@@ -139,6 +232,7 @@ Escrita concorrente é evitada por contrato, não por sorte: cada etapa tem um �
 | Agente | Papel |
 | --- | --- |
 | `sdd-builder` | Orquestrador. Diagnostica o estado do projeto e roteia para a etapa certa. |
+| `sdd-solution-builder` | Entry-point multiprojeto. Entrevista, líder, replicação, contratos, incrementos e integração. |
 | `sdd-prd-builder` | Etapa 1. PRD de 9 seções e criação do roadmap. |
 | `sdd-spec-builder` | Etapa 2. `spec.md`, `plan.md` e `tests.md`, em modo single ou batch por onda. |
 | `sdd-feature-builder` | Etapa 3. Apresenta plano e escolhas de modelos por harness, coordena unidades, valida, commita e atualiza o roadmap. |
@@ -155,6 +249,7 @@ Escrita concorrente é evitada por contrato, não por sorte: cada etapa tem um �
 
 | Skill | Conteúdo |
 | --- | --- |
+| `solution-builder` | Workspace sem Git, catálogo/líder, artefatos globais replicados, schemas, pacotes isolados, ondas, locks, propostas e retomada. |
 | `prd-builder` | PRD de 9 seções, caminhos greenfield e projeto existente, sistema de IDs de feature, ondas de execução, checklist de validação e criação do roadmap. |
 | `spec-builder` | Descoberta de padrões do código em duas camadas, mapeamento PRD para spec, estrutura do `tests.md`, regra de idioma e modo batch por onda. |
 | `feature-builder` | Plano inicial, escolha de modelos de programação/testes por harness, unidades independentes, concorrência, commits, verificação final e roadmap. |
@@ -170,6 +265,7 @@ sdd-builder/
 ├── plugin.json                     # Manifest Copilot CLI (raiz)
 ├── agents/                         # Agentes para Claude Code e Cursor (*.md)
 │   ├── sdd-builder.md
+│   ├── sdd-solution-builder.md
 │   ├── sdd-prd-builder.md
 │   ├── sdd-spec-builder.md
 │   ├── sdd-feature-builder.md
@@ -182,7 +278,13 @@ sdd-builder/
 │   ├── sdd-go-specialist.md
 │   └── sdd-swift-specialist.md
 ├── copilot-agents/                 # Agentes para Copilot CLI (*.agent.md)
+├── docs/validation-solution.md     # Cenários de validação multiprojeto
 └── skills/                         # Skills compartilhadas entre as 3 plataformas
+    ├── solution-builder/
+    │   ├── SKILL.md
+    │   └── references/
+    │       ├── contracts.md
+    │       └── publication.md
     ├── prd-builder/SKILL.md
     ├── spec-builder/
     │   ├── SKILL.md

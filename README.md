@@ -12,7 +12,7 @@ Cada plugin é publicado simultaneamente para os três hosts a partir do mesmo r
 | [`design-docs-plugin`](./design-docs) | documentation | Assistente de entrevista estruturada para gerar PRDs (Geral e Funcional) e HLDs em Markdown, com exportação opcional em JSON. | Claude Code · Copilot CLI · Cursor |
 | [`dev-guideline-plugin`](./dev-guideline) | documentation | Gerador de guidelines de desenvolvimento por linguagem, com entrevista guiada e pesquisa em fontes oficiais. | Claude Code · Copilot CLI · Cursor |
 | [`plugin-creator-plugin`](./plugin-creator) | development | Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor). | Claude Code · Copilot CLI · Cursor |
-| [`sdd-builder-plugin`](./sdd-builder) | development | PRD com roadmap, specs por feature e implementação paralela por unidades independentes, com escolha de modelos por harness. | Claude Code · Copilot CLI · Cursor |
+| [`sdd-builder-plugin`](./sdd-builder) | development | SDD local e multiprojeto: PRDs incrementais, contratos por revisão, líder e artefatos de solução replicados, com implementação isolada. | Claude Code · Copilot CLI · Cursor |
 | [`adrs-management-plugin`](./adrs-management) | documentation | Gestão completa de Architecture Decision Records (ADRs): mapeamento do codebase, identificação com scoring e histórico git, geração MADR e vínculos bidirecionais. | Claude Code · Copilot CLI · Cursor |
 | [`swe-dependency-map-plugin`](./swe-dependency-map) | development | Mapeia dependências entre LIBs e módulos, calcula CA/CE, instabilidade, abstração e Zona de Dor e gera relatórios determinísticos. | Claude Code · Copilot CLI · Cursor |
 
@@ -58,9 +58,10 @@ Assistente para scaffold de novos plugins de IA multiplataforma neste repositór
 
 Jornada completa de desenvolvimento orientado a spec, do PRD até a feature implementada, com o roadmap `docs/prd_map_progress.json` amarrando as três etapas.
 
-- **Agentes:** `sdd-builder` (roteia a etapa), `sdd-prd-builder` (PRD e roadmap), `sdd-spec-builder` (`spec.md`, `plan.md` e `tests.md` por feature), `sdd-feature-builder` (apresenta plano e escolha de modelos por harness, coordena unidades e verifica o resultado), `sdd-test-specialist` (autoria e execução de testes com modelo configurável) e sete especialistas de implementação: `sdd-dotnet-specialist`, `sdd-python-specialist`, `sdd-node-angular-specialist`, `sdd-plsql-specialist`, `sdd-java-specialist`, `sdd-go-specialist` e `sdd-swift-specialist`.
-- **Skills:** `prd-builder` (PRD e roadmap), `spec-builder` (specs e testes rastreáveis, em modo single ou batch), `feature-builder` (unidades independentes, modos paralelo/sequencial, limite de workers, modelos de programação/testes por harness e verificação final), `work-unit` (contrato dos workers com contexto mínimo) e `progress-tracker` (schema do roadmap e protocolo de escrita com lock).
-- **Palavras-chave:** `sdd`, `spec-driven-development`, `prd`, `spec`, `feature-builder`, `roadmap`, `planning`, `workflow`.
+- **Modo solução (1.4.0):** workspace pode não ter Git; um projeto líder mantém os artefatos globais e publica cópias em `docs/solutions/<solution-id>/` de todos os participantes. PRDs, roadmaps, features e SPECs permanecem no `docs/` de cada projeto.
+- **Agentes:** `sdd-builder` (roteia a etapa ou solução), `sdd-solution-builder` (líder, contratos, incrementos e integração), `sdd-prd-builder` (PRD e roadmap), `sdd-spec-builder` (`spec.md`, `plan.md` e `tests.md` por feature), `sdd-feature-builder` (plano, modelos, unidades e verificação), `sdd-test-specialist` (autoria e execução de testes) e sete especialistas de implementação: `sdd-dotnet-specialist`, `sdd-python-specialist`, `sdd-node-angular-specialist`, `sdd-plsql-specialist`, `sdd-java-specialist`, `sdd-go-specialist` e `sdd-swift-specialist`.
+- **Skills:** `solution-builder` (coordenação multiprojeto, replicação e retomada), `prd-builder` (PRD e evolução incremental), `spec-builder` (specs e testes rastreáveis), `feature-builder` (execução e verificação), `work-unit` (contrato dos workers) e `progress-tracker` (schema e escritor único do roadmap).
+- **Palavras-chave:** `sdd`, `spec-driven-development`, `prd`, `spec`, `feature-builder`, `roadmap`, `multi-project`, `solution`.
 - **Instalação e detalhes:** [`sdd-builder/README.md`](./sdd-builder/README.md).
 
 ### adrs-management-plugin

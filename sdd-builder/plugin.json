@@ -1,13 +1,13 @@
 {
   "name": "sdd-builder-plugin",
-  "description": "Desenvolvimento orientado a spec: PRD com roadmap, specs por feature e implementação paralela com escolha de modelos de programação e testes por harness",
-  "version": "1.3.0",
+  "description": "Desenvolvimento orientado a spec para projetos e soluções multiprojeto: PRDs incrementais, contratos por revisão e implementação isolada com líder e artefatos replicados",
+  "version": "1.4.0",
   "author": {
     "name": "Alexandre Danelon (Arquiteto Móvel)",
     "email": "alexandre.danelon@outlook.com"
   },
   "license": "MIT",
-  "keywords": ["sdd", "spec-driven-development", "prd", "spec", "feature-builder", "roadmap", "planning", "workflow"],
+  "keywords": ["sdd", "spec-driven-development", "prd", "spec", "feature-builder", "roadmap", "multi-project", "solution"],
   "agents": "copilot-agents/",
   "skills": ["skills/"]
 }

@@ -11,13 +11,68 @@ description: >
 
 # Feature Builder
 
+## Contrato de execução por solução
+
+Quando `mode=solution`, as regras abaixo prevalecem sobre fallback inline, descoberta
+global, soft-fail de pré-condições e escrita no roadmap das seções seguintes. Leia os
+[Contratos da solução](../solution-builder/references/contracts.md) e respeite a
+concessão de slots/Git recebida. Sem pacote, o fluxo single-project permanece igual.
+
+- Fixe `PROJECT_ROOT`, `GIT_ROOT`, PRD, roadmap e pasta da única feature a partir do
+  pacote. PRD, roadmap e os três documentos `spec.md`, `plan.md`, `tests.md` são
+  obrigatórios nesse modo. Se faltarem, devolva `blocked`; não sintetize nem prossiga
+  sem rastreamento. Descoberta de código é restrita ao projeto, com leituras externas
+  apenas dos contratos explicitamente concedidos.
+- Antes de qualquer escrita, verifique dependências da seção 8 do PRD local no código
+  e nos estados verificados, e cada provider externo em `done`, com evidência conferida,
+  contrato presente e hash/fragmento iguais à revisão do pacote. Repita em cada barreira
+  de fase. Revisão diferente retorna `blocked`; não aceite stub de produção para liberar
+  dependência. Mudança detectada interrompe novos despachos e aguarda os writers afetados.
+- Preserve a escolha de modelos já aceita. Sem interação em filhos, devolva plano e
+  seleção pendente ao root; não adote modelos por silêncio. No modo aninhado, só use os
+  `workerSlotsGranted` reservados globalmente, nunca um teto de 3 adicional por feature.
+  Considere também a própria janela no orçamento global.
+- `stage=feature-plan`: devolva plano de fases/unidades `work-unit`, recursos, modelos
+  e proposta `startFeature`, sem implementar, commitar ou escrever status. Sem delegação
+  aninhada, o root encerra essa janela e despacha os workers diretamente sob este
+  contrato. `stage=feature-review`: nova janela de leitura/validação final aplica o
+  Step 8, retorna evidências e `finishFeature`; não faz alterações de produção. Sem
+  delegação aninhada, ela verifica evidências novas de `test-execution` despachadas pelo
+  root contra os mesmos hashes/commits finais; se faltar algum check, devolve as
+  unidades de execução necessárias para o root e aguarda uma nova janela de revisão.
+  Não abre netos nem dispensa a suíte, TC/ACs ou smoke checks obrigatórios do Step 8.
+- Em `stage=feature`, o root já aplica `startFeature` após preflight e modelos resolvidos.
+  Confirme `in-progress` e a tentativa autorizada antes de liberar implementação.
+  Steps 6 e 9 produzem propostas, não escritas diretas. Só o orquestrador da solução
+  aplica `status`, `note`, `decisions` e timestamps, após verificar o retorno no disco.
+  A obrigação de acompanhar progresso continua, com escrita delegada ao root.
+- Etapas mutáveis usam a concessão exclusiva do `gitRoot` canônico. Workers subordinados
+  recebem o mesmo token e não readquirem o lock. Outra feature/projeto no mesmo Git
+  aguarda; paralelismo interno só para unidades disjuntas da mesma fase.
+- Rode build/testes/suíte com cwd em `PROJECT_ROOT`. No monorepo, use o comando que
+  valida o projeto alvo; suíte da raiz Git apenas se exigida pela configuração e com
+  recursos reservados, nunca uma varredura arbitrária de projetos irmãos.
+- Faça stage e commit com `git -C <GIT_ROOT>` e paths explícitos pertencentes à fase do
+  projeto. Confira o índice: stage alheio bloqueia o commit até isolamento, sem reset
+  ou inclusão no commit. Exclua `docs/solutions/` e alterações preexistentes. No modo
+  flat, o root assumindo este papel faz os commits; especialistas nunca commitam.
+- A retomada de fase não usa só mensagem de commit: confira feature/projeto, paths,
+  revisão de entrada e evidências. IDs `F01` iguais em projetos do mesmo monorepo não
+  autorizam pular a fase de outro projeto.
+- Aguarde/encerre workers e comandos antes de devolver a concessão e o resultado ao
+  root. Retorne `finishFeature` com desfecho do Step 8, commits, TC/ACs, revisões e
+  decisões; não espere publicação da proposta enquanto segura Git. Nenhum filho
+  escreve `docs/solutions/`. Sem mecanismo de contexto isolado, devolva handoff `blocked`;
+  execução inline no chat da solução não substitui uma janela isolada.
+
 Implemente a feature a partir de `spec.md` + `plan.md` + `tests.md`. Antes de iniciar, apresente o plano e permita escolher os modelos de programação e testes conforme o harness. Depois de resolver essas escolhas, execute autonomamente as fases, delegue aos especialistas, valide, commite, atualize o roadmap e reporte contra os critérios de aceite do PRD.
 
 A execução usa unidades delimitadas: implementação com o especialista da stack e autoria/execução de testes com `sdd-test-specialist`. Leia [Execução por unidades independentes](references/parallel-execution.md) para opções, dependências, despacho e escolha de modelo. Workers usam apenas o contrato da skill [work-unit](../work-unit/SKILL.md), sem carregar este fluxo completo.
 
 A escolha por harness segue [Plano de execução e escolha de modelos](references/model-selection.md). Todos os perfis herdam o modelo quando não há override nativo; nenhum especialista fixa Sonnet, Sol ou outro provedor. A herança do perfil não substitui a escolha do usuário no plano inicial.
 
-This is **Step 3 of the SDD journey** and the only skill allowed to move a feature to `in-progress` or `done` in the roadmap.
+Esta é a **etapa 3 da jornada SDD**. No modo single-project, esta skill escreve os estados
+`in-progress` e `done`; no modo solução, propõe essas mudanças ao escritor global.
 
 ## INPUT
 
@@ -284,7 +339,9 @@ Following the `progress-tracker` skill, write the outcome of Step 8.5 to `docs/p
 
 Append any cross-cutting decision taken during implementation to `decisions`, so later features inherit the context.
 
-This skill is the only writer of feature statuses. Technology specialists never touch this file: when steps ran in parallel, each specialist reports back and this skill performs a single write.
+No modo single-project, esta skill é a única escritora dos estados de implementação.
+No modo solução, devolve a proposta ao root. Especialistas nunca escrevem neste arquivo;
+os resultados paralelos convergem antes de qualquer atualização do escritor autorizado.
 
 ### Step 10: Final Report
 
