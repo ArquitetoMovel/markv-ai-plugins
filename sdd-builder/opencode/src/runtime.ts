@@ -21,25 +21,26 @@ export async function acquire(name: string, owner: string) {
 export async function registerDispatch(ctx: Context) {
   const agents: { name: string; worker: boolean }[] = JSON.parse(await readFile(join(assets, 'agents.json'), 'utf8'));
   await ctx.tool.transform(editor => {
-    editor.add({ name: 'sdd_models', description: 'Consultar catálogo real e modelo padrão para escolhas SDD por papel.', input: { type: 'object', properties: {}, additionalProperties: false }, execute: async () => ({ content: JSON.stringify({ models: await ctx.model.list(), default: await ctx.model.default() }) }) });
+    editor.add({ name: 'sdd_models', description: 'Consultar catálogo real e modelo padrão para overrides opcionais ou restrições SDD.', input: { type: 'object', properties: {}, additionalProperties: false }, execute: async () => ({ content: JSON.stringify({ models: await ctx.model.list(), default: await ctx.model.default() }) }) });
     editor.add({ name: 'sdd_dispatch', description: 'Executar pacote SDD em sessão isolada; no máximo 3 janelas globais e um writer por Git.', input: {
-      type: 'object', properties: { agent: { type: 'string' }, directory: { type: 'string' }, model: { type: 'string' }, gitRoot: { type: 'string' }, packet: { type: 'string' } }, required: ['agent', 'directory', 'model', 'packet'], additionalProperties: false,
+      type: 'object', properties: { agent: { type: 'string' }, directory: { type: 'string' }, model: { type: 'string', default: 'inherit', description: 'Override opcional providerID/modelID; omitido usa inherit.' }, gitRoot: { type: 'string' }, packet: { type: 'string' } }, required: ['agent', 'directory', 'packet'], additionalProperties: false,
     }, execute: async (raw, context) => {
-      const input = raw as { agent: string; directory: string; model: string; gitRoot?: string; packet: string };
+      const input = raw as { agent: string; directory: string; model?: string; gitRoot?: string; packet: string };
+      const requestedModel = input.model === undefined ? 'inherit' : input.model;
       if (!agents.some(x => x.name === input.agent)) throw new Error('Agente SDD desconhecido.');
       const parent = await ctx.session.get({ sessionID: context.sessionID });
       if (parent.metadata?.sddWorker) throw new Error('Sessões filhas SDD não podem delegar. Retorne o plano ao root.');
       if (!isAbsolute(input.directory) || (input.gitRoot && !isAbsolute(input.gitRoot))) throw new Error('directory e gitRoot devem ser absolutos.');
       const directory = await realpath(input.directory);
       let model = parent.model;
-      if (input.model !== 'inherit') {
+      if (requestedModel !== 'inherit') {
         const models = (await ctx.model.list()).data;
-        const selected = models.find(m => `${m.providerID}/${m.id}` === input.model);
-        if (!selected) throw new Error('Modelo não disponível. Solicite nova escolha ao usuário.');
+        const selected = models.find(m => `${m.providerID}/${m.id}` === requestedModel);
+        if (!selected) throw new Error('Modelo não disponível. Use somente fallback autorizado ou solicite alternativa; sem interação, retorne bloqueio.');
         model = { providerID: selected.providerID, id: selected.id };
       }
       if (!model) { const selected = (await ctx.model.default()).data; if (selected) model = { providerID: selected.providerID, id: selected.id }; }
-      if (!model) throw new Error('Modelo herdado indisponível. Solicite escolha ao usuário.');
+      if (!model) throw new Error('Modelo herdado indisponível. Solicite alternativa; sem interação, retorne bloqueio.');
       await ctx.permission.assert({ sessionID: context.sessionID, agent: context.agent, action: 'sdd_dispatch', resources: [input.agent] });
       const boundary = relative(await realpath(parent.location.directory), directory);
       if (boundary.startsWith('..') || isAbsolute(boundary)) await ctx.permission.assert({ sessionID: context.sessionID, agent: context.agent, action: 'external_directory', resources: [`${directory}/*`] });
@@ -63,7 +64,7 @@ export async function registerDispatch(ctx: Context) {
           releaseGit = await acquire(`git:${await realpath(common)}`, context.sessionID);
         }
         context.signal.throwIfAborted();
-        child = await ctx.session.create({ parentID: context.sessionID, title: `SDD ${input.agent}`, agent: input.agent, model, location: { directory }, metadata: { sddWorker: true, requestedModel: input.model }, permissions: [
+        child = await ctx.session.create({ parentID: context.sessionID, title: `SDD ${input.agent}`, agent: input.agent, model, location: { directory }, metadata: { sddWorker: true, requestedModel }, permissions: [
           { action: 'subagent', resource: '*', effect: 'deny' },
           { action: 'sdd_dispatch', resource: '*', effect: 'deny' },
           ...(!input.gitRoot ? [{ action: 'edit', resource: '*', effect: 'deny' as const }, { action: 'shell', resource: '*', effect: 'deny' as const }] : []),
@@ -76,7 +77,7 @@ export async function registerDispatch(ctx: Context) {
         safeToRelease = true;
         context.signal.throwIfAborted();
         const result = await ctx.session.get({ sessionID: child.id });
-        return { content: JSON.stringify({ sessionID: child.id, outcome: result.outcome, requestedModel: input.model, resolvedModel: model, effectiveModel: result.model, messages: await ctx.session.context({ sessionID: child.id }) }) };
+        return { content: JSON.stringify({ sessionID: child.id, outcome: result.outcome, requestedModel, resolvedModel: model, effectiveModel: result.model, messages: await ctx.session.context({ sessionID: child.id }) }) };
       } catch (error) {
         if (child) {
           try { await ctx.session.interrupt({ sessionID: child.id, resume: false }); await ctx.session.wait({ sessionID: child.id }); safeToRelease = true; }

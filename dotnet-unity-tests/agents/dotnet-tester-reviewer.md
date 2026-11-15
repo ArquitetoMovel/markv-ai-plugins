@@ -6,7 +6,7 @@ description: >
   percentual de cobertura e gerar um plano detalhado de testes unitários (test-plan.md).
   Ativa para: "revisar testes", "inspecionar solução", "analisar cobertura",
   "criar plano de testes", "modernizar MSTest", "quais testes faltam".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

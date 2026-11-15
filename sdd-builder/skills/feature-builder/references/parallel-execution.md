@@ -27,31 +27,32 @@ globais do host. Valem só para a execução atual, inclusive retries e verifica
 | --- | --- | --- |
 | `execution=parallel` ou `execution=sequential` | `parallel` | Paralelo somente entre unidades elegíveis da mesma fase; sequencial mantém um worker ativo por vez. |
 | `max-workers=N` | `3` | Inteiro positivo. Limita todos os workers ativos, incluindo testes, ao menor valor entre N e os slots disponíveis no host. |
-| `implementation-model=inherit` ou `implementation-model=<ID>` | Escolha no plano inicial | Modelo de programação para unidades de implementação e integração, inclusive correções. |
-| `test-model=inherit` ou `test-model=<ID>` | Escolha no plano inicial | Modelo dos workers de autoria e execução de testes, inclusive validações finais. |
+| `implementation-model=inherit` ou `implementation-model=<ID>` | `inherit` | Modelo de programação para unidades de implementação e integração, inclusive correções. |
+| `test-model=inherit` ou `test-model=<ID>` | `inherit` | Modelo dos workers de autoria e execução de testes, inclusive validações finais. |
 
-Aceite equivalentes como `modo paralelo`, `sem paralelismo`, `no máximo 2 agentes`,
-`Sol 6.1 para programação e Terra 6.1 para testes` e `Sonnet 5.5 para programação e Haiku 5.5
-para testes`. Resolva nomes/IDs no harness atual conforme [Seleção de modelos](model-selection.md).
+Aceite equivalentes como `modo paralelo`, `sem paralelismo`, `no máximo 2 agentes`
+e preferências por nome de modelo para um ou ambos os papéis. Resolva nomes/IDs no harness atual conforme [Seleção de modelos](model-selection.md).
 `max-workers=1` serializa sem eliminar os contextos separados. Restrições explícitas
 de não delegar/paralelizar prevalecem; em sequencial, o teto efetivo de workers é 1.
 
 Opções inválidas/contraditórias de execução mantêm o padrão da opção afetada e são
 registradas em Overrides ignored. Escolhas de **modelo** inválidas ou ambíguas voltam
-à seleção pelo usuário; nunca aplique herança ou outro modelo como escolha implícita.
+à resolução com o usuário, salvo fallback autorizado; não substitua overrides inválidos
+por herança. Um papel sem preferência usa `inherit` normalmente.
 
 ## Capacidade do host e seleção efetiva do modelo
 
 Antes de iniciar a implementação, siga [Plano de execução e escolha de modelos por
-harness](model-selection.md): identifique o harness e seu catálogo, apresente o plano com
-as sugestões e resolva as escolhas de programação e testes. Não marque `in-progress`
-nem despache workers enquanto faltar uma escolha necessária. Opções já informadas e
-aplicáveis dispensam nova pergunta, mas o plano sempre é mostrado.
+harness](model-selection.md): identifique as capacidades reais, apresente o plano e aplique
+`inherit` aos papéis sem preferência. Overrides válidos alteram somente o papel informado.
+Consulte catálogo apenas quando necessário. Prossiga sem confirmação; somente uma
+incompatibilidade sem fallback autorizado bloqueia implementação e `in-progress`.
 
 Aplique `implementation-model` em `implementation`/`integration` e `test-model` em
 `test-authoring`/`test-execution`, com a ferramenta nativa de delegação e seu mecanismo
 real de seleção. Perfis herdam o modelo; não há modelo de provedor fixo em agente algum.
-Solicitado, ID resolvido e modelo efetivo são registrados separadamente. Um modelo
+Origem (`default`, `preference` ou `explicit`), solicitado, resolvido e efetivo são
+registrados separadamente. Um modelo
 indisponível exige alternativa aceita, salvo fallback já autorizado pelo usuário.
 
 Se `sdd-builder` já estiver coordenando a sessão e o host impedir delegação aninhada,
@@ -74,7 +75,7 @@ Cada unidade tem:
   pelos comandos, incluindo caminhos gerados que não aparecem no Component Overview.
 - Trechos relevantes de spec/plano, TC/ACs, convenções locais, comandos com cwd e critério
   de término. Encaminhe apenas o contexto necessário, sem histórico completo do chat.
-- Estado `pending`, `running`, `completed`, `blocked` ou `failed`, modelo solicitado e
+- Estado `pending`, `running`, `completed`, `blocked` ou `failed`, origem, modelo solicitado e
   resolvido/efetivo, tentativas e retorno compacto.
 
 Separe implementação e testes. `implementation` vai ao especialista da tecnologia;

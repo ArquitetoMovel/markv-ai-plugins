@@ -41,8 +41,9 @@ dos workers; não execute o fluxo do orquestrador nem carregue a skill `feature-
   com seus IDs. Sem `tests.md`, expectativas derivadas da estratégia de testes da spec.
 - Convenções aplicáveis do projeto e da stack, comandos autorizados, diretório de
   execução e recursos exclusivos concedidos (build, banco, porta, simulador, fixtures).
-- Critério de término, harness, modelo solicitado pelo usuário, ID resolvido para
-  despacho, fallbacks já autorizados e orçamento de tentativas restante. Programação/integração recebem
+- Critério de término, harness, origem do modelo (`default`, `preference` ou `explicit`),
+  solicitado (override/preferência ou `inherit` padrão), ID resolvido para despacho,
+  fallbacks já autorizados e orçamento de tentativas restante. Programação/integração recebem
   `implementation-model`; autoria/execução de testes recebem `test-model`.
 
 Se faltar escopo, contrato ou dependência necessária, devolva `blocked` com a informação
@@ -92,10 +93,11 @@ histórico das outras unidades; retries recebem apenas o contrato e o erro neces
   decide a classificação final e controla o limite de retries entre workers.
 - O worker não escolhe nem troca seu próprio modelo. Repita o modelo informado pelo host
   quando disponível; caso contrário, escreva `não informado pelo host`, sem inferir pela
-  identidade do agente ou pelo texto do prompt. Se o host informar substituição em
-  relação ao ID resolvido sem fallback autorizado, devolva `blocked` antes de editar/executar
-  para o orquestrador resolver a divergência. Com fallback autorizado, registre solicitado,
-  resolvido e efetivo; não interprete herança do perfil como autorização de fallback.
+  identidade do agente ou pelo texto do prompt. Se o host informar substituição que
+  contrarie uma preferência/restrição ou ID explícito, sem fallback autorizado, devolva
+  `blocked` antes de editar/executar para o orquestrador resolver. A resolução normal de
+  `inherit`, dentro das restrições aplicáveis, não exige confirmação. Registre origem,
+  solicitado, resolvido e efetivo; herança não autoriza substituir um override incompatível.
 
 ## Retorno obrigatório
 
@@ -103,6 +105,7 @@ histórico das outras unidades; retries recebem apenas o contrato e o erro neces
 Unidade: <ID> | Feature: <ID> | Fase: <nome> | Papel: <papel>
 Status: completed | blocked | failed
 Harness: <nome>
+Origem do modelo: default | preference | explicit
 Modelo solicitado: <nome/inherit/ID> | Resolvido: <herança ou ID do harness>
 Modelo efetivo: <ID ou não informado pelo host>
 Arquivos criados/modificados: <lista exata ou nenhum>

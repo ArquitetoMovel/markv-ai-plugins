@@ -8,7 +8,7 @@ description: >
   Ativa para: "criar testes unitários", "gerar testes .NET", "orquestrar testes",
   "coordenar criação de testes", "executar workflow de testes", "cobrir solução",
   "rodar o fluxo completo de testes".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

@@ -108,7 +108,7 @@ Invoque o subagente com a ferramenta `Task`, informando sempre:
 - A instrução de reportar de volta os caminhos gerados
 - As preferências do usuário sem perda: na etapa 3, encaminhe `execution`, `max-workers`, `implementation-model`, `test-model`, escolhas já aceitas e os demais overrides
 
-No modo single-project, na etapa 3, o plano e a escolha de modelos por harness devem chegar ao usuário antes de iniciar implementação. Não aceite sugestões em nome dele nem pergunte de novo por escolhas já aceitas. Se o subagente não puder interagir com o usuário, mantenha o fluxo na sessão principal.
+No modo single-project, na etapa 3, apresente o plano com `inherit` nos papéis sem preferência e prossiga sem confirmação. Preserve overrides e preferências já aceitos; consulte catálogo somente quando necessário. Se houver incompatibilidade sem fallback autorizado e o subagente não puder interagir, resolva-a na sessão principal. Sem interação, retorne bloqueio claro apenas para essa incompatibilidade.
 
 No modo single-project, antes de delegar a etapa 3, confira se o host permite que `sdd-feature-builder` despache seus workers. Se não permitir delegação aninhada ou o usuário tiver pedido execução sem subagentes, aplique a skill `feature-builder` na sessão atual, assumindo o papel de único escritor da etapa. Despache workers diretamente somente quando a delegação estiver disponível e permitida; sem subagentes, execute os papéis inline. Não crie dois orquestradores concorrentes.
 

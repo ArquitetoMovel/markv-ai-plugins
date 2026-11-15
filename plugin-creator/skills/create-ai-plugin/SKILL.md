@@ -151,7 +151,7 @@ Mantenha `name`, `version`, `description` e `keywords` **idênticos** nos três 
 name: <agent-name>
 description: >
   <descrição ativável em pt-BR, incluindo gatilhos de uso>
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob
@@ -166,6 +166,11 @@ skills:
 
 <corpo do agente em pt-BR>
 ```
+
+Use `model: inherit` como padrão e preserve as preferências do host, sem exigir escolha
+de modelo para iniciar o fluxo. Overrides são opcionais e devem usar mecanismos nativos;
+não fixe provedor nem presuma que testes exigem modelo menor. No Copilot, mantenha a
+herança implícita, sem adicionar `model` ao frontmatter deste padrão.
 
 Ajuste a lista `tools` ao que o agente realmente precisa. Inclua só as skills que ele usa.
 

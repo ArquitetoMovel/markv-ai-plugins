@@ -47,7 +47,8 @@ somente para validar e gravar as mutações propostas de cada roadmap local.
 6. Detecte as capacidades reais do harness. Sem delegação aninhada, receba unidades de
    `feature-plan` e despache workers diretamente, usando `feature-review` isolado para
    a verificação final. Sem contexto isolado, persista handoff `blocked`; não implemente
-   inline no chat da solução. Se necessário, resolva modelos/perguntas com o usuário
+   inline no chat da solução. Use herança de modelos nos papéis sem preferência e propague overrides válidos
+   nos pacotes. Resolva somente incompatibilidades de modelos e perguntas necessárias
    na sessão principal, respeitando escolhas já aceitas.
 7. Compartilhe `max-workers=3` entre todas as janelas e workers. Reserve slots/Git antes
    do despacho; serialize mutações no mesmo `gitRoot`, inclusive réplicas. Libere Git

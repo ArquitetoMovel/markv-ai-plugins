@@ -276,7 +276,7 @@ o root gera uma tentativa nova com o caminho relativo recalculado.
     "workerSlotsGranted": 1,
     "implementationModel": "inherit",
     "testModel": "inherit",
-    "modelsAccepted": true,
+    "modelSources": { "implementation": "default", "tests": "default" },
     "nestedDelegation": false
   },
   "gitLease": "checkout-f04-spec-a1",
@@ -292,9 +292,19 @@ o root gera uma tentativa nova com o caminho relativo recalculado.
 roadmap/decisões relevante, da SPEC/plano/testes quando houver e dos contratos lidos.
 Um objeto vazio só é válido antes de preparar a tarefa; não despache assim. Compare
 somente campos relevantes do roadmap para não invalidar por progresso de outra feature.
-`autoAccept`, modelos e `modelsAccepted` refletem autorização existente; valores do
-exemplo não concedem autorização. Guarde solicitado/resolvido e fallbacks por papel
-em `options` quando houver seleção além de `inherit`; o retorno registra o efetivo.
+`autoAccept` reflete autorização existente para a SPEC; o exemplo não concede aceite.
+Modelos omitidos usam `inherit` por papel, sem confirmação. `modelSources` registra a
+origem de cada valor: `default` (padrão), `preference` (preferência já aceita no escopo)
+ou `explicit` (override da invocação atual). Propague preferências e fallbacks válidos
+entre pacotes, ondas e retomadas, sem convertê-los em escolhas novas do usuário.
+Guarde solicitado/resolvido e fallbacks por papel em `options`; o retorno registra
+o efetivo. Somente incompatibilidades sem fallback autorizado bloqueiam o despacho.
+O campo legado `modelsAccepted` não é requisito para herança: ausente/false não bloqueia
+o padrão, e true não autoriza substituição nem elimina a validação de overrides.
+Em pacote legado sem `modelSources`, derive a origem da invocação ou preferência
+registrada; `default` só vale para papel sem preferência. Um modelo não herdado sem
+evidência de escolha/política aceita retorna incompatibilidade ao root. Os campos
+registram decisões e não concedem autorização por si mesmos.
 `gitLease` é um token lógico verificado no lock real, nunca prova suficiente sozinho.
 `lang` no pacote de projeto vem do roadmap/PRD local, que pode ter idioma diferente
 do `lang` global da solução. Na criação de PRD, use o idioma já confirmado para aquele

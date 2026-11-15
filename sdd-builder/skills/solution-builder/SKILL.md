@@ -163,9 +163,12 @@ Repasse preferências e decisões relevantes dentro do pacote.
 - Sem contexto isolado ou com proibição de subagentes: persista pacote e handoff,
   registre `blocked` e instrua nova sessão externa. Nunca execute a tarefa de projeto
   inline no contexto da solução. O fallback inline do modo single-project não se aplica.
-- Sem interação em filhos: resolva na sessão principal o plano e os dois seletores de
-  `references/model-selection.md` da skill feature-builder; grave solicitado/resolvido
-  e fallbacks aceitos. Não escolha pelo usuário nem peça de novo por escolhas válidas.
+- Aplique `references/model-selection.md` da skill feature-builder: use `inherit` nos
+  papéis sem preferência e preserve overrides/preferências válidos entre projetos,
+  ondas e retomadas no escopo aceito. Grave origem, solicitado/resolvido e fallbacks
+  nos pacotes; a ausência de override não exige entrevista. Sem interação em filhos,
+  resolva somente incompatibilidades na sessão principal. Sem interação no root,
+  retorne bloqueio claro apenas se a incompatibilidade não tiver fallback autorizado.
 
 Modo por onda autoriza `autoAccept` da SPEC apenas quando essa política já foi aceita
 no escopo do incremento; cada janela ainda trata uma única feature e registra premissas.

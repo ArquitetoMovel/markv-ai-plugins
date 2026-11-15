@@ -8,7 +8,7 @@ description: >
   generate-guideline. Ativa para: "criar guideline", "gerar guideline",
   "guideline de desenvolvimento", "padrões de código", "coding standards",
   "development guidelines", "guia de estilo".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

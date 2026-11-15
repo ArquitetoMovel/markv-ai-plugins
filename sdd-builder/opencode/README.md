@@ -42,11 +42,17 @@ Os comandos selecionam o coordenador na sessão atual e preservam argumentos/ane
 A linguagem do plugin é pt-BR; os artefatos do produto seguem o idioma definido pelo
 contrato canônico do PRD. Leia o [fluxo completo](../README.md) para os requisitos de cada etapa.
 
-`sdd_models` consulta o catálogo da conta. O usuário escolhe modelos independentes
-para programação e testes, como `providerID/modelID` ou `inherit`; não há provedor
-fixo nem substituição silenciosa. IDs com variante ainda não são aceitos pelo adaptador.
+Programação e testes herdam o modelo do host por padrão, sem pergunta ou exigência de
+modelos distintos. Overrides opcionais alteram somente o papel informado; o outro
+permanece herdado. Consulte `sdd_models` para resolver um override como `providerID/modelID`,
+restrições ou pedido de opções. Não há provedor fixo nem substituição silenciosa de
+preferências. IDs com variante ainda não são aceitos pelo adaptador.
 
-`sdd_dispatch` recebe agente, diretório absoluto, modelo e pacote mínimo. Para editar,
+`sdd_dispatch` recebe agente, diretório absoluto e pacote mínimo. `model` é opcional e
+usa `inherit` quando omitido: modelo do pai ou padrão do host quando o pai não o expõe.
+O retorno informa modelo solicitado, resolvido e efetivo; a origem por papel permanece
+no pacote. Override incompatível sem fallback autorizado retorna bloqueio, inclusive
+sem interação, sem aguardar indefinidamente. Para editar,
 exige `gitRoot` absoluto validado por Git. Sem ele, a sessão nega edição e shell.
 Cada filho tem contexto novo e não delega: o root executa o protocolo de planejamento,
 despacho direto e revisão isolada previsto para hosts sem delegação aninhada.

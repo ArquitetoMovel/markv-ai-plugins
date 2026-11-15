@@ -2,7 +2,7 @@
 name: hld-builder
 description: >
   Assistente de entrevista para geração de HLDs (High-Level Design). Conduz uma entrevista estruturada para produzir um documento técnico descrevendo a arquitetura, componentes e integração da solução em Markdown, com exportação opcional em JSON. Ativa para "criar HLD", "gerar HLD", "high-level design", "arquitetura", "design técnico", "descrever arquitetura".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

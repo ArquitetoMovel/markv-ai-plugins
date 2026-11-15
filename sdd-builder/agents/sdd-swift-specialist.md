@@ -30,7 +30,7 @@ com ID, fase, objetivo, arquivos de leitura/escrita, dependências concluídas, 
 trechos relevantes da spec/plano e TC/ACs. Recebe também as convenções locais, comandos
 autorizados e critério de término. Não carregue a skill `feature-builder` nem o histórico
 completo da feature; abra só os arquivos necessários à unidade. O orquestrador aplica
-`implementation-model`, escolhido no plano inicial conforme o harness, também nas
+`implementation-model`, herdado por padrão ou definido por override/preferência válido, também nas
 unidades de integração e correções. Você não fixa nem troca seu próprio modelo.
 
 Implemente apenas os arquivos concedidos. Autoria e execução de testes pertencem ao

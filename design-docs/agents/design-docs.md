@@ -6,7 +6,7 @@ description: >
   uma feature específica) e conduz a entrevista invocando a skill correspondente.
   Ativa para: "criar PRD", "gerar PRD", "PRD geral", "PRD funcional",
   "documento de requisitos", "requisitos de produto", "requisitos de feature".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob
