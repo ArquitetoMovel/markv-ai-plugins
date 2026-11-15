@@ -120,3 +120,33 @@ Claude Code, Copilot CLI ou Cursor.
 Referências: [plugins](https://opencode.ai/docs/build/plugins/),
 [API servidor](https://opencode.ai/docs/build/plugins/server/),
 [agentes](https://opencode.ai/docs/agents/), [permissões](https://opencode.ai/docs/permissions/).
+
+## Pacote gerado pelo GitHub Actions
+
+O workflow **Pacote SDD Builder para OpenCode** executa em pushes e pull requests
+que alterem o SDD Builder, seus marketplaces ou o próprio workflow. Também pode
+ser iniciado manualmente em **Actions → Pacote SDD Builder para OpenCode → Run workflow**
+(depois que o workflow estiver disponível na branch padrão).
+
+O job usa Node.js 22 e OpenCode 2.2.6, confere versões dos manifests, instala as
+dependências com `npm ci` e roda tipos, testes e instalação real do tarball fora
+do checkout, sem chamar LLMs. Após aprovação, gera o pacote npm e verifica que ele
+contém somente o adaptador OpenCode e os recursos SDD necessários.
+
+Baixe o artefato `opencode-sdd-builder-<número-do-build>` na execução do workflow.
+Ele contém `opencode-sdd-builder-1.5.0.tgz` e `SHA256SUMS`, com retenção de 30 dias.
+O checksum referencia o nome do tarball no mesmo diretório. Em Linux, confira com
+`sha256sum --check SHA256SUMS`; em macOS, com `shasum -a 256 -c SHA256SUMS`.
+
+Para instalar sem clonar o marketplace, extraia o artefato e execute:
+
+```bash
+# Execute no diretório onde extraiu o artefato do GitHub Actions.
+npm install --prefix "$HOME/.local/share/sdd-builder-opencode" ./opencode-sdd-builder-1.5.0.tgz
+node "$HOME/.local/share/sdd-builder-opencode/node_modules/opencode-sdd-builder/dist/cli.js" install --project /caminho/do/projeto
+```
+
+Mantenha esse diretório de instalação disponível: o projeto referencia o pacote por
+caminho absoluto. Para atualizar, instale o novo tarball no mesmo prefixo e execute
+novamente o instalador. Para remover os perfis, use `uninstall --project` antes de
+excluir o pacote. O CI gera artefatos; publicação npm e push da branch são separados.

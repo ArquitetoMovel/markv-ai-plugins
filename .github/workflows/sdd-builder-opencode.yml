@@ -1,0 +1,119 @@
+name: Pacote SDD Builder para OpenCode
+
+on:
+  push:
+    paths:
+      - 'sdd-builder/**'
+      - '**/marketplace.json'
+      - 'marketplace.json'
+      - 'AGENTS.md'
+      - '.github/workflows/sdd-builder-opencode.yml'
+  pull_request:
+    paths:
+      - 'sdd-builder/**'
+      - '**/marketplace.json'
+      - 'marketplace.json'
+      - 'AGENTS.md'
+      - '.github/workflows/sdd-builder-opencode.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sdd-builder-opencode-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Validar e empacotar instalador
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: sdd-builder/opencode
+        shell: bash
+    steps:
+      - name: Obter fontes compartilhadas e adaptador
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: sdd-builder/opencode/package-lock.json
+
+      - name: Instalar dependências reproduzíveis
+        run: npm ci
+
+      - name: Conferir versões dos manifests e marketplaces
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const read = path => JSON.parse(readFileSync(path, 'utf8'));
+          const pkg = read('package.json');
+          const lock = read('package-lock.json');
+          assert.equal(lock.version, pkg.version);
+          assert.equal(lock.packages[''].version, pkg.version);
+          const manifests = ['../plugin.json', '../.claude-plugin/plugin.json', '../.cursor-plugin/plugin.json'].map(read);
+          for (const manifest of manifests) assert.equal(manifest.version, pkg.version);
+          const markets = ['../../marketplace.json', '../../.claude-plugin/marketplace.json', '../../.cursor-plugin/marketplace.json', '../../.github/plugin/marketplace.json'].map(read);
+          const entries = markets.map(m => m.plugins.find(p => p.name === 'sdd-builder-plugin'));
+          for (const entry of entries) {
+            assert.deepEqual(entry, entries[0]);
+            assert.equal(entry.version, pkg.version);
+          }
+          assert.equal(markets[3].name, 'arquiteto-movel-plugins');
+          console.log(`Versões alinhadas: ${pkg.version}`);
+          NODE
+
+      - name: Instalar OpenCode na versão homologada
+        run: |
+          npm install --global @opencode/cli@2.2.6
+          opencode --version
+
+      - name: Validar tipos, testes e instalação externa do tarball
+        # Inclui build dos agentes/skills e teste real sem chamadas a LLMs.
+        run: npm run test:integration
+
+      - name: Gerar pacote e checksum
+        # O passo anterior já validou tipos, testes e build deste checkout.
+        run: |
+          mkdir -p artifacts
+          npm pack --ignore-scripts --pack-destination artifacts
+          cd artifacts
+          sha256sum *.tgz > SHA256SUMS
+
+      - name: Conferir conteúdo do pacote gerado
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, tarfile
+          artifacts = list(pathlib.Path('artifacts').glob('*.tgz'))
+          assert len(artifacts) == 1, 'Esperado exatamente um pacote'
+          version = json.loads(pathlib.Path('package.json').read_text())['version']
+          with tarfile.open(artifacts[0]) as archive:
+              files = [m.name for m in archive.getmembers() if m.isfile()]
+              assert all(p.startswith('package/dist/') or p in ('package/package.json', 'package/README.md', 'package/LICENSE') for p in files), files
+              assert len([p for p in files if p.startswith('package/dist/assets/agents/') and p.endswith('.md')]) == 13
+              assert len([p for p in files if p.endswith('/SKILL.md')]) == 6
+              manifest = json.load(archive.extractfile('package/package.json'))
+              assert manifest['version'] == version
+              assert 'package/dist/cli.js' in files
+              assert 'package/dist/index.js' in files
+          print(f'Pacote validado: {artifacts[0].name}, {len(files)} arquivos')
+          PY
+
+      - name: Disponibilizar instalador no build
+        uses: actions/upload-artifact@v7
+        with:
+          name: opencode-sdd-builder-${{ github.run_number }}
+          path: |
+            sdd-builder/opencode/artifacts/*.tgz
+            sdd-builder/opencode/artifacts/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
