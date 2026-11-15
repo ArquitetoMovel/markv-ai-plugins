@@ -2,7 +2,7 @@
 name: adr-generator
 description: >
   Gera documentos formais de ADR no formato MADR a partir de arquivos de ADRs potenciais identificados. Processa uma decisao por vez com suporte a execucao paralela, numeracao sequencial e marcacao de lacunas.
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

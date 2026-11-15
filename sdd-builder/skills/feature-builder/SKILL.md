@@ -3,8 +3,8 @@ name: feature-builder
 description: >
   Implementa uma feature a partir de spec, plano e casos de teste, dividindo cada fase
   em unidades independentes de implementação e testes, com contexto mínimo e plano
-  inicial para escolher modelos por papel conforme o harness. Detecta a stack,
-  coordena especialistas em paralelo ou em
+  inicial com herança de modelos e overrides opcionais por papel conforme o harness.
+  Detecta a stack, coordena especialistas em paralelo ou em
   sequência, commita por fase e atualiza o roadmap após a verificação dos critérios de
   aceite. Use para implementar feature, executar plan.md ou retomar implementação.
 ---
@@ -28,8 +28,9 @@ concessão de slots/Git recebida. Sem pacote, o fluxo single-project permanece i
   contrato presente e hash/fragmento iguais à revisão do pacote. Repita em cada barreira
   de fase. Revisão diferente retorna `blocked`; não aceite stub de produção para liberar
   dependência. Mudança detectada interrompe novos despachos e aguarda os writers afetados.
-- Preserve a escolha de modelos já aceita. Sem interação em filhos, devolva plano e
-  seleção pendente ao root; não adote modelos por silêncio. No modo aninhado, só use os
+- Preserve preferências de modelos já aceitas e use `inherit` nos papéis sem preferência.
+  Sem interação em filhos, devolva somente incompatibilidades de modelos ao root; a
+  ausência de override não bloqueia a execução. No modo aninhado, só use os
   `workerSlotsGranted` reservados globalmente, nunca um teto de 3 adicional por feature.
   Considere também a própria janela no orçamento global.
 - `stage=feature-plan`: devolva plano de fases/unidades `work-unit`, recursos, modelos
@@ -65,11 +66,11 @@ concessão de slots/Git recebida. Sem pacote, o fluxo single-project permanece i
   escreve `docs/solutions/`. Sem mecanismo de contexto isolado, devolva handoff `blocked`;
   execução inline no chat da solução não substitui uma janela isolada.
 
-Implemente a feature a partir de `spec.md` + `plan.md` + `tests.md`. Antes de iniciar, apresente o plano e permita escolher os modelos de programação e testes conforme o harness. Depois de resolver essas escolhas, execute autonomamente as fases, delegue aos especialistas, valide, commite, atualize o roadmap e reporte contra os critérios de aceite do PRD.
+Implemente a feature a partir de `spec.md` + `plan.md` + `tests.md`. Antes de iniciar, apresente o plano com herança de modelos para programação e testes e aplique overrides opcionais conforme o harness. Sem incompatibilidades, execute autonomamente as fases, delegue aos especialistas, valide, commite, atualize o roadmap e reporte contra os critérios de aceite do PRD.
 
 A execução usa unidades delimitadas: implementação com o especialista da stack e autoria/execução de testes com `sdd-test-specialist`. Leia [Execução por unidades independentes](references/parallel-execution.md) para opções, dependências, despacho e escolha de modelo. Workers usam apenas o contrato da skill [work-unit](../work-unit/SKILL.md), sem carregar este fluxo completo.
 
-A escolha por harness segue [Plano de execução e escolha de modelos](references/model-selection.md). Todos os perfis herdam o modelo quando não há override nativo; nenhum especialista fixa Sonnet, Sol ou outro provedor. A herança do perfil não substitui a escolha do usuário no plano inicial.
+A escolha por harness segue [Plano de execução e escolha de modelos](references/model-selection.md). Todos os perfis herdam o modelo quando não há override nativo; nenhum especialista fixa Sonnet, Sol ou outro provedor. A herança é o padrão documentado para cada papel sem preferência, sem confirmação obrigatória. Um override altera somente o papel informado; o mesmo modelo pode atender a ambos.
 
 Esta é a **etapa 3 da jornada SDD**. No modo single-project, esta skill escreve os estados
 `in-progress` e `done`; no modo solução, propõe essas mudanças ao escritor global.
@@ -96,8 +97,8 @@ The skill only needs to locate three files and one reference source:
 - **Commits**: one per phase of `plan.md`, on the current branch (no branch creation, no branch switching).
 - **Roadmap update**: the feature's `status` in `docs/prd_map_progress.json` moves to `in-progress` when work starts and to `done` only when Step 8 says the run succeeded.
 - **Chat report** at the end: the feature's acceptance-criteria checklist marked ✓ / ✗ / — against actual test results, plus sections for Deviations, Soft-fails, Pre-existing failures, Overrides applied, Overrides ignored, and Phase status.
-- **Plano inicial**: fases/unidades, harness, concorrência, especialistas, sugestões e escolhas de modelos para programação e testes. Se faltar uma escolha, aguarde antes de iniciar alterações.
-- **Resumo de execução**: modos solicitado/efetivo, unidades por fase, limite de workers, modelos solicitado/resolvido/efetivo para ambos os papéis e fallbacks autorizados. O quadro de unidades fica em memória ou nas tarefas do host.
+- **Plano inicial**: fases/unidades, harness, concorrência, especialistas e modelos de programação/testes com origem `default`, `preference` ou `explicit`. Mostre o plano e prossiga com os padrões válidos; aguarde somente para resolver incompatibilidades sem fallback autorizado.
+- **Resumo de execução**: modos solicitado/efetivo, unidades por fase, limite de workers, origem e modelos solicitado/resolvido/efetivo para ambos os papéis e fallbacks autorizados. O quadro de unidades fica em memória ou nas tarefas do host.
 
 Não crie artefatos extras de planejamento no projeto alvo: o quadro de unidades e o relatório ficam nas tarefas do host/chat. Além do código, testes, roadmap e commits, comandos podem gerar seus artefatos usuais de build/teste nos diretórios autorizados; não os inclua no commit por padrão.
 
@@ -141,7 +142,7 @@ Interpret extra instructions as natural-language overrides on the defaults:
 | Default | Example overrides |
 |---|---|
 | Hard-fail retry limit = 3 | "no retry limit", "max 5 tries" |
-| Autonomia após resolver a escolha de modelos | "pause between phases"; a autonomia não autoriza escolher modelos pendentes pelo usuário |
+| Autonomia com herança de modelos por padrão | "pause between phases"; overrides incompatíveis exigem resolução |
 | 1 commit per phase | "single commit at the end", "no commits, just implement" |
 | Run lint + typecheck + tests | "skip tests", "skip lint", "skip typecheck" |
 | Implement all phases | "only phases 1 and 2", "skip phase 3" — phase positions are ordinal; labels like `A/B/C` map to `1/2/3` |
@@ -149,14 +150,14 @@ Interpret extra instructions as natural-language overrides on the defaults:
 | Dispatch the detected specialist | "don't use subagents", "implement it yourself", "use the python specialist" |
 | `execution=parallel` | `execution=sequential`, "modo sequencial", "no parallel" |
 | `max-workers=3` | `max-workers=2`, "no máximo 2 agentes" |
-| Modelo de programação escolhido no plano inicial | `implementation-model=gpt-6.1-sol` (quando disponível), `implementation-model=inherit` |
-| Modelo de testes escolhido no plano inicial | `test-model=gpt-6.1-terra` (quando disponível), `test-model=inherit` |
+| `implementation-model=inherit` | `implementation-model=<ID-disponível>` |
+| `test-model=inherit` | `test-model=<ID-disponível>` |
 
 For each recognized override, record before/after for the final report's "Overrides applied" section.
 
 **Immutable core (cannot be overridden):** the final AC checklist and its traceability to the PRD, and the roadmap update. Instructions that would disable either are logged under "Overrides ignored" with the reason.
 
-Para instruções ambíguas/contraditórias, mantenha o padrão e registre em Overrides ignored, **exceto escolhas de modelo**: solicite resolução antes de despachar o papel afetado. Nunca substitua uma escolha ambígua por herança automática.
+Para instruções ambíguas/contraditórias, mantenha o padrão e registre em Overrides ignored, **exceto escolhas de modelo**: siga `model-selection.md`, usando somente fallback autorizado ou resolução antes de despachar o papel afetado. Sem interação, retorne bloqueio claro. Nunca substitua uma escolha ambígua por herança automática.
 
 Para as opções de execução, aplique a precedência e os fallbacks da [referência](references/parallel-execution.md): proibição explícita de subagentes/paralelismo prevalece; seleção de modelo só vale quando aplicada pelo host. `skip tests` limita a execução por fase, mas não dispensa a verificação final obrigatória do Step 8.
 
@@ -186,28 +187,28 @@ Detect the technology of the files this feature will touch, then pick the specia
 Rules:
 
 - **Repositórios poliglotas:** selecione por unidade dentro da fase, não pela maioria dos arquivos do repositório. Registre fase/unidade → especialista; testes recebem as convenções da stack correspondente.
-- **Stack ambígua ou sem especialista:** planeje a unidade inline seguindo a spec e apresente essa limitação na escolha de modelos, antes de executar. A unidade inline também conta como writer para conflitos e barreiras.
+- **Stack ambígua ou sem especialista:** planeje a unidade inline seguindo a spec e apresente essa limitação no plano inicial. A unidade inline também conta como writer para conflitos e barreiras.
 - **Marcadores de mesmo peso:** escolha a stack que realmente possui os arquivos da unidade e documente a decisão; se a unidade mistura stacks independentes, divida-a.
 - **User override:** an explicit "use the X specialist" instruction wins over detection.
-- **Host sem delegação:** inclua a execução inline no plano e resolva a escolha de herança conforme `model-selection.md`; não substitua um modelo selecionado apenas emitindo aviso.
+- **Host sem delegação:** inclua a execução inline no plano e aplique a herança padrão conforme `model-selection.md`; não substitua um modelo selecionado apenas emitindo aviso.
 
-Selecione `sdd-test-specialist` para autoria e execução de testes em ambas as modalidades. Unidades `implementation` e `integration` usam `implementation-model`; `test-authoring` e `test-execution` usam `test-model`. Resolva ambas as escolhas conforme a capacidade real do harness no passo abaixo. Não altere o modelo do orquestrador.
+Selecione `sdd-test-specialist` para autoria e execução de testes em ambas as modalidades. Unidades `implementation` e `integration` usam `implementation-model`; `test-authoring` e `test-execution` usam `test-model`. Aplique herança aos papéis sem preferência e valide overrides conforme a capacidade real do harness no passo abaixo. Não altere o modelo do orquestrador.
 
-**5.1: Apresentar plano e escolher modelos antes de iniciar**
+**5.1: Apresentar plano e aplicar a política de modelos**
 
-Siga integralmente [Plano de execução e escolha de modelos por harness](references/model-selection.md). Identifique o harness pela sessão/ferramentas, consulte seu catálogo e apresente fases, unidades previstas, dependências, paralelismo, validação e dois seletores de modelo. Sugira GPT-6.1 Sol + GPT-6.1 Terra no Codex e Claude Sonnet 5.5 + Claude Haiku 5.5 no Claude Code/Cursor, somente conforme disponibilidade. No Antigravity e demais harnesses, ofereça os modelos do catálogo atual.
+Siga integralmente [Plano de execução e escolha de modelos por harness](references/model-selection.md). Identifique as capacidades reais do harness e apresente fases, unidades, dependências, paralelismo, validação e modelos por papel. Use `implementation-model=inherit` e `test-model=inherit` quando não houver preferências; consulte catálogo somente para resolver overrides, restrições ou pedido de opções. Não recomende dupla fixa nem modelo mais leve para testes por padrão.
 
-Respeite valores explícitos de `implementation-model`/`test-model` e escolhas já aceitas nesta execução. Se ambos estiverem resolvidos e aplicáveis, mostre o plano e prossiga sem reconfirmação. Se faltar algum, peça somente a escolha pendente e aguarde antes de marcar `in-progress`, despachar workers ou alterar arquivos. Silêncio ou timeout não selecionam as recomendações. Sem interação, entregue o plano com a seleção pendente; a execução ainda não começou.
+Respeite overrides explícitos e preferências já aceitas no escopo. Um override altera somente o papel informado; o outro continua herdado. Registre a origem por papel e, com valores aplicáveis, mostre o plano e prossiga sem confirmação, inclusive sem interação. Somente uma escolha/preferência incompatível, instruções contraditórias ou restrição não atendida sem fallback autorizado bloqueiam o início; sem interação, retorne o motivo e as alternativas, sem espera indefinida. Não substitua overrides por silêncio ou timeout.
 
-Se não houver seleção por worker, apresente a limitação e ofereça herança/execução inline ou ajuste manual. Não aplique fallback diferente da escolha aceita sem autorização prévia. Se a delegação aninhada estiver indisponível, mantenha a coordenação na sessão principal quando possível; respeite a decisão de modelos também no fallback inline.
+Se não houver seleção por worker, informe a herança efetiva e prossiga sem perguntar quando não houver preferência incompatível. Use execução inline quando permitida; ajuste manual só se necessário para atender uma escolha explícita. Não aplique fallback diferente da escolha aceita sem autorização prévia. Se a delegação aninhada estiver indisponível, mantenha a coordenação na sessão principal quando possível; respeite a decisão de modelos também no fallback inline.
 
-Cada worker recebe o contrato `work-unit`: objetivo, papel, caminhos absolutos, arquivos de leitura/escrita, dependências, recursos, trechos relevantes da spec/plano, TC/ACs, convenções locais e da stack, comandos, critério de término, harness e modelo solicitado/resolvido para aquele papel. Use contexto novo por unidade e o mecanismo nativo de modelo, sem encaminhar PRD completo, roadmap, outras fases ou histórico inteiro do chat. Retornos contêm resumo, caminhos e evidências; só carregue logs extensos quando precisar diagnosticar uma falha.
+Cada worker recebe o contrato `work-unit`: objetivo, papel, caminhos absolutos, arquivos de leitura/escrita, dependências, recursos, trechos relevantes da spec/plano, TC/ACs, convenções locais e da stack, comandos, critério de término, harness, origem e modelo solicitado/resolvido para aquele papel. Use contexto novo por unidade e o mecanismo nativo de modelo, sem encaminhar PRD completo, roadmap, outras fases ou histórico inteiro do chat. Retornos contêm resumo, caminhos e evidências; só carregue logs extensos quando precisar diagnosticar uma falha.
 
 Workers não fazem stage/commit, não escrevem no roadmap e não delegam novamente. O orquestrador integra, valida, commita e acompanha o progresso.
 
 ### Step 6: Mark the feature in progress
 
-Somente após resolver as escolhas do plano inicial, siga `progress-tracker` para marcar `in-progress` antes da primeira fase, com nota curta sobre a execução. Enquanto a seleção estiver pendente, preserve o roadmap. Se ele não existir, registre o soft-fail e prossiga sem rastreamento, conforme o comportamento existente.
+Após aplicar padrões/overrides e resolver eventuais incompatibilidades do plano inicial, siga `progress-tracker` para marcar `in-progress` antes da primeira fase, com nota curta sobre a execução. Enquanto houver incompatibilidade de modelo sem fallback autorizado, preserve o roadmap. Se ele não existir, registre o soft-fail e prossiga sem rastreamento, conforme o comportamento existente.
 
 Do this once, not per phase. Keep the locked window short.
 
@@ -356,8 +357,8 @@ Branch: <current-branch>
 Specialist: <agent used, or "none — implemented inline">
 Execução: <solicitada> → <efetiva> | Workers: <limite solicitado/efetivo>
 Harness: <nome/variante e capacidade de seleção>
-Modelo de programação: <solicitado> → <ID resolvido> → <efetivo ou não informado pelo host>
-Modelo de testes: <solicitado> → <ID resolvido> → <efetivo ou não informado pelo host>
+Modelo de programação: <origem: default/preference/explicit> | <solicitado> → <ID resolvido> → <efetivo ou não informado pelo host>
+Modelo de testes: <origem: default/preference/explicit> | <solicitado> → <ID resolvido> → <efetivo ou não informado pelo host>
 Unidades: <ID, fase, papel, dependências, agente, estado, TC/ACs e evidências>
 Fallbacks: <limitação de host/modelo/concorrência ou nenhum>
 Roadmap: <feature> → <new status>
@@ -414,7 +415,7 @@ If aborted, the report still lists whatever committed phases achieved and clearl
 - Locate AC and dependency content in the PRD semantically, never by fixed section number.
 - Detect the stack and dispatch the matching technology specialist before writing code.
 - Separar implementação, autoria e execução de testes em unidades com contexto mínimo; paralelizar somente quando não há conflito de escrita/leitura ou recurso e as dependências estão concluídas.
-- Apresentar o plano inicial e resolver modelos de programação/testes conforme o harness antes de iniciar implementação ou atualizar o roadmap; não perguntar de novo por escolhas válidas já informadas.
+- Apresentar o plano inicial e aplicar herança nos papéis sem preferência; validar overrides conforme o harness e resolver incompatibilidades antes de iniciar. Não perguntar por modelos ausentes nem repetir escolhas válidas.
 - Aplicar `implementation-model` e `test-model` pela seleção real do host e registrar solicitado/resolvido/efetivo; prompt com nome de modelo não comprova troca.
 - Commit 1 per phase (default), staging only the files that phase touched.
 - Match the project's recent commit-message style.
@@ -459,10 +460,10 @@ Free-form instructions at the end of the invocation override defaults. Examples:
 - **Execução**: `execution=parallel`, `execution=sequential`, `run everything sequentially`.
 - **Concorrência**: `max-workers=2`, `no máximo 2 agentes` (inteiro positivo; padrão 3).
 - **Modelo de programação**: `implementation-model=inherit` ou ID confirmado no harness. Aplica à implementação e integração, inclusive correções.
-- **Modelo de testes**: `test-model=inherit` ou ID confirmado no harness. Aplica à autoria e execução, inclusive verificação final. Papéis sem escolha explícita são selecionados no plano inicial.
+- **Modelo de testes**: `test-model=inherit` ou ID confirmado no harness. Aplica à autoria e execução, inclusive verificação final. Papéis sem preferência usam `inherit` sem pergunta adicional.
 - **External services**: `stub OpenAI`, `assume empty response for missing APIs` — stubs apply ONLY in test code; production modules keep the real call.
 
-Overrides não reconhecidos/contraditórios mantêm o padrão e são registrados em `Overrides ignored`, exceto escolhas de modelo, que exigem resolução com o usuário. Uma recomendação não é seleção automática.
+Overrides não reconhecidos/contraditórios mantêm o padrão e são registrados em `Overrides ignored`, exceto escolhas de modelo, que seguem a resolução/fallback de `model-selection.md`. A ausência de preferência aplica `inherit`; não autoriza substituir uma escolha explícita nem rotear automaticamente entre modelos.
 
 **Immutable core**: the AC checklist with its traceability to the PRD, and the roadmap update, cannot be overridden.
 
@@ -488,11 +489,13 @@ Overrides não reconhecidos/contraditórios mantêm o padrão e são registrados
 
 **Feature poliglota**: escolha o especialista por unidade; o relatório lista a relação fase/unidade/stack e os agentes usados.
 
-**Host sem despacho de subagentes**: apresente a alternativa inline no plano inicial e resolva a escolha de herança antes de iniciar. Preserve a seleção de modelos já aceita e registre a limitação no relatório.
+**Host sem despacho de subagentes**: apresente a alternativa inline no plano inicial e use a herança padrão quando não houver preferência incompatível. Preserve a seleção de modelos já aceita e registre a limitação no relatório.
 
 **Conflitos inesperados entre unidades**: pare e aguarde os workers envolvidos, preserve alterações preexistentes e diffs válidos, reconcilie com um único escritor e revalide. Não faça reset/revert geral. Registre o incidente em `Deviations` e reagende as unidades afetadas em sequência.
 
-**Modelo escolhido indisponível ou sem seleção por worker**: siga `model-selection.md`; ofereça alternativas e aguarde a escolha, salvo fallback já autorizado. Não prossiga com outro modelo apenas emitindo aviso. Registre solicitado/resolvido/efetivo para os dois papéis.
+**Override/preferência incompatível ou indisponível**: siga `model-selection.md`; use fallback autorizado ou peça alternativa. Sem interação, retorne bloqueio claro sem espera indefinida. Não substitua a escolha por herança apenas emitindo aviso. Registre origem e solicitado/resolvido/efetivo para os dois papéis.
+
+**Sem seleção por worker, sem preferência incompatível**: informe a herança efetiva e prossiga sem pergunta de modelo, respeitando as restrições de isolamento/execução do fluxo.
 
 **Host sem concorrência ou sem delegação aninhada**: mantenha a orquestração na sessão principal quando possível; caso contrário, ofereça execução em sequência/inline e registre o modo efetivo. Mudança de modelo em relação à escolha aceita exige resolução conforme `model-selection.md`. Testes e verificação final continuam obrigatórios.
 

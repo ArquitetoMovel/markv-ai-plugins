@@ -15,7 +15,8 @@ function harness(overrides = {}) {
 const input = { agent: 'sdd-python-specialist', directory: process.cwd(), model: 'p/m', packet: 'somente esta unidade' };
 const context = () => ({ sessionID: 'parent', agent: 'sdd-builder', signal: new AbortController().signal });
 test('sessão isolada recebe pacote mínimo e modelo explícito, sem copiar histórico', async () => {
-  const h = harness(); await registerDispatch(h.ctx);
+  const h = harness({ get: async ({ sessionID }) => ({ id: sessionID, model: { providerID: 'p', id: sessionID === 'parent' ? 'parent' : 'm' }, outcome: 'succeeded', location: { directory: process.cwd() } }) });
+  await registerDispatch(h.ctx);
   const result = JSON.parse((await h.tools.get('sdd_dispatch').execute(input, context())).content);
   assert.equal(result.outcome, 'succeeded'); assert.equal(result.requestedModel, 'p/m');
   const created = h.calls.find(c => c[0] === 'create')[1];
@@ -26,6 +27,40 @@ test('sessão isolada recebe pacote mínimo e modelo explícito, sem copiar hist
 test('modelo inexistente não cria sessão e não aplica fallback', async () => {
   const h = harness(); await registerDispatch(h.ctx);
   await assert.rejects(h.tools.get('sdd_dispatch').execute({ ...input, model: 'inexistente' }, context()), /não disponível/);
+  assert.ok(!h.calls.some(c => c[0] === 'create'));
+});
+test('modelo omitido ou inherit herda o pai sem consultar catálogo nem modelo padrão', async () => {
+  for (const model of [undefined, 'inherit']) {
+    const h = harness({ get: async ({ sessionID }) => ({ id: sessionID, model: { providerID: 'p', id: 'parent' }, outcome: 'succeeded', location: { directory: process.cwd() } }) });
+    h.ctx.model.list = async () => { throw new Error('Catálogo não é necessário para herança.'); };
+    h.ctx.model.default = async () => { throw new Error('O pai já informa o modelo.'); };
+    await registerDispatch(h.ctx);
+    const tool = h.tools.get('sdd_dispatch');
+    assert.ok(!tool.input.required.includes('model'));
+    const { model: _model, ...withoutModel } = input;
+    const request = model === undefined ? withoutModel : { ...withoutModel, model };
+    const result = JSON.parse((await tool.execute(request, context())).content);
+    const created = h.calls.find(c => c[0] === 'create')[1];
+    assert.deepEqual(created.model, { providerID: 'p', id: 'parent' });
+    assert.equal(created.metadata.requestedModel, 'inherit');
+    assert.equal(result.requestedModel, 'inherit');
+    assert.deepEqual(result.resolvedModel, created.model);
+    assert.deepEqual(result.effectiveModel, created.model);
+  }
+});
+test('sem modelo no pai, herança usa o padrão do host e preserva o efetivo informado', async () => {
+  const h = harness({ get: async ({ sessionID }) => ({ id: sessionID, model: sessionID === 'child' ? { providerID: 'p', id: 'effective' } : undefined, outcome: 'succeeded', location: { directory: process.cwd() } }) });
+  h.ctx.model.list = async () => { throw new Error('Catálogo não é necessário para herança.'); };
+  await registerDispatch(h.ctx);
+  const result = JSON.parse((await h.tools.get('sdd_dispatch').execute({ ...input, model: 'inherit' }, context())).content);
+  assert.deepEqual(result.resolvedModel, { providerID: 'p', id: 'm' });
+  assert.deepEqual(result.effectiveModel, { providerID: 'p', id: 'effective' });
+});
+test('herança sem modelo no pai nem padrão do host bloqueia antes de criar sessão', async () => {
+  const h = harness({ get: async () => ({ location: { directory: process.cwd() } }) });
+  h.ctx.model.default = async () => ({ data: undefined });
+  await registerDispatch(h.ctx);
+  await assert.rejects(h.tools.get('sdd_dispatch').execute({ ...input, model: 'inherit' }, context()), /Modelo herdado indisponível/);
   assert.ok(!h.calls.some(c => c[0] === 'create'));
 });
 test('filho não pode abrir nova delegação', async () => {

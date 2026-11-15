@@ -6,6 +6,20 @@ O `sdd-builder` também possui uma [adaptação para OpenCode 2.2.6](sdd-builder
 
 Cada plugin é publicado simultaneamente para os três hosts a partir do mesmo repositório, reaproveitando *skills* compartilhadas e disponibilizando agentes adaptados ao formato de cada plataforma.
 
+## Política de modelos
+
+Os agentes herdam o modelo do host por padrão, com `model: inherit` nos perfis
+Claude/Cursor e herança implícita nos perfis Copilot. Iniciar um fluxo não exige escolher
+modelos nem usar modelos distintos. Preferências e overrides válidos têm prioridade
+sobre o padrão; não se presume menor capacidade para autoria ou diagnóstico de testes.
+
+No SDD, `implementation-model` e `test-model` são overrides opcionais e independentes:
+informar somente um mantém o outro herdado. O plano é apresentado e a execução continua
+sem confirmação de modelos. Uma escolha incompatível ou restrição não atendida exige
+resolução apenas quando não houver fallback já autorizado. Roteamento automático entre
+modelos depende de política previamente aceita no escopo. Veja o
+[contrato de modelos do SDD](sdd-builder/skills/feature-builder/references/model-selection.md).
+
 ## Catálogo
 
 | Plugin | Categoria | Descrição | Plataformas |

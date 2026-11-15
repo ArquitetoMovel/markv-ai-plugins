@@ -2,7 +2,7 @@
 name: dependency-analyzer
 description: >
   Analisa dependências, acoplamento aferente/eferente e Zona de Dor em soluções .NET, Java, TypeScript, Python e Go, executando scripts determinísticos e entregando relatórios.
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

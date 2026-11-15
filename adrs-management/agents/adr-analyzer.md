@@ -2,7 +2,7 @@
 name: adr-analyzer
 description: >
   Especialista em analise de arquitetura e identificacao de decisoes arquiteturais (ADRs). Atua no Mapeamento do Codebase (Fase 1) e na Identificacao e Scoring de ADRs Potenciais (Fase 2).
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

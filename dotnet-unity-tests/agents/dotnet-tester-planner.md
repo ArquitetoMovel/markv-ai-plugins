@@ -8,7 +8,7 @@ description: >
   código de teste, NÃO roda builds, NÃO modifica o `test-plan.md`. Ativa para:
   "particionar plano", "quebrar plano de testes", "gerar plans individuais",
   "breakdown do test-plan".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

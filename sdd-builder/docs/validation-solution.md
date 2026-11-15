@@ -164,8 +164,15 @@ não basta para pular fase. Cancelamento encerra/aguarda workers antes de libera
 - Sem delegação aninhada: `feature-plan` termina antes de o root despachar especialistas;
   finalização passa por `feature-review` em contexto novo, com evidências finais reais.
 - Com apenas um slot: planejamento termina antes do worker, sem deadlock de coordenadores.
-- Sem interação em filhos: perguntas/modelos voltam à sessão principal, respeitando
-  escolhas já aceitas; nenhuma escolha é feita por silêncio.
+- Sem preferência de modelos: programação e testes usam `inherit` e o plano segue
+  sem pergunta ou confirmação de modelos, inclusive sem interação no root.
+- Override de um único papel: o outro permanece herdado. O mesmo modelo pode atender
+  aos dois papéis; origem, solicitado/resolvido/efetivo são registrados nos pacotes/retornos.
+- Sem interação em filhos: perguntas necessárias e incompatibilidades de modelos
+  sem fallback autorizado voltam à sessão principal. Preserve preferências válidas
+  entre projetos, ondas e retomadas, sem repetir escolhas nem adotar trocas por silêncio.
+- Override indisponível/restrição não atendida: somente fallback já autorizado permite
+  continuar. Sem interação e sem fallback, retorne bloqueio claro sem espera indefinida.
 - Sem contexto isolado ou sem subagentes por preferência: handoff persistido e tarefa
   `blocked`, sem executar projeto inline no chat global. Não diga "isolado" quando o
   mecanismo nativo herda o histórico completo.

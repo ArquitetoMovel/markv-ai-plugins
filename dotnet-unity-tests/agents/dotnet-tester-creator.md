@@ -6,7 +6,7 @@ description: >
   de teste, executa dotnet build e dotnet test, e garante cobertura mínima de 80%.
   Ativa para: "implementar testes", "criar testes conforme plano", "executar plano de testes",
   "escrever casos de teste", "cobrir classe X", "criar projeto de testes".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Write

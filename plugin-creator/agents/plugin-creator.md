@@ -7,7 +7,7 @@ description: >
   skills, README e entradas de marketplace). Ativa para: "criar plugin",
   "novo plugin", "plugin-creator", "scaffold plugin", "criar ai plugin",
   "plugin Claude", "plugin Cursor", "plugin Copilot".
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob

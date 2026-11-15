@@ -2,7 +2,7 @@
 name: adr-linker
 description: >
   Analisa ADRs existentes, detecta relacionamentos arquiteturais (Supersedes, Depends on, Related to, Amends) e cria links bidirecionais clicaveis em Markdown, preservando a integridade dos documentos.
-model: sonnet
+model: inherit
 tools:
   - Read
   - Glob
