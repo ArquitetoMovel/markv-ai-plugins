@@ -1,8 +1,11 @@
 # sdd-builder-plugin
 
-Plugin de desenvolvimento orientado a spec (SDD), com fluxo de implementação independente do provedor de LLM. A escolha de modelos se adapta ao harness da sessão: **Codex**, **Claude Code**, **Cursor**, **Antigravity**, **Copilot** ou outro ambiente que carregue as skills e forneça as ferramentas necessárias. Os manifests de distribuição existentes atendem Claude Code, Copilot CLI e Cursor.
+Plugin de desenvolvimento orientado a spec (SDD), com fluxo de implementação independente do provedor de LLM. A escolha de modelos se adapta ao harness da sessão: **Codex**, **Claude Code**, **Cursor**, **Antigravity**, **Copilot** ou outro ambiente que carregue as skills e forneça as ferramentas necessárias. Os manifests de distribuição existentes atendem Claude Code, Copilot CLI e Cursor. A adaptação [OpenCode 2.2.6](opencode/README.md) inclui pacote TypeScript, instalador por projeto e distribuição npm preparada.
 
 Ele conduz o produto do zero até as features implementadas em três etapas encadeadas: PRD com roadmap, specs técnicas por feature e implementação por unidades independentes, com especialistas por tecnologia e plano inicial para escolher modelos de programação e testes por harness. O roadmap `docs/prd_map_progress.json` é a fonte única de verdade sobre o progresso e amarra as três etapas.
+
+Na versão **1.5.0**, o pacote `opencode-sdd-builder` adiciona suporte ao OpenCode 2.2.6,
+com instalador por projeto, agentes adaptados e skills compartilhadas.
 
 Na versão **1.4.0**, o agente `sdd-solution-builder` adiciona coordenação de múltiplos
 projetos, PRDs incrementais, contratos por revisão e integração por incremento. Cada
@@ -329,3 +332,10 @@ copilot plugin install sdd-builder-plugin
 ### Cursor
 
 Disponibilize via repositório de marketplace de time em **Dashboard → Settings → Plugins → Team Marketplaces → Import**, apontando para o repositório `markv-ai-plugins`.
+
+### OpenCode 2.2.6
+
+Consulte [instalação e uso](opencode/README.md). No diretório `sdd-builder/opencode`,
+execute `npm ci`, `npm run build` e `node dist/cli.js install --project /caminho/do/projeto`.
+Depois reabra o OpenCode e use `/sdd`. A publicação npm e a homologação completa com
+provedores LLM são etapas separadas.

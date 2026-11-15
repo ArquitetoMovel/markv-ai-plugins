@@ -1,7 +1,7 @@
 {
   "name": "sdd-builder-plugin",
   "description": "Desenvolvimento orientado a spec para projetos e soluções multiprojeto: PRDs incrementais, contratos por revisão e implementação isolada com líder e artefatos replicados",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "author": {
     "name": "Alexandre Danelon (Arquiteto Móvel)",
     "email": "alexandre.danelon@outlook.com"

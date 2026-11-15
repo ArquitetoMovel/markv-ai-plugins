@@ -44,7 +44,7 @@
     {
       "name": "sdd-builder-plugin",
       "source": "./sdd-builder",
-      "version": "1.4.0",
+      "version": "1.5.0",
       "description": "Desenvolvimento orientado a spec para projetos e soluções multiprojeto: PRDs incrementais, contratos por revisão e implementação isolada com líder e artefatos replicados",
       "category": "development",
       "keywords": ["sdd", "spec-driven-development", "prd", "spec", "feature-builder", "roadmap", "multi-project", "solution"]

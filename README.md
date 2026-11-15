@@ -2,6 +2,8 @@
 
 Catálogo de plugins de IA multiplataforma com suporte a **Claude Code**, **GitHub Copilot CLI** e **Cursor**.
 
+O `sdd-builder` também possui uma [adaptação para OpenCode 2.2.6](sdd-builder/opencode/README.md).
+
 Cada plugin é publicado simultaneamente para os três hosts a partir do mesmo repositório, reaproveitando *skills* compartilhadas e disponibilizando agentes adaptados ao formato de cada plataforma.
 
 ## Catálogo
@@ -12,7 +14,7 @@ Cada plugin é publicado simultaneamente para os três hosts a partir do mesmo r
 | [`design-docs-plugin`](./design-docs) | documentation | Assistente de entrevista estruturada para gerar PRDs (Geral e Funcional) e HLDs em Markdown, com exportação opcional em JSON. | Claude Code · Copilot CLI · Cursor |
 | [`dev-guideline-plugin`](./dev-guideline) | documentation | Gerador de guidelines de desenvolvimento por linguagem, com entrevista guiada e pesquisa em fontes oficiais. | Claude Code · Copilot CLI · Cursor |
 | [`plugin-creator-plugin`](./plugin-creator) | development | Assistente de entrevista para criar plugins de IA multiplataforma (Claude Code, Copilot CLI e Cursor). | Claude Code · Copilot CLI · Cursor |
-| [`sdd-builder-plugin`](./sdd-builder) | development | SDD local e multiprojeto: PRDs incrementais, contratos por revisão, líder e artefatos de solução replicados, com implementação isolada. | Claude Code · Copilot CLI · Cursor |
+| [`sdd-builder-plugin`](./sdd-builder) | development | SDD local e multiprojeto: PRDs incrementais, contratos por revisão, líder e artefatos de solução replicados, com implementação isolada. | Claude Code · Copilot CLI · Cursor · OpenCode |
 | [`adrs-management-plugin`](./adrs-management) | documentation | Gestão completa de Architecture Decision Records (ADRs): mapeamento do codebase, identificação com scoring e histórico git, geração MADR e vínculos bidirecionais. | Claude Code · Copilot CLI · Cursor |
 | [`swe-dependency-map-plugin`](./swe-dependency-map) | development | Mapeia dependências entre LIBs e módulos, calcula CA/CE, instabilidade, abstração e Zona de Dor e gera relatórios determinísticos. | Claude Code · Copilot CLI · Cursor |
 

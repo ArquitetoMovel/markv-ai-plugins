@@ -148,3 +148,12 @@ para despacho e **efetivo** informado pelo host. Se o efetivo não for exposto, 
 - [Subagentes Cursor](https://cursor.com/docs/subagents).
 - [Modelos Antigravity](https://www.antigravity.google/docs/models/) e [consulta de modelos na CLI](https://www.antigravity.google/docs/cli/headless/).
 - [Referência Copilot CLI](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).
+
+## OpenCode 2.2.6
+
+Com o adaptador `opencode-sdd-builder`, consulte `sdd_models` para o catálogo atual.
+Use IDs `providerID/modelID` ou `inherit` aceito pelo usuário para cada papel.
+A chamada `sdd_dispatch` recebe o modelo e abre sessão filha isolada; o coordenador
+permanece no modelo da sua sessão. Não use o catálogo de outro host. O adaptador
+serializa Git e limita três janelas globais, sem delegação aninhada. A skill
+`sdd-opencode` instalada define o mapeamento de ferramentas e recuperação de locks.
