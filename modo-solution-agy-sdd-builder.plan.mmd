@@ -1,0 +1,21 @@
+flowchart TD
+  user[Usuário no Diretório Neutro]
+  entry[sdd-solution-builder / sdd-builder]
+  solDocs["docs/solution/SOLUTION.md + solution.json"]
+  runs["docs/solution/runs/&lt;run-id&gt;/ + solution-notes.md"]
+  prdWin["Janela PRD por Projeto (prd-notes.md)"]
+  specWin["Janela SPEC por Feature (Contrato/Revisão)"]
+  featWin["Janela Feature por Feature (Lock por gitRoot)"]
+  intWin["Janela de Integração do Incremento"]
+
+  user -->|Prompt inicial ou Entrevista| entry
+  entry --> solDocs
+  entry --> runs
+  entry -->|Pacote isolado| prdWin
+  entry -->|Pacote isolado + onda da solução| specWin
+  entry -->|Pacote isolado + orçamento global| featWin
+  entry -->|Critérios entre projetos| intWin
+  prdWin -->|Mutações propostas + PRD.md| entry
+  specWin -->|Mutações propostas + contrato| entry
+  featWin -->|Mutações propostas + commits no gitRoot| entry
+  intWin -->|Evidências E2E do incremento| entry

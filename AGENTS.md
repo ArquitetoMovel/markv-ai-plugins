@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -90,3 +90,16 @@ copilot plugin install <plugin-name>
 3. Author agents in **both** `agents/` (Claude/Cursor schema) and `copilot-agents/` (Copilot schema). Keep bodies in sync.
 4. Put shared knowledge in `skills/<skill>/SKILL.md`.
 5. Add a matching entry to **all four** marketplace manifests (`marketplace.json`, `.claude-plugin/marketplace.json`, `.cursor-plugin/marketplace.json`, `.github/plugin/marketplace.json`) with identical `name`, `source`, `version`, `description`, `category`, `keywords`.
+
+## Adaptador OpenCode do sdd-builder
+
+O `sdd-builder/opencode/` atende OpenCode 2.2.6 como quarto host desse plugin.
+É um pacote TypeScript ESM com SDK fixado, instalador explícito por projeto e testes
+focados. As fontes canônicas continuam em `sdd-builder/agents/` e `skills/`; o build
+gera perfis e recursos em `dist/`, ignorado pelo Git. Não edite os gerados.
+
+Valide com `npm ci`, `npm run check`, `npm test` e `npm run test:integration` no pacote.
+O teste integrado instala tarball externo e exige OpenCode 2.2.6, sem chamar LLMs.
+O pacote npm não é uma nova entrada nos marketplaces dos outros hosts. Não adicione
+campos OpenCode aos manifests Claude/Cursor/Copilot. Mudanças de metadados comuns
+continuam exigindo sincronização de todas as cópias.

@@ -96,6 +96,43 @@ Extra rules:
 
 ## Single-writer rule
 
+### Modo solução: aplicação de mutações propostas
+
+Com `mode=solution`, esta modalidade prevalece sobre a lista de escritores locais
+abaixo e **não muda o schema `1.0`**. O único escritor efetivo é o orquestrador global
+(`sdd-solution-builder` ou `sdd-builder` assumindo esse contrato). PRD/SPEC/feature,
+inclusive filhos sequenciais, retornam propostas e nunca escrevem no roadmap. Workers
+de implementação/integração/testes continuam proibidos de escrever em qualquer modo.
+
+- `mergePrd`: root cria/mescla após validar PRD de 9 seções e diff. Preserva IDs,
+  `specPath`, status, decisões e evidências; novos IDs não reutilizam números removidos.
+  Feature removida permanece com `note: "no longer in PRD"` e status histórico intacto.
+  Por isso a validação de correspondência PRD/roadmap admite apenas essa exceção para
+  entradas históricas; toda feature ativa do PRD continua aparecendo exatamente uma vez.
+  Mudança de feature `done` exige evolução ou reabertura explicitamente autorizada.
+- `setSpecPath`: root confere os três arquivos e contratos na revisão esperada; altera
+  só `specPath` e timestamps, nunca `status`.
+- `startFeature`: após modelos/preflight, root marca `in-progress` antes de liberar
+  qualquer implementação. `finishFeature`: root aplica `done` só com verificação final
+  comprovada; falha/incompleto mantém `in-progress` com motivo, além das decisões aceitas.
+
+Cada proposta identifica projeto, feature quando aplicável, `taskId`, tentativa,
+`mutationId` estável por operação (IDs distintos para início e desfecho),
+precondições e campos alterados. Confira estado canônico, concessão Git e retorno;
+adquira `<PROJECT_ROOT>/docs/prd_map_progress.lock`, releia do disco e rejeite resultado
+stale/duplicado ou precondição conflitante. Preserve entradas e decisões alheias.
+Libere o lock após a troca atômica, releia e registre a tentativa aceita no estado da
+solução; publique os artefatos globais antes de liberar dependentes.
+
+Uma interrupção entre a escrita do roadmap e o registro no estado é reconciliada
+comparando o diff proposto, precondições e artefatos. Se a mudança já estiver aplicada,
+registre aceitação sem repetir apêndices de `decisions`; conflito não é sobrescrito.
+O lock de roadmap cobre só read-modify-write; a concessão Git segue o protocolo da
+solução. Roadmaps permanecem em `docs/` de cada projeto e nunca são replicados em
+`docs/solutions/`. Consulte [Solution Builder](../solution-builder/SKILL.md).
+
+### Escritores no modo single-project
+
 Concurrency is handled by restricting who writes, not by hoping writes interleave well.
 
 **Allowed writers**
